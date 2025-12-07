@@ -1,0 +1,37 @@
+.captcha-container {
+    margin: 1rem 0;
+    padding: 1rem;
+    border: 1px solid rgba(0, 0, 0, 0.12);
+    border-radius: 4px;
+    background-color: rgba(0, 0, 0, 0.02);
+}
+
+.captcha-question {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.question-text {
+    font-size: 1.25rem;
+    font-weight: 500;
+    color: rgba(0, 0, 0, 0.87);
+}
+
+.refresh-button {
+    color: rgba(0, 0, 0, 0.54);
+}
+
+.answer-field {
+    width: 100%;
+    margin: 0;
+}
+
+.valid-icon {
+    color: #4caf50;
+}
+
+.invalid-icon {
+    color: #f44336;
+}

@@ -1,0 +1,30 @@
+<div class="captcha-container">
+    <div class="captcha-question">
+        <span class="question-text">{{ num1 }} + {{ num2 }} = ?</span>
+        <button
+            type="button"
+            mat-icon-button
+            (click)="refresh()"
+            matTooltip="Generera ny fråga"
+            class="refresh-button"
+        >
+            <mat-icon>refresh</mat-icon>
+        </button>
+    </div>
+    <mat-form-field appearance="outline" class="answer-field">
+        <mat-label>Ditt svar</mat-label>
+        <input
+            matInput
+            type="number"
+            [(ngModel)]="userAnswer"
+            (ngModelChange)="checkAnswer()"
+            placeholder="Skriv svaret här"
+        />
+        @if (userAnswer && isValid) {
+            <mat-icon matSuffix class="valid-icon">check_circle</mat-icon>
+        }
+        @if (userAnswer && !isValid) {
+            <mat-icon matSuffix class="invalid-icon">cancel</mat-icon>
+        }
+    </mat-form-field>
+</div>

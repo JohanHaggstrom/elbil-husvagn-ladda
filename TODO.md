@@ -27,6 +27,7 @@
 - [x] **Sociala funktioner**:
     - [x] Möjlighet att lägga till kommentarer på en punkt.
     - [x] Möjlighet att ge tumme upp/ner på en punkt.
+- [ ] **Användarhantering**: Möjlighet att hantera admin användare. Kunna byta psw, ta bort användare, etc. Spara i ny tabell. Obs saltat.
 
 ## Frontend (Angular)
 - [x] **Karta - Sök**: Implementera sökfält för att hitta platser på kartan.
@@ -38,7 +39,9 @@
 - [x] **Felhantering**: Hantera om backend är nere eller API-anrop misslyckas.
 - [x] **Lista/karta**: Lägg till möjlighet att visa en lista eller en karta.
 - [x] **Material icons**: Lägg till möjlighet att visa material icons.
-- [ ] **Kunna föreslå förbättringar**: Lägg till möjlighet att kunna föreslå förbättringar. Med Captcha för att förhindra spam. Inklusive databas för det i backend.
+- [x] **Kunna föreslå förbättringar**: Lägg till möjlighet att kunna föreslå förbättringar. Med Captcha för att förhindra spam. Inklusive databas för det i backend.
+- [ ] **Kunna enkelt föreslå en ny laddstation**: Lägg till möjlighet att kunna enkelt föreslå en ny laddstation. Med Captcha för att förhindra spam. Inklusive databas för det i backend.
+- [ ] **Kunna lägga in ungefärlig förbrukning för ekipage**: Lägg till möjlighet att kunna lägga in ungefärlig förbrukning för ekipage. Inklusive databas för det i backend.
 - [ ] **Bild av laddstation**: Lägg till möjlighet att visa en bild av en laddstation.
 - [ ] **Runtime Config för Docker**: Implementera runtime configuration för API-nyckel i Docker
     - Skapa `app.initializer.ts` som läser `/assets/config.json` vid app-start

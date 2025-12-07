@@ -19,6 +19,7 @@ import { MapComponent } from '../map/map.component';
 import { ChargingStationService } from '../services/charging-station.service';
 import { ConnectionService } from '../services/connection.service';
 import { ErrorService } from '../services/error.service';
+import { FeedbackService } from '../services/feedback.service';
 
 @Component({
     selector: 'app-home',
@@ -63,9 +64,20 @@ export class HomeComponent implements OnInit {
     private dialog = inject(MatDialog);
     private connectionService = inject(ConnectionService);
     private errorService = inject(ErrorService);
+    private feedbackService = inject(FeedbackService);
+
+    protected unhandledFeedbackCount = 0;
 
     navigateToLogin(): void {
         this.router.navigate(['/login']);
+    }
+
+    navigateToFeedback(): void {
+        this.router.navigate(['/feedback']);
+    }
+
+    navigateToAdminFeedback(): void {
+        this.router.navigate(['/admin/feedback']);
     }
 
     logout(): void {
@@ -74,6 +86,11 @@ export class HomeComponent implements OnInit {
 
     ngOnInit(): void {
         this.loadChargingPoints();
+
+        // Load unhandled feedback count if admin
+        if (this.authService.isAuthenticated()) {
+            this.loadUnhandledFeedbackCount();
+        }
 
         // Monitor connection status
         this.connectionService.online$.subscribe(isOnline => {
@@ -163,5 +180,17 @@ export class HomeComponent implements OnInit {
         } finally {
             this.isLoading = false;
         }
+    }
+
+    private loadUnhandledFeedbackCount(): void {
+        this.feedbackService.getUnhandledCount().subscribe({
+            next: (count) => {
+                this.unhandledFeedbackCount = count;
+            },
+            error: (error) => {
+                console.error('Error loading unhandled feedback count:', error);
+                // Silently fail - not critical
+            }
+        });
     }
 }

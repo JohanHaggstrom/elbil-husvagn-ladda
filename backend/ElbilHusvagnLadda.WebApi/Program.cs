@@ -1,5 +1,7 @@
 using ElbilHusvagnLadda.WebApi.Data;
 using ElbilHusvagnLadda.WebApi.Middleware;
+using ElbilHusvagnLadda.WebApi.Models;
+using ElbilHusvagnLadda.WebApi.Services;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -11,6 +13,10 @@ builder.Services.AddControllers();
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));
+
+// Configure Email Settings
+builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings"));
+builder.Services.AddScoped<IEmailService, EmailService>();
 
 // Configure CORS to allow Angular frontend
 builder.Services.AddCors(options =>

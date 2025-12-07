@@ -1,0 +1,129 @@
+<div class="admin-feedback-container">
+    <div class="header">
+        <button mat-icon-button (click)="goBack()" class="back-button">
+            <mat-icon>arrow_back</mat-icon>
+        </button>
+        <h1>Hantera Feedback</h1>
+        @if (unhandledCount > 0) {
+            <mat-chip highlighted color="warn" class="unhandled-badge">
+                {{ unhandledCount }} ohanterade
+            </mat-chip>
+        }
+    </div>
+
+    @if (isLoading) {
+        <div class="loading-container">
+            <mat-spinner></mat-spinner>
+            <p>Laddar feedback...</p>
+        </div>
+    } @else if (feedbacks.length === 0) {
+        <mat-card class="empty-state">
+            <mat-card-content>
+                <mat-icon class="empty-icon">inbox</mat-icon>
+                <h2>Ingen feedback än</h2>
+                <p>Det finns ingen feedback att visa just nu.</p>
+            </mat-card-content>
+        </mat-card>
+    } @else {
+        <div class="feedback-list">
+            @for (feedback of feedbacks; track feedback.id) {
+                <mat-card class="feedback-item" [class.handled]="feedback.isHandled">
+                    <mat-card-header>
+                        <div class="feedback-header">
+                            <div class="title-section">
+                                <div class="chips">
+                                    <mat-chip [color]="getFeedbackTypeColor(feedback.type)" highlighted>
+                                        {{ getFeedbackTypeLabel(feedback.type) }}
+                                    </mat-chip>
+                                    @if (feedback.isHandled) {
+                                        <mat-chip color="accent" highlighted>
+                                            <mat-icon>check_circle</mat-icon>
+                                            Hanterad
+                                        </mat-chip>
+                                    }
+                                </div>
+                                <h3>{{ feedback.title }}</h3>
+                            </div>
+                            <div class="action-buttons">
+                                <button
+                                    mat-icon-button
+                                    [color]="feedback.isHandled ? '' : 'accent'"
+                                    (click)="toggleHandled(feedback)"
+                                    [matTooltip]="feedback.isHandled ? 'Markera som ohanterad' : 'Markera som hanterad'"
+                                >
+                                    <mat-icon>{{ feedback.isHandled ? 'radio_button_unchecked' : 'check_circle' }}</mat-icon>
+                                </button>
+                                <button
+                                    mat-icon-button
+                                    color="warn"
+                                    (click)="deleteFeedback(feedback)"
+                                    matTooltip="Ta bort"
+                                >
+                                    <mat-icon>delete</mat-icon>
+                                </button>
+                            </div>
+                        </div>
+                    </mat-card-header>
+                    <mat-card-content>
+                        <p class="description">{{ feedback.description }}</p>
+
+                        @if (feedback.email) {
+                            <div class="email-info">
+                                <mat-icon>email</mat-icon>
+                                <a [href]="'mailto:' + feedback.email">{{ feedback.email }}</a>
+                            </div>
+                        }
+
+                        <div class="metadata">
+                            <mat-icon>schedule</mat-icon>
+                            <span>{{ formatDate(feedback.createdAt) }}</span>
+                        </div>
+
+                        <div class="admin-response-section">
+                            @if (editingResponseId === feedback.id) {
+                                <mat-form-field appearance="outline" class="full-width">
+                                    <mat-label>Admin-svar</mat-label>
+                                    <textarea
+                                        matInput
+                                        [(ngModel)]="tempResponse"
+                                        rows="4"
+                                        maxlength="2000"
+                                        placeholder="Skriv ditt svar här..."
+                                    ></textarea>
+                                    <mat-hint align="end">{{ tempResponse.length }}/2000</mat-hint>
+                                </mat-form-field>
+                                <div class="response-actions">
+                                    <button mat-button (click)="cancelEditingResponse()">
+                                        Avbryt
+                                    </button>
+                                    <button mat-raised-button color="primary" (click)="saveResponse(feedback)">
+                                        Spara svar
+                                    </button>
+                                </div>
+                            } @else {
+                                @if (feedback.adminResponse) {
+                                    <div class="admin-response">
+                                        <div class="response-header">
+                                            <mat-icon>admin_panel_settings</mat-icon>
+                                            <strong>Admin-svar:</strong>
+                                        </div>
+                                        <p>{{ feedback.adminResponse }}</p>
+                                        <button mat-button color="primary" (click)="startEditingResponse(feedback)">
+                                            <mat-icon>edit</mat-icon>
+                                            Redigera svar
+                                        </button>
+                                    </div>
+                                } @else {
+                                    <button mat-raised-button color="primary" (click)="startEditingResponse(feedback)">
+                                        <mat-icon>reply</mat-icon>
+                                        Svara
+                                    </button>
+                                }
+                            }
+                        </div>
+                    </mat-card-content>
+                </mat-card>
+            }
+        </div>
+    }
+</div>

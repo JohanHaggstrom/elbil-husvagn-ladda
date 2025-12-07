@@ -135,6 +135,18 @@ p {
     color: var(--gray-900);
 }
 
+.feedback-badge {
+    background-color: #1976d2;
+    color: white;
+    border-radius: 12px;
+    padding: 2px 8px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    margin-left: 12px;
+    min-width: 20px;
+    text-align: center;
+}
+
 // Offline banner styles
 .offline-banner {
     display: flex;

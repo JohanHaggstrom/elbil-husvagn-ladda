@@ -1,0 +1,56 @@
+.feedback-container {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 2rem;
+    min-height: 100vh;
+    background: #f5f5f5;
+}
+
+.feedback-card {
+    max-width: 600px;
+    width: 100%;
+    margin-top: 2rem;
+}
+
+.header-content {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    width: 100%;
+}
+
+.back-button {
+    margin-right: 0.5rem;
+}
+
+.description {
+    color: rgba(0, 0, 0, 0.6);
+    margin-bottom: 1.5rem;
+}
+
+.full-width {
+    width: 100%;
+    margin-bottom: 1rem;
+}
+
+.actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+    margin-top: 1.5rem;
+}
+
+.spinning {
+    animation: spin 1s linear infinite;
+    margin-right: 0.5rem;
+}
+
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}

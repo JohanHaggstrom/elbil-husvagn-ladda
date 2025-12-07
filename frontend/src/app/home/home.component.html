@@ -13,6 +13,13 @@
                         <span>{{ authService.currentUser() }}</span>
                     </div>
                     <mat-divider></mat-divider>
+                    <button mat-menu-item (click)="navigateToAdminFeedback()">
+                        <mat-icon>admin_panel_settings</mat-icon>
+                        <span>Hantera Feedback</span>
+                        @if (unhandledFeedbackCount > 0) {
+                            <span class="feedback-badge">{{ unhandledFeedbackCount }}</span>
+                        }
+                    </button>
                     <button mat-menu-item (click)="logout()">
                         <mat-icon>logout</mat-icon>
                         <span>Logga ut</span>
@@ -23,6 +30,11 @@
                         <span>Logga in</span>
                     </button>
                 }
+                <mat-divider></mat-divider>
+                <button mat-menu-item (click)="navigateToFeedback()">
+                    <mat-icon>feedback</mat-icon>
+                    <span>Rapportera/Föreslå</span>
+                </button>
             </mat-menu>
         </div>
         <h5>Anpassade, eller lämpliga, när man har husvagn</h5>

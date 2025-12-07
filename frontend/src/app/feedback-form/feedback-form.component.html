@@ -1,0 +1,99 @@
+<div class="feedback-container">
+    <mat-card class="feedback-card">
+        <mat-card-header>
+            <div class="header-content">
+                <button mat-icon-button (click)="goBack()" class="back-button">
+                    <mat-icon>arrow_back</mat-icon>
+                </button>
+                <mat-card-title>Rapportera eller Föreslå</mat-card-title>
+            </div>
+        </mat-card-header>
+
+        <mat-card-content>
+            <p class="description">
+                Hjälp oss att förbättra applikationen genom att rapportera buggar eller föreslå nya funktioner!
+            </p>
+
+            <form #feedbackForm="ngForm" (ngSubmit)="submitFeedback()">
+                <mat-form-field appearance="outline" class="full-width">
+                    <mat-label>Typ</mat-label>
+                    <mat-select [(ngModel)]="feedbackType" name="type" required>
+                        @for (type of feedbackTypes; track type.value) {
+                            <mat-option [value]="type.value">
+                                {{ type.label }}
+                            </mat-option>
+                        }
+                    </mat-select>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline" class="full-width">
+                    <mat-label>Titel</mat-label>
+                    <input
+                        matInput
+                        [(ngModel)]="title"
+                        name="title"
+                        placeholder="Kort beskrivning av problemet eller förslaget"
+                        maxlength="200"
+                        required
+                    />
+                    <mat-hint align="end">{{ title.length }}/200</mat-hint>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline" class="full-width">
+                    <mat-label>Beskrivning</mat-label>
+                    <textarea
+                        matInput
+                        [(ngModel)]="description"
+                        name="description"
+                        placeholder="Detaljerad beskrivning..."
+                        rows="8"
+                        maxlength="2000"
+                        required
+                    ></textarea>
+                    <mat-hint align="end">{{ description.length }}/2000</mat-hint>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline" class="full-width">
+                    <mat-label>E-post (valfritt)</mat-label>
+                    <input
+                        matInput
+                        type="email"
+                        [(ngModel)]="email"
+                        name="email"
+                        placeholder="din@email.com"
+                        maxlength="255"
+                    />
+                    <mat-hint>Om du vill få svar på din feedback</mat-hint>
+                </mat-form-field>
+
+                <app-simple-captcha (captchaValid)="onCaptchaValidChange($event)"></app-simple-captcha>
+
+                <div class="actions">
+                    <button
+                        mat-raised-button
+                        type="button"
+                        (click)="goBack()"
+                        [disabled]="isSubmitting"
+                    >
+                        Avbryt
+                    </button>
+                    <button
+                        mat-raised-button
+                        color="primary"
+                        type="submit"
+                        [disabled]="!feedbackForm.form.valid || !isCaptchaValid || isSubmitting"
+                    >
+                        @if (isSubmitting) {
+                            <span>
+                                <mat-icon class="spinning">refresh</mat-icon>
+                                Skickar...
+                            </span>
+                        } @else {
+                            <span>Skicka</span>
+                        }
+                    </button>
+                </div>
+            </form>
+        </mat-card-content>
+    </mat-card>
+</div>

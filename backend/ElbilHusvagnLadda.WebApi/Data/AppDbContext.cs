@@ -11,6 +11,7 @@ public class AppDbContext : DbContext
 
     public DbSet<ChargingPoint> ChargingPoints { get; set; }
     public DbSet<ChargePointComment> ChargePointComments { get; set; }
+    public DbSet<Feedback> Feedbacks { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
