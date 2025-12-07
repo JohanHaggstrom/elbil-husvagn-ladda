@@ -30,12 +30,12 @@
 
 ## Frontend (Angular)
 - [x] **Karta - Sök**: Implementera sökfält för att hitta platser på kartan.
-- [ ] **Karta - Styling**: Göra pins transparenta/snyggare.
+- [x] **Karta - Styling**: Göra pins transparenta/snyggare.
 - [x] **API-koppling**: Koppla ihop frontend med backend på riktigt (ersätta hårdkodad data).
 - [x] **Säkerhet**: Hantera API-nyckel i anrop och Login-flöde i UI.
 - [x] **Admin UI**: Gränssnitt för att lägga till, redigera och ta bort punkter.
 - [x] **Social UI**: Gränssnitt för kommentarer och betyg.
-- [ ] **Felhantering**: Hantera om backend är nere eller API-anrop misslyckas.
+- [x] **Felhantering**: Hantera om backend är nere eller API-anrop misslyckas.
 - [x] **Lista/karta**: Lägg till möjlighet att visa en lista eller en karta.
 - [x] **Material icons**: Lägg till möjlighet att visa material icons.
 - [ ] **Kunna föreslå förbättringar**: Lägg till möjlighet att kunna föreslå förbättringar. Med Captcha för att förhindra spam. Inklusive databas för det i backend.
