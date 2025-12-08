@@ -13,4 +13,12 @@ public class ChargingPoint
     public required string MapCoordinates { get; set; }
     public int? NumberOfChargePoints { get; set; }
     public int Capacity { get; set; }
+
+    [System.Text.Json.Serialization.JsonIgnore]
+    public byte[]? ImageData { get; set; }
+
+    [System.Text.Json.Serialization.JsonIgnore]
+    public string? ImageContentType { get; set; }
+
+    public bool HasImage => ImageData != null && ImageData.Length > 0;
 }

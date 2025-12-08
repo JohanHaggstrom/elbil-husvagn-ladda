@@ -3,10 +3,13 @@ import { AbstractControl, FormBuilder, FormGroup, ReactiveFormsModule, Validatio
 import { MatButtonModule } from '@angular/material/button';
 import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import * as L from 'leaflet';
 import { firstValueFrom } from 'rxjs';
+import { environment } from '../../../environments/environment';
 import { ChargingPoint, ChargingStationService } from '../../services/charging-station.service';
 
 @Component({
@@ -17,7 +20,9 @@ import { ChargingPoint, ChargingStationService } from '../../services/charging-s
     MatButtonModule,
     MatFormFieldModule,
     MatInputModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    MatIconModule,
+    MatTooltipModule
   ],
   templateUrl: './edit-charging-point-dialog.component.html',
   styleUrl: './edit-charging-point-dialog.component.scss'
@@ -29,11 +34,20 @@ export class EditChargingPointDialogComponent implements AfterViewInit {
   private map: L.Map | undefined;
   private marker: L.Marker | undefined;
 
+  selectedFile: File | null = null;
+  imagePreview: string | null = null;
+  currentImagePath: string | null = null; // Not used anymore but kept for compatibility if needed, though logic uses hasImage
+  hasImage = false;
+  isUploadingImage = false;
+
   constructor(
     private fb: FormBuilder,
     private dialogRef: MatDialogRef<EditChargingPointDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: ChargingPoint | null
   ) {
+    this.hasImage = !!data?.hasImage;
+    // We can set currentImagePath to something if we want, but we use getImageUrl instead
+
     this.form = this.fb.group({
       id: [data?.id || 0],
       title: [data?.title || '', Validators.required],
@@ -106,10 +120,10 @@ export class EditChargingPointDialogComponent implements AfterViewInit {
       } else {
         this.marker = L.marker([lat, lng], { draggable: true }).addTo(this.map!);
         this.marker.on('dragend', () => {
-            if (this.marker) {
-              const position = this.marker.getLatLng();
-              this.updateCoordinates(position.lat, position.lng);
-            }
+          if (this.marker) {
+            const position = this.marker.getLatLng();
+            this.updateCoordinates(position.lat, position.lng);
+          }
         });
       }
 
@@ -118,7 +132,7 @@ export class EditChargingPointDialogComponent implements AfterViewInit {
 
     // Invalidate size after a short delay to ensure map renders correctly in dialog
     setTimeout(() => {
-        this.map?.invalidateSize();
+      this.map?.invalidateSize();
     }, 100);
   }
 
@@ -166,9 +180,92 @@ export class EditChargingPointDialogComponent implements AfterViewInit {
     }
   }
 
-
-
   onCancel(): void {
     this.dialogRef.close(false);
+  }
+
+  onFileSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files[0]) {
+      const file = input.files[0];
+
+      // Validate file type
+      const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
+      if (!allowedTypes.includes(file.type)) {
+        this.snackBar.open('Endast JPG, PNG och WebP bilder är tillåtna', 'Stäng', { duration: 3000 });
+        return;
+      }
+
+      // Validate file size (5MB)
+      if (file.size > 5 * 1024 * 1024) {
+        this.snackBar.open('Bilden får max vara 5MB', 'Stäng', { duration: 3000 });
+        return;
+      }
+
+      this.selectedFile = file;
+
+      // Create preview
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        this.imagePreview = e.target?.result as string;
+      };
+      reader.readAsDataURL(file);
+    }
+  }
+
+  async uploadImage(): Promise<void> {
+    if (!this.selectedFile || !this.data?.id) {
+      return;
+    }
+
+    this.isUploadingImage = true;
+    try {
+      await firstValueFrom(
+        this.chargingStationService.uploadImage(this.data.id, this.selectedFile)
+      );
+      this.hasImage = true;
+      this.currentImagePath = 'dummy'; // Just to trigger UI update if it relies on this, but we should use hasImage
+      this.selectedFile = null;
+      this.imagePreview = null;
+      this.snackBar.open('Bild uppladdad!', 'Stäng', { duration: 2000 });
+    } catch (error) {
+      console.error('Error uploading image:', error);
+      this.snackBar.open('Kunde inte ladda upp bild', 'Stäng', { duration: 3000 });
+    } finally {
+      this.isUploadingImage = false;
+    }
+  }
+
+  async deleteImage(): Promise<void> {
+    if (!this.data?.id || !this.hasImage) {
+      return;
+    }
+
+    if (!confirm('Är du säker på att du vill ta bort bilden?')) {
+      return;
+    }
+
+    try {
+      await firstValueFrom(this.chargingStationService.deleteImage(this.data.id));
+      this.hasImage = false;
+      this.currentImagePath = null;
+      this.snackBar.open('Bild borttagen!', 'Stäng', { duration: 2000 });
+    } catch (error) {
+      console.error('Error deleting image:', error);
+      this.snackBar.open('Kunde inte ta bort bild', 'Stäng', { duration: 3000 });
+    }
+  }
+
+  cancelImageSelection(): void {
+    this.selectedFile = null;
+    this.imagePreview = null;
+  }
+
+  getImageUrl(): string {
+    if (this.data?.id) {
+      // Add timestamp to prevent caching issues when image is updated
+      return `${environment.apiUrl}/api/chargingpoints/${this.data.id}/image?t=${new Date().getTime()}`;
+    }
+    return '';
   }
 }

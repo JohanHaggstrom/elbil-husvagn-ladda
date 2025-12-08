@@ -4,6 +4,7 @@ using ElbilHusvagnLadda.WebApi.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ElbilHusvagnLadda.WebApi.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251207145800_AddImagePathToChargingPoint")]
+    partial class AddImagePathToChargingPoint
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -79,11 +82,8 @@ namespace ElbilHusvagnLadda.WebApi.Migrations
                         .IsRequired()
                         .HasColumnType("longtext");
 
-                    b.Property<string>("ImageContentType")
+                    b.Property<string>("ImagePath")
                         .HasColumnType("longtext");
-
-                    b.Property<byte[]>("ImageData")
-                        .HasColumnType("longblob");
 
                     b.Property<string>("MapCoordinates")
                         .IsRequired()

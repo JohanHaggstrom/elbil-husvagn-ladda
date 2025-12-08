@@ -28,6 +28,8 @@
     - [x] Möjlighet att lägga till kommentarer på en punkt.
     - [x] Möjlighet att ge tumme upp/ner på en punkt.
 - [ ] **Användarhantering**: Möjlighet att hantera admin användare. Kunna byta psw, ta bort användare, etc. Spara i ny tabell. Obs saltat.
+- [ ] **Backup**: Möjlighet att backup laddstationer till en json-fil.
+- [ ] **Restore**: Möjlighet att restore laddstationer från en json-fil.
 
 ## Frontend (Angular)
 - [x] **Karta - Sök**: Implementera sökfält för att hitta platser på kartan.
@@ -42,13 +44,16 @@
 - [x] **Kunna föreslå förbättringar**: Lägg till möjlighet att kunna föreslå förbättringar. Med Captcha för att förhindra spam. Inklusive databas för det i backend.
 - [ ] **Kunna enkelt föreslå en ny laddstation**: Lägg till möjlighet att kunna enkelt föreslå en ny laddstation. Med Captcha för att förhindra spam. Inklusive databas för det i backend.
 - [ ] **Kunna lägga in ungefärlig förbrukning för ekipage**: Lägg till möjlighet att kunna lägga in ungefärlig förbrukning för ekipage. Inklusive databas för det i backend.
-- [ ] **Bild av laddstation**: Lägg till möjlighet att visa en bild av en laddstation.
+- [x] **Bild av laddstation**: Lägg till möjlighet att visa en bild av en laddstation.
 - [ ] **Runtime Config för Docker**: Implementera runtime configuration för API-nyckel i Docker
     - Skapa `app.initializer.ts` som läser `/assets/config.json` vid app-start
     - Skapa `docker-entrypoint.sh` som genererar `config.json` från miljövariabler
     - Uppdatera Dockerfile att använda entrypoint-scriptet
     - Flytta `apiKey` och `apiUrl` från `environment.ts` till runtime config
     - Detta gör att samma Docker-image kan användas i olika miljöer
+- [ ] **Byt till riktig Captcha**: Byt till riktig Captcha, när det stöder Angular 21.
+- [ ] **Exportera**: Möjlighet att exportera laddstationer till en json-fil.
+- [ ] **Importera**: Möjlighet att importera laddstationer från en json-fil.
 
 ## Dokumentation
 - [ ] **Uppdatera README**: Dokumentera nya funktioner och Docker-setup.

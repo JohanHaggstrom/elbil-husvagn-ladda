@@ -35,6 +35,71 @@
             font-style: italic;
         }
     }
+
+    .image-section {
+        margin-top: 1rem;
+        padding-top: 1rem;
+        border-top: 1px solid #e0e0e0;
+
+        h3 {
+            margin: 0 0 1rem 0;
+            font-size: 1.1rem;
+            color: rgba(0, 0, 0, 0.87);
+        }
+
+        .current-image,
+        .image-preview {
+            position: relative;
+            margin-bottom: 1rem;
+
+            img {
+                max-width: 100%;
+                max-height: 300px;
+                border-radius: 8px;
+                display: block;
+                margin: 0 auto;
+                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            }
+
+            button {
+                position: absolute;
+                top: 8px;
+                right: 8px;
+                background-color: rgba(255, 255, 255, 0.9);
+            }
+        }
+
+        .preview-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .upload-section {
+            text-align: center;
+
+            button {
+                margin-bottom: 0.5rem;
+            }
+
+            .help-text {
+                margin: 0;
+                font-size: 0.8rem;
+                color: #666;
+            }
+        }
+
+        .spinning {
+            animation: spin 1s linear infinite;
+            margin-right: 0.5rem;
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+    }
 }
 
 @media (max-width: 600px) {

@@ -15,6 +15,7 @@ export interface ChargingPoint {
     mapCoordinates: string;
     numberOfChargePoints?: number;
     capacity: number;
+    hasImage?: boolean;
 }
 
 @Injectable({
@@ -51,4 +52,15 @@ export class ChargingStationService {
     deleteChargingPoint(id: number): Observable<void> {
         return this.http.delete<void>(`${this.apiUrl}/${id}`, this.getHeaders());
     }
+
+    uploadImage(id: number, file: File): Observable<any> {
+        const formData = new FormData();
+        formData.append('image', file);
+        return this.http.post(`${this.apiUrl}/${id}/image`, formData);
+    }
+
+    deleteImage(id: number): Observable<void> {
+        return this.http.delete<void>(`${this.apiUrl}/${id}/image`);
+    }
 }
+

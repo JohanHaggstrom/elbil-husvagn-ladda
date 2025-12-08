@@ -11,6 +11,7 @@ import { MatMenuModule } from '@angular/material/menu';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { Router } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
+import { environment } from '../../environments/environment';
 import { IdentifiedCaravanChargePoint } from '../app.model';
 import { AuthService } from '../auth/auth.service';
 import { ChargePointCommentsDialogComponent } from '../dialogs/charge-point-comments-dialog/charge-point-comments-dialog.component';
@@ -172,7 +173,8 @@ export class HomeComponent implements OnInit {
                 comments: point.comments || '',
                 mapCoordinates: point.mapCoordinates,
                 numberOfChargePoints: point.numberOfChargePoints,
-                capacity: point.capacity
+                capacity: point.capacity,
+                hasImage: point.hasImage
             }));
         } catch (error) {
             this.errorService.handleError(error, 'Kunde inte ladda laddstationer');
@@ -192,5 +194,9 @@ export class HomeComponent implements OnInit {
                 // Silently fail - not critical
             }
         });
+    }
+
+    protected getImageUrl(id: number): string {
+        return `${environment.apiUrl}/api/chargingpoints/${id}/image`;
     }
 }

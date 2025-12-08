@@ -25,6 +25,13 @@ public class ApiKeyMiddleware
             return;
         }
 
+        // Exclude image endpoints from API Key validation so <img> tags work
+        if (context.Request.Path.Value?.EndsWith("/image", StringComparison.OrdinalIgnoreCase) == true)
+        {
+            await _next(context);
+            return;
+        }
+
         if (!context.Request.Headers.TryGetValue(APIKEYNAME, out var extractedApiKey))
         {
             context.Response.StatusCode = 401;

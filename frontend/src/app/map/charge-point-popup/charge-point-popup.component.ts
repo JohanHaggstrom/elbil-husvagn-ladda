@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
+import { environment } from '../../../environments/environment';
 import { IdentifiedCaravanChargePoint } from '../../app.model';
 
 @Component({
@@ -36,5 +37,9 @@ export class ChargePointPopupComponent {
 
     onViewComments(): void {
         this.viewComments.emit();
+    }
+
+    getImageUrl(): string {
+        return `${environment.apiUrl}/api/chargingpoints/${this.chargePoint.id}/image`;
     }
 }

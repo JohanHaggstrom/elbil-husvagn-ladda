@@ -74,6 +74,15 @@
         <div class="list-view">
             @for (item of filteredChargePoints; track item.id) {
             <div class="one-row-container">
+                <div class="image-container">
+                    @if (item.hasImage) {
+                        <img [src]="getImageUrl(item.id)" alt="{{ item.title }}" loading="lazy" />
+                    } @else {
+                        <div class="placeholder-image">
+                            <mat-icon>ev_station</mat-icon>
+                        </div>
+                    }
+                </div>
                 <div class="text-content-container">
                     <span class="left-side-content">{{ item.title }}</span>
                     <span class="right-side-content">{{ item.city }}</span>

@@ -241,7 +241,41 @@ p {
     justify-content: center;
     align-items: center;
     width: 100%;
+    width: 100%;
     box-sizing: border-box;
+
+    .image-container {
+        width: 56px;
+        height: 56px;
+        margin-right: 12px;
+        flex-shrink: 0;
+
+        img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .placeholder-image {
+            width: 100%;
+            height: 100%;
+            background-color: #f3f4f6;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #9ca3af;
+            border: 1px solid #e5e7eb;
+
+            mat-icon {
+                font-size: 24px;
+                width: 24px;
+                height: 24px;
+            }
+        }
+    }
 
     .text-content-container {
         border: 1px solid var(--gray-300, lightgrey);

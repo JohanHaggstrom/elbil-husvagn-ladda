@@ -1,4 +1,9 @@
 <div class="popup-content">
+    @if (chargePoint.hasImage) {
+        <div class="popup-image">
+            <img [src]="getImageUrl()" alt="{{ chargePoint.title }}" loading="lazy" />
+        </div>
+    }
     <h3>{{ chargePoint.title }}</h3>
     <p><strong>{{ chargePoint.city }}</strong></p>
     <p>{{ chargePoint.address1 }}</p>
