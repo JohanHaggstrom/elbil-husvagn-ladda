@@ -92,9 +92,7 @@ p {
         margin-bottom: 0.5rem;
         position: relative;
 
-        .spacer {
-            width: 48px; // Same width as icon button to balance the layout
-        }
+
 
         h1 {
             margin: 0;
@@ -102,8 +100,13 @@ p {
             text-align: center;
         }
 
-        .user-menu-button {
+        .user-menu-button,
+        .menu-button {
             flex-shrink: 0;
+        }
+
+        .auth-icon {
+            color: #1976d2; // Primary color to indicate logged in
         }
     }
 

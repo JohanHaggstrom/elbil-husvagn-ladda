@@ -1,10 +1,40 @@
 <main class="main">
     <div class="header-container">
         <div class="header-top">
-            <div class="spacer"></div>
+            <button mat-icon-button [matMenuTriggerFor]="appMenu" class="menu-button">
+                <mat-icon>menu</mat-icon>
+            </button>
+            <mat-menu #appMenu="matMenu">
+                <button mat-menu-item (click)="navigateToFeedback()">
+                    <mat-icon>feedback</mat-icon>
+                    <span>Rapportera issue/Föreslå förbättring</span>
+                </button>
+                @if (authService.isAuthenticated()) {
+                    <mat-divider></mat-divider>
+                    <button mat-menu-item (click)="navigateToAdminFeedback()">
+                        <mat-icon>admin_panel_settings</mat-icon>
+                        <span>Ny feedback</span>
+                        @if (unhandledFeedbackCount > 0) {
+                            <span class="feedback-badge">{{ unhandledFeedbackCount }}</span>
+                        }
+                    </button>
+                    <button mat-menu-item (click)="navigateToAdminSuggestions()">
+                        <mat-icon>rate_review</mat-icon>
+                        <span>Förslag på nya laddstationer</span>
+                        @if (unhandledSuggestionsCount > 0) {
+                            <span class="feedback-badge">{{ unhandledSuggestionsCount }}</span>
+                        }
+                    </button>
+                }
+            </mat-menu>
+
             <h1>{{ title }}</h1>
             <button mat-icon-button [matMenuTriggerFor]="userMenu" class="user-menu-button">
-                <mat-icon>account_circle</mat-icon>
+                @if (authService.isAuthenticated()) {
+                    <mat-icon class="auth-icon">account_circle</mat-icon>
+                } @else {
+                    <mat-icon>account_circle</mat-icon>
+                }
             </button>
             <mat-menu #userMenu="matMenu">
                 @if (authService.isAuthenticated()) {
@@ -13,20 +43,6 @@
                         <span>{{ authService.currentUser() }}</span>
                     </div>
                     <mat-divider></mat-divider>
-                    <button mat-menu-item (click)="navigateToAdminFeedback()">
-                        <mat-icon>admin_panel_settings</mat-icon>
-                        <span>Hantera Feedback</span>
-                        @if (unhandledFeedbackCount > 0) {
-                            <span class="feedback-badge">{{ unhandledFeedbackCount }}</span>
-                        }
-                    </button>
-                    <button mat-menu-item (click)="navigateToAdminSuggestions()">
-                        <mat-icon>rate_review</mat-icon>
-                        <span>Hantera Förslag</span>
-                        @if (unhandledSuggestionsCount > 0) {
-                            <span class="feedback-badge">{{ unhandledSuggestionsCount }}</span>
-                        }
-                    </button>
                     <button mat-menu-item (click)="logout()">
                         <mat-icon>logout</mat-icon>
                         <span>Logga ut</span>
@@ -37,11 +53,6 @@
                         <span>Logga in</span>
                     </button>
                 }
-                <mat-divider></mat-divider>
-                <button mat-menu-item (click)="navigateToFeedback()">
-                    <mat-icon>feedback</mat-icon>
-                    <span>Rapportera/Föreslå</span>
-                </button>
             </mat-menu>
         </div>
         <h5>Anpassade, eller lämpliga, när man har husvagn</h5>
@@ -160,10 +171,6 @@
         [matTooltip]="authService.isAuthenticated() ? 'Lägg till laddstation' : 'Föreslå laddstation'"
         (click)="openCreateDialog()"
     >
-        @if (authService.isAuthenticated()) {
-            <mat-icon>add</mat-icon>
-        } @else {
-            <mat-icon>lightbulb</mat-icon>
-        }
+        <mat-icon>add</mat-icon>
     </button>
 </main>
