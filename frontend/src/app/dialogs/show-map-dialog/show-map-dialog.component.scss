@@ -1,0 +1,19 @@
+.map-container {
+  height: 80vh; /* Adapts to screen height */
+  width: 100%;
+  background-color: #f5f5f5;
+  border-radius: 4px;
+  overflow: hidden;
+  /* Removed fixed min-width to allow flexibility */
+}
+
+#view-map {
+  height: 100%;
+  width: 100%;
+}
+
+@media (max-width: 600px) {
+  .map-container {
+    height: 60vh; /* Smaller height on mobile */
+  }
+}

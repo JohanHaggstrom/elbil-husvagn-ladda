@@ -10,6 +10,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import * as L from 'leaflet';
 import { firstValueFrom } from 'rxjs';
 import { environment } from '../../../environments/environment';
+import { AuthService } from '../../auth/auth.service';
 import { ChargingPoint, ChargingStationService } from '../../services/charging-station.service';
 
 @Component({
@@ -30,15 +31,17 @@ import { ChargingPoint, ChargingStationService } from '../../services/charging-s
 export class EditChargingPointDialogComponent implements AfterViewInit {
   form: FormGroup;
   private chargingStationService = inject(ChargingStationService);
+  private authService = inject(AuthService);
   private snackBar = inject(MatSnackBar);
   private map: L.Map | undefined;
   private marker: L.Marker | undefined;
 
   selectedFile: File | null = null;
   imagePreview: string | null = null;
-  currentImagePath: string | null = null; // Not used anymore but kept for compatibility if needed, though logic uses hasImage
+  currentImagePath: string | null = null;
   hasImage = false;
   isUploadingImage = false;
+  isSuggestion = false;
 
   constructor(
     private fb: FormBuilder,
@@ -46,7 +49,8 @@ export class EditChargingPointDialogComponent implements AfterViewInit {
     @Inject(MAT_DIALOG_DATA) public data: ChargingPoint | null
   ) {
     this.hasImage = !!data?.hasImage;
-    // We can set currentImagePath to something if we want, but we use getImageUrl instead
+    // Determine if this is a suggestion: if not authenticated, OR if specifically passed (future proof)
+    this.isSuggestion = !this.authService.isAuthenticated();
 
     this.form = this.fb.group({
       id: [data?.id || 0],
@@ -62,6 +66,8 @@ export class EditChargingPointDialogComponent implements AfterViewInit {
       capacity: [data?.capacity || null, [Validators.required, this.integerValidator()]]
     });
   }
+
+  // ... (keep integerValidator and other methods same until onSubmit)
 
   private integerValidator(): ValidatorFn {
     return (control: AbstractControl): ValidationErrors | null => {
@@ -159,23 +165,46 @@ export class EditChargingPointDialogComponent implements AfterViewInit {
       const pointData = this.form.value;
 
       try {
-        if (this.data && this.data.id) {
+        if (this.isSuggestion) {
+          // Suggestion Mode
+          const { id, ...newPoint } = pointData;
+          const createdSuggestion = await firstValueFrom(this.chargingStationService.suggestChargingPoint(newPoint)) as ChargingPoint;
+
+          // If there is a file selected, upload it to the suggestion
+          if (this.selectedFile && createdSuggestion.id) {
+            await firstValueFrom(this.chargingStationService.uploadSuggestionImage(createdSuggestion.id, this.selectedFile));
+          }
+
+          this.snackBar.open('Tack! Ditt förslag har skickats för granskning.', 'Stäng', { duration: 5000 });
+          this.dialogRef.close(true);
+        } else if (this.data && this.data.id) {
           // Update existing
           await firstValueFrom(this.chargingStationService.updateChargingPoint(pointData.id, pointData));
           this.snackBar.open('Laddstation uppdaterad!', 'Stäng', { duration: 3000 });
           this.dialogRef.close(true);
         } else {
-          // Create new
-          // Remove ID from payload for creation
+          // Create new (Admin)
           const { id, ...newPoint } = pointData;
-          await firstValueFrom(this.chargingStationService.createChargingPoint(newPoint));
+          const createdPoint = await firstValueFrom(this.chargingStationService.createChargingPoint(newPoint)) as ChargingPoint;
+
+          // If there is a file selected, upload it (but wait, UI for create usually doesn't show file upload until created?
+          // actually in this dialog, file upload is separate button that requires ID.
+          // But for suggestion I did it in one go above because user can't edit suggestion after.
+          // For admin creating, they get the dialog back? No, it closes.
+          // Existing logic relied on user creating then editing? Or maybe upload was not available in Create mode?
+          // In Create mode (data=null), hasImage is false. The HTML shows upload button?
+          // Let's check HTML.
+          if (this.selectedFile && createdPoint.id) {
+            await firstValueFrom(this.chargingStationService.uploadImage(createdPoint.id, this.selectedFile));
+          }
+
           this.snackBar.open('Laddstation skapad!', 'Stäng', { duration: 3000 });
           this.dialogRef.close(true);
         }
       } catch (err) {
         console.error('Error saving charging point:', err);
-        const action = this.data && this.data.id ? 'uppdatera' : 'skapa';
-        this.snackBar.open(`Kunde inte ${action} laddstation.`, 'Stäng', { duration: 3000 });
+        const action = this.isSuggestion ? 'skicka förslag' : (this.data && this.data.id ? 'uppdatera' : 'skapa');
+        this.snackBar.open(`Kunde inte ${action}.`, 'Stäng', { duration: 3000 });
       }
     }
   }
@@ -214,25 +243,33 @@ export class EditChargingPointDialogComponent implements AfterViewInit {
   }
 
   async uploadImage(): Promise<void> {
-    if (!this.selectedFile || !this.data?.id) {
+    if (!this.selectedFile) {
       return;
     }
 
-    this.isUploadingImage = true;
-    try {
-      await firstValueFrom(
-        this.chargingStationService.uploadImage(this.data.id, this.selectedFile)
-      );
-      this.hasImage = true;
-      this.currentImagePath = 'dummy'; // Just to trigger UI update if it relies on this, but we should use hasImage
-      this.selectedFile = null;
-      this.imagePreview = null;
-      this.snackBar.open('Bild uppladdad!', 'Stäng', { duration: 2000 });
-    } catch (error) {
-      console.error('Error uploading image:', error);
-      this.snackBar.open('Kunde inte ladda upp bild', 'Stäng', { duration: 3000 });
-    } finally {
-      this.isUploadingImage = false;
+    // If suggestion mode, we don't upload immediately, we wait for submit?
+    // Or if editing existing suggestion? Admin shouldn't edit existing suggestion via this dialog (this is for ChargingPoint).
+    // So uploadImage button should logic:
+    // If existing point (data.id): upload immediately.
+    // If creating/suggesting: Just store selectedFile and upload on Submit.
+
+    if (this.data?.id && !this.isSuggestion) {
+      this.isUploadingImage = true;
+      try {
+        await firstValueFrom(
+          this.chargingStationService.uploadImage(this.data.id, this.selectedFile)
+        );
+        this.hasImage = true;
+        this.currentImagePath = 'dummy';
+        this.selectedFile = null;
+        this.imagePreview = null;
+        this.snackBar.open('Bild uppladdad!', 'Stäng', { duration: 2000 });
+      } catch (error) {
+        console.error('Error uploading image:', error);
+        this.snackBar.open('Kunde inte ladda upp bild', 'Stäng', { duration: 3000 });
+      } finally {
+        this.isUploadingImage = false;
+      }
     }
   }
 

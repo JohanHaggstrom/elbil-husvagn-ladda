@@ -74,24 +74,24 @@
       <textarea matInput formControlName="comments" rows="3"></textarea>
     </mat-form-field>
 
-    @if (data?.id) {
-      <div class="image-section">
-        <h3>Bild</h3>
+    <div class="image-section">
+      <h3>Bild</h3>
 
-        @if (hasImage && !imagePreview) {
-          <div class="current-image">
-            <img [src]="getImageUrl()" alt="Laddstation" />
-            <button mat-icon-button color="warn" (click)="deleteImage()" matTooltip="Ta bort bild">
-              <mat-icon>delete</mat-icon>
-            </button>
-          </div>
-        }
+      @if (data?.id && hasImage && !imagePreview) {
+        <div class="current-image">
+          <img [src]="getImageUrl()" alt="Laddstation" />
+          <button mat-icon-button color="warn" (click)="deleteImage()" matTooltip="Ta bort bild">
+            <mat-icon>delete</mat-icon>
+          </button>
+        </div>
+      }
 
-        @if (imagePreview) {
-          <div class="image-preview">
-            <img [src]="imagePreview" alt="Förhandsvisning" />
-            <div class="preview-actions">
-              <button mat-button (click)="cancelImageSelection()">Avbryt</button>
+      @if (imagePreview) {
+        <div class="image-preview">
+          <img [src]="imagePreview" alt="Förhandsvisning" />
+          <div class="preview-actions">
+            <button mat-button (click)="cancelImageSelection()">Ta bort val</button>
+            @if (data?.id && !isSuggestion) {
               <button mat-raised-button color="primary" (click)="uploadImage()" [disabled]="isUploadingImage">
                 @if (isUploadingImage) {
                   <span>
@@ -102,22 +102,22 @@
                   <span>Ladda upp</span>
                 }
               </button>
-            </div>
+            }
           </div>
-        }
+        </div>
+      }
 
-        @if (!imagePreview) {
-          <div class="upload-section">
-            <input type="file" #fileInput (change)="onFileSelected($event)" accept="image/jpeg,image/jpg,image/png,image/webp" style="display: none" />
-            <button mat-raised-button (click)="fileInput.click()">
-              <mat-icon>add_photo_alternate</mat-icon>
-              {{ hasImage ? 'Byt bild' : 'Lägg till bild' }}
-            </button>
-            <p class="help-text">JPG, PNG eller WebP. Max 5MB.</p>
-          </div>
-        }
-      </div>
-    }
+      @if (!imagePreview && (!hasImage || !data?.id)) {
+        <div class="upload-section">
+          <input type="file" #fileInput (change)="onFileSelected($event)" accept="image/jpeg,image/jpg,image/png,image/webp" style="display: none" />
+          <button mat-raised-button (click)="fileInput.click()">
+            <mat-icon>add_photo_alternate</mat-icon>
+            {{ hasImage ? 'Byt bild' : 'Lägg till bild' }}
+          </button>
+          <p class="help-text">JPG, PNG eller WebP. Max 5MB.</p>
+        </div>
+      }
+    </div>
   </form>
 </mat-dialog-content>
 <mat-dialog-actions align="end">

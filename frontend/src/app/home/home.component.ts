@@ -81,6 +81,10 @@ export class HomeComponent implements OnInit {
         this.router.navigate(['/admin/feedback']);
     }
 
+    navigateToAdminSuggestions(): void {
+        this.router.navigate(['/admin/suggestions']);
+    }
+
     logout(): void {
         this.authService.logout();
     }
@@ -88,9 +92,10 @@ export class HomeComponent implements OnInit {
     ngOnInit(): void {
         this.loadChargingPoints();
 
-        // Load unhandled feedback count if admin
+        // Load unhandled feedback and suggestions count if admin
         if (this.authService.isAuthenticated()) {
             this.loadUnhandledFeedbackCount();
+            this.loadUnhandledSuggestionsCount();
         }
 
         // Monitor connection status
@@ -192,6 +197,19 @@ export class HomeComponent implements OnInit {
             error: (error) => {
                 console.error('Error loading unhandled feedback count:', error);
                 // Silently fail - not critical
+            }
+        });
+    }
+
+    protected unhandledSuggestionsCount = 0;
+
+    private loadUnhandledSuggestionsCount(): void {
+        this.chargingStationService.getSuggestedCount().subscribe({
+            next: (count) => {
+                this.unhandledSuggestionsCount = count;
+            },
+            error: (error) => {
+                console.error('Error loading unhandled suggestions count:', error);
             }
         });
     }

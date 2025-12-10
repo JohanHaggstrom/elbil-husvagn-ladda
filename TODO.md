@@ -42,7 +42,7 @@
 - [x] **Lista/karta**: Lägg till möjlighet att visa en lista eller en karta.
 - [x] **Material icons**: Lägg till möjlighet att visa material icons.
 - [x] **Kunna föreslå förbättringar**: Lägg till möjlighet att kunna föreslå förbättringar. Med Captcha för att förhindra spam. Inklusive databas för det i backend.
-- [ ] **Kunna enkelt föreslå en ny laddstation**: Lägg till möjlighet att kunna enkelt föreslå en ny laddstation. Med Captcha för att förhindra spam. Inklusive databas för det i backend.
+- [x] **Kunna enkelt föreslå en ny laddstation**: Lägg till möjlighet att kunna enkelt föreslå en ny laddstation. Med Captcha för att förhindra spam. Inklusive databas för det i backend.
 - [ ] **Kunna lägga in ungefärlig förbrukning för ekipage**: Lägg till möjlighet att kunna lägga in ungefärlig förbrukning för ekipage. Inklusive databas för det i backend.
 - [x] **Bild av laddstation**: Lägg till möjlighet att visa en bild av en laddstation.
 - [ ] **Runtime Config för Docker**: Implementera runtime configuration för API-nyckel i Docker

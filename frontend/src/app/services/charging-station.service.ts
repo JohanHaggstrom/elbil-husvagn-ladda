@@ -62,5 +62,34 @@ export class ChargingStationService {
     deleteImage(id: number): Observable<void> {
         return this.http.delete<void>(`${this.apiUrl}/${id}/image`);
     }
+
+    // Suggested Charging Points
+    private suggestedApiUrl = `${environment.apiUrl}/api/suggestedchargingpoints`;
+
+    getSuggestedChargingPoints(): Observable<ChargingPoint[]> {
+        return this.http.get<ChargingPoint[]>(this.suggestedApiUrl, this.getHeaders());
+    }
+
+    getSuggestedCount(): Observable<number> {
+        return this.http.get<number>(`${this.suggestedApiUrl}/count`, this.getHeaders());
+    }
+
+    suggestChargingPoint(chargingPoint: Omit<ChargingPoint, 'id'>): Observable<ChargingPoint> {
+        return this.http.post<ChargingPoint>(this.suggestedApiUrl, chargingPoint, this.getHeaders());
+    }
+
+    deleteSuggestedChargingPoint(id: number): Observable<void> {
+        return this.http.delete<void>(`${this.suggestedApiUrl}/${id}`, this.getHeaders());
+    }
+
+    approveSuggestedChargingPoint(id: number): Observable<ChargingPoint> {
+        return this.http.post<ChargingPoint>(`${this.suggestedApiUrl}/${id}/approve`, {}, this.getHeaders());
+    }
+
+    uploadSuggestionImage(id: number, file: File): Observable<any> {
+        const formData = new FormData();
+        formData.append('image', file);
+        return this.http.post(`${this.suggestedApiUrl}/${id}/image`, formData, this.getHeaders());
+    }
 }
 

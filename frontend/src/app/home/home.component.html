@@ -20,6 +20,13 @@
                             <span class="feedback-badge">{{ unhandledFeedbackCount }}</span>
                         }
                     </button>
+                    <button mat-menu-item (click)="navigateToAdminSuggestions()">
+                        <mat-icon>rate_review</mat-icon>
+                        <span>Hantera Förslag</span>
+                        @if (unhandledSuggestionsCount > 0) {
+                            <span class="feedback-badge">{{ unhandledSuggestionsCount }}</span>
+                        }
+                    </button>
                     <button mat-menu-item (click)="logout()">
                         <mat-icon>logout</mat-icon>
                         <span>Logga ut</span>
@@ -146,15 +153,17 @@
         }
     </div>
 
-    @if (authService.isAuthenticated()) {
-        <button
-            mat-fab
-            color="primary"
-            class="add-fab"
-            matTooltip="Lägg till laddstation"
-            (click)="openCreateDialog()"
-        >
+    <button
+        mat-fab
+        color="primary"
+        class="add-fab"
+        [matTooltip]="authService.isAuthenticated() ? 'Lägg till laddstation' : 'Föreslå laddstation'"
+        (click)="openCreateDialog()"
+    >
+        @if (authService.isAuthenticated()) {
             <mat-icon>add</mat-icon>
-        </button>
-    }
+        } @else {
+            <mat-icon>lightbulb</mat-icon>
+        }
+    </button>
 </main>

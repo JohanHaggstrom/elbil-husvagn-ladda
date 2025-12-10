@@ -17,9 +17,13 @@ public class ApiKeyMiddleware
 
     public async Task InvokeAsync(HttpContext context)
     {
-        // Only apply API key validation to GET /api/chargingpoints
-        if (!context.Request.Path.StartsWithSegments("/api/chargingpoints") ||
-            !context.Request.Method.Equals("GET", StringComparison.OrdinalIgnoreCase))
+        // Apply API key validation to GET /api/chargingpoints AND all /api/suggestedchargingpoints
+        bool isProtectedChargingPoints = context.Request.Path.StartsWithSegments("/api/chargingpoints") &&
+                                         context.Request.Method.Equals("GET", StringComparison.OrdinalIgnoreCase);
+
+        bool isProtectedSuggestions = context.Request.Path.StartsWithSegments("/api/suggestedchargingpoints");
+
+        if (!isProtectedChargingPoints && !isProtectedSuggestions)
         {
             await _next(context);
             return;

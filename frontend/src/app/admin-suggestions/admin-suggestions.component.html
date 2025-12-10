@@ -1,0 +1,82 @@
+<div class="admin-suggestions-container">
+    <div class="header">
+        <button mat-icon-button (click)="goBack()" class="back-button">
+            <mat-icon>arrow_back</mat-icon>
+        </button>
+        <h1>Hantera Förslag</h1>
+        @if (suggestions.length > 0) {
+            <mat-chip highlighted color="accent" class="count-badge">
+                {{ suggestions.length }} förslag
+            </mat-chip>
+        }
+    </div>
+
+    @if (isLoading) {
+        <div class="loading-container">
+            <mat-spinner></mat-spinner>
+            <p>Laddar förslag...</p>
+        </div>
+    } @else if (suggestions.length === 0) {
+        <mat-card class="empty-state">
+            <mat-card-content>
+                <mat-icon class="empty-icon">check_circle_outline</mat-icon>
+                <h2>Inga nya förslag</h2>
+                <p>Alla förslag har hanterats!</p>
+            </mat-card-content>
+        </mat-card>
+    } @else {
+        <div class="suggestions-list">
+            @for (suggestion of suggestions; track suggestion.id) {
+                <mat-card class="suggestion-item">
+                    <mat-card-header>
+                        <div class="suggestion-header">
+                            <div class="title-section">
+                                <h3>{{ suggestion.title }}</h3>
+                                <span class="subtitle">{{ suggestion.city }}, {{ suggestion.country }}</span>
+                            </div>
+                            <div class="action-buttons">
+                                <button
+                                    mat-mini-fab
+                                    color="primary"
+                                    (click)="approveSuggestion(suggestion)"
+                                    matTooltip="Godkänn och lägg till"
+                                >
+                                    <mat-icon>check</mat-icon>
+                                </button>
+                                <button
+                                    mat-mini-fab
+                                    color="warn"
+                                    (click)="deleteSuggestion(suggestion)"
+                                    matTooltip="Neka / Ta bort"
+                                >
+                                    <mat-icon>close</mat-icon>
+                                </button>
+                            </div>
+                        </div>
+                    </mat-card-header>
+                    <mat-card-content>
+                        <div class="content-grid">
+                            <div class="details">
+                                <p><strong>Adress:</strong> {{ suggestion.address1 }} {{ suggestion.address2 }}</p>
+                                <p><strong>Postnummer:</strong> {{ suggestion.postalCode }}</p>
+                                <p>
+                                    <strong>Plats:</strong> {{ suggestion.mapCoordinates }}
+                                    <button mat-icon-button color="primary" (click)="viewOnMap(suggestion)" matTooltip="Visa på karta" class="small-icon-btn">
+                                        <mat-icon>map</mat-icon>
+                                    </button>
+                                </p>
+                                <p><strong>Kapacitet:</strong> {{ suggestion.capacity }} kW</p>
+                                <p><strong>Antal laddare:</strong> {{ suggestion.numberOfChargePoints || '-' }}</p>
+                            </div>
+                            @if (suggestion.hasImage) {
+                                <div class="image-preview">
+                                    <img [src]="getSuggestionImageUrl(suggestion.id)" alt="Förslag bild">
+                                </div>
+                            }
+                        </div>
+                    </mat-card-content>
+                </mat-card>
+            }
+        </div>
+    }
+</div>
