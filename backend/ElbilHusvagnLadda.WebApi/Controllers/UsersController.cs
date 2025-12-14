@@ -15,12 +15,14 @@ public class UsersController : ControllerBase
     private readonly AppDbContext _context;
     private readonly IPasswordService _passwordService;
     private readonly IEmailService _emailService;
+    private readonly IPasswordValidationService _passwordValidationService;
 
-    public UsersController(AppDbContext context, IPasswordService passwordService, IEmailService emailService)
+    public UsersController(AppDbContext context, IPasswordService passwordService, IEmailService emailService, IPasswordValidationService passwordValidationService)
     {
         _context = context;
         _passwordService = passwordService;
         _emailService = emailService;
+        _passwordValidationService = passwordValidationService;
     }
 
     [HttpGet]
@@ -48,6 +50,13 @@ public class UsersController : ControllerBase
         if (await _context.Users.AnyAsync(u => u.Email == request.Email || u.Username == request.Username))
         {
             return BadRequest("User with this email or username already exists.");
+        }
+
+        // Validate password against policy
+        var validationResult = _passwordValidationService.Validate(request.Password);
+        if (!validationResult.IsValid)
+        {
+            return BadRequest(new { errors = validationResult.Errors });
         }
 
         var user = new User

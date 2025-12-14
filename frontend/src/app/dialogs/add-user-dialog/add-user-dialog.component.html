@@ -45,7 +45,7 @@
                 matInput
                 [type]="hidePassword ? 'password' : 'text'"
                 formControlName="password"
-                placeholder="Minst 6 tecken"
+                placeholder="Nytt lösenord"
             />
             <button
                 type="button"
@@ -64,6 +64,11 @@
             <mat-error>{{ passwordError }}</mat-error>
             }
         </mat-form-field>
+
+        <app-password-strength-indicator
+            [password]="form.get('password')?.value || ''"
+            (validityChange)="isPasswordValid = $event"
+        ></app-password-strength-indicator>
 
         <mat-form-field appearance="outline" class="form-field">
             <mat-label>Bekräfta lösenord</mat-label>
@@ -100,7 +105,12 @@
         mat-raised-button
         color="primary"
         (click)="onSubmit()"
-        [disabled]="isSubmitting"
+        [disabled]="
+            isSubmitting ||
+            !isPasswordValid ||
+            form.invalid ||
+            form.get('password')?.value !== form.get('confirmPassword')?.value
+        "
     >
         @if (isSubmitting) {
         <mat-spinner

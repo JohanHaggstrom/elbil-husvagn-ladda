@@ -52,4 +52,10 @@ export class UserService {
             username,
         });
     }
+
+    validatePassword(password: string): Observable<any> {
+        return this.http.post(`${this.apiUrl}/account/validate-password`, {
+            password,
+        });
+    }
 }

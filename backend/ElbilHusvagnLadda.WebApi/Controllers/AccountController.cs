@@ -15,11 +15,13 @@ public class AccountController : ControllerBase
 {
     private readonly AppDbContext _context;
     private readonly IPasswordService _passwordService;
+    private readonly IPasswordValidationService _passwordValidationService;
 
-    public AccountController(AppDbContext context, IPasswordService passwordService)
+    public AccountController(AppDbContext context, IPasswordService passwordService, IPasswordValidationService passwordValidationService)
     {
         _context = context;
         _passwordService = passwordService;
+        _passwordValidationService = passwordValidationService;
     }
 
     [HttpPost("change-password")]
@@ -34,6 +36,13 @@ public class AccountController : ControllerBase
         if (!_passwordService.VerifyPassword(request.OldPassword, user.PasswordHash))
         {
             return BadRequest("Incorrect old password.");
+        }
+
+        // Validate new password against policy
+        var validationResult = _passwordValidationService.Validate(request.NewPassword);
+        if (!validationResult.IsValid)
+        {
+            return BadRequest(new { errors = validationResult.Errors });
         }
 
         user.PasswordHash = _passwordService.HashPassword(request.NewPassword);
@@ -94,5 +103,18 @@ public class AccountController : ControllerBase
 
         await _context.SaveChangesAsync();
         return Ok(new { message = "Profile updated successfully.", user = new { username = user.Username, email = user.Email, role = user.Role } });
+    }
+
+    [AllowAnonymous]
+    [HttpPost("validate-password")]
+    public IActionResult ValidatePassword([FromBody] PasswordValidationRequest request)
+    {
+        if (string.IsNullOrEmpty(request.Password))
+        {
+            return BadRequest("Password cannot be empty.");
+        }
+
+        var result = _passwordValidationService.Validate(request.Password);
+        return Ok(result);
     }
 }

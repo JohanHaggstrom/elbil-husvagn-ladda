@@ -16,6 +16,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { firstValueFrom } from 'rxjs';
 import { UserService } from '../../services/user.service';
+import { PasswordStrengthIndicatorComponent } from '../password-strength-indicator/password-strength-indicator.component';
 
 @Component({
     selector: 'app-add-user-dialog',
@@ -30,6 +31,7 @@ import { UserService } from '../../services/user.service';
         ReactiveFormsModule,
         MatIconModule,
         MatProgressSpinnerModule,
+        PasswordStrengthIndicatorComponent,
     ],
     templateUrl: './add-user-dialog.component.html',
     styleUrl: './add-user-dialog.component.scss',
@@ -44,6 +46,7 @@ export class AddUserDialogComponent {
     isSubmitting = false;
     hidePassword = true;
     hideConfirmPassword = true;
+    isPasswordValid = false;
 
     roles = ['User', 'Admin', 'SuperAdmin'];
 
@@ -51,7 +54,7 @@ export class AddUserDialogComponent {
         this.form = this.fb.group({
             username: ['', [Validators.required, Validators.minLength(3)]],
             email: ['', [Validators.required, Validators.email]],
-            password: ['', [Validators.required, Validators.minLength(6)]],
+            password: ['', [Validators.required]],
             confirmPassword: ['', [Validators.required]],
             role: ['Admin', Validators.required],
         });
@@ -75,7 +78,6 @@ export class AddUserDialogComponent {
     get passwordError(): string {
         const control = this.form.get('password');
         if (control?.hasError('required')) return 'Lösenord är obligatoriskt';
-        if (control?.hasError('minlength')) return 'Minst 6 tecken';
         return '';
     }
 
@@ -100,6 +102,7 @@ export class AddUserDialogComponent {
     async onSubmit(): Promise<void> {
         if (
             this.form.invalid ||
+            !this.isPasswordValid ||
             this.form.get('password')?.value !==
                 this.form.get('confirmPassword')?.value
         ) {

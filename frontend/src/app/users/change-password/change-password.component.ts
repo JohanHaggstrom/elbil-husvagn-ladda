@@ -17,6 +17,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
 import { AuthService } from '../../auth/auth.service';
+import { PasswordStrengthIndicatorComponent } from '../../dialogs/password-strength-indicator/password-strength-indicator.component';
 import { UserService } from '../../services/user.service';
 
 @Component({
@@ -32,6 +33,7 @@ import { UserService } from '../../services/user.service';
         MatButtonModule,
         MatProgressSpinnerModule,
         MatIconModule,
+        PasswordStrengthIndicatorComponent,
     ],
     templateUrl: './change-password.component.html',
     styleUrl: './change-password.component.scss',
@@ -48,11 +50,12 @@ export class ChangePasswordComponent implements OnInit {
     isChangingPassword = false;
     hidePassword = true;
     hideConfirmPassword = true;
+    isNewPasswordValid = false;
 
     constructor() {
         this.form = this.fb.group({
             oldPassword: ['', [Validators.required]],
-            newPassword: ['', [Validators.required, Validators.minLength(6)]],
+            newPassword: ['', [Validators.required]],
             confirmPassword: ['', [Validators.required]],
         });
     }
@@ -70,13 +73,6 @@ export class ChangePasswordComponent implements OnInit {
 
     toggleConfirmPasswordVisibility(): void {
         this.hideConfirmPassword = !this.hideConfirmPassword;
-    }
-
-    getPasswordError(): string {
-        const control = this.form.get('newPassword');
-        if (control?.hasError('required')) return 'Lösenord är obligatoriskt';
-        if (control?.hasError('minlength')) return 'Minst 6 tecken';
-        return '';
     }
 
     getConfirmPasswordError(): string {

@@ -23,6 +23,10 @@ builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("Emai
 builder.Services.AddScoped<IEmailService, EmailService>();
 builder.Services.AddScoped<IPasswordService, PasswordService>();
 
+// Configure Password Policy
+builder.Services.Configure<PasswordPolicy>(builder.Configuration.GetSection("PasswordPolicy"));
+builder.Services.AddScoped<IPasswordValidationService, PasswordValidationService>();
+
 // Configure CORS to allow Angular frontend
 builder.Services.AddCors(options =>
 {
