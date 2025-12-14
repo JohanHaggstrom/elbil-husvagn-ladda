@@ -29,7 +29,7 @@ public class AppDbContext : DbContext
 
             // Configure relationship
             entity.HasOne(e => e.ChargingPoint)
-                .WithMany()
+                .WithMany(cp => cp.ChargePointComments)
                 .HasForeignKey(e => e.ChargePointId)
                 .OnDelete(DeleteBehavior.Cascade);
         });

@@ -8,6 +8,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatMenuModule } from '@angular/material/menu';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { Router } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
@@ -17,6 +18,7 @@ import { AuthService } from '../auth/auth.service';
 import { ChargePointCommentsDialogComponent } from '../dialogs/charge-point-comments-dialog/charge-point-comments-dialog.component';
 import { EditChargingPointDialogComponent } from '../dialogs/edit-charging-point-dialog/edit-charging-point-dialog.component';
 import { MapComponent } from '../map/map.component';
+import { BackupService } from '../services/backup.service';
 import { ChargingStationService } from '../services/charging-station.service';
 import { ConnectionService } from '../services/connection.service';
 import { ErrorService } from '../services/error.service';
@@ -70,6 +72,8 @@ export class HomeComponent implements OnInit {
     private connectionService = inject(ConnectionService);
     private errorService = inject(ErrorService);
     private feedbackService = inject(FeedbackService);
+    private backupService = inject(BackupService);
+    private snackBar = inject(MatSnackBar);
 
     protected unhandledFeedbackCount = 0;
 
@@ -99,6 +103,31 @@ export class HomeComponent implements OnInit {
 
     navigateToUserList(): void {
         this.router.navigate(['/admin/users']);
+    }
+
+    async exportChargingPoints(): Promise<void> {
+        try {
+            const blob = await firstValueFrom(
+                this.backupService.exportChargingPoints()
+            );
+            const url = window.URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `backup-${new Date()
+                .toISOString()
+                .slice(0, 10)}.json`;
+            link.click();
+            window.URL.revokeObjectURL(url);
+            this.snackBar.open(
+                'Backup exporterad! (Laddstationer, kommentarer & användare)',
+                'Stäng',
+                {
+                    duration: 5000,
+                }
+            );
+        } catch (error) {
+            this.errorService.handleError('Kunde inte exportera backup');
+        }
     }
 
     logout(): void {
