@@ -1,3 +1,4 @@
+import { CommonModule } from '@angular/common';
 import { Component, OnInit, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
@@ -23,12 +24,14 @@ import { ChargingStationService } from '../services/charging-station.service';
 import { ConnectionService } from '../services/connection.service';
 import { ErrorService } from '../services/error.service';
 import { FeedbackService } from '../services/feedback.service';
+import { ThemeService } from '../services/theme.service';
 import { ChangePasswordComponent } from '../users/change-password/change-password.component';
 import { UserProfileComponent } from '../users/user-profile/user-profile.component';
 
 @Component({
     selector: 'app-home',
     imports: [
+        CommonModule,
         MatIconModule,
         MatButtonModule,
         MatTooltipModule,
@@ -66,6 +69,7 @@ export class HomeComponent implements OnInit {
     }
 
     protected authService = inject(AuthService);
+    protected themeService = inject(ThemeService);
     private router = inject(Router);
     private chargingStationService = inject(ChargingStationService);
     private dialog = inject(MatDialog);

@@ -1,7 +1,194 @@
 /* You can add global styles to this file, and also import other style files */
 
-html, body { height: 100%; }
-body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+// Light mode (default)
+:root,
+.light-mode {
+    --bg-primary: #ffffff;
+    --bg-secondary: #f8f9fa;
+    --text-primary: #1a1a1a;
+    --text-secondary: #666666;
+    --border-color: rgba(0, 0, 0, 0.1);
+    --card-bg: #ffffff;
+    --input-bg: #f8f9fa;
+    --shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+// Dark mode
+.dark-mode {
+    --bg-primary: #1a1a1a;
+    --bg-secondary: #2d2d2d;
+    --text-primary: #ffffff;
+    --text-secondary: #b0b0b0;
+    --border-color: rgba(255, 255, 255, 0.1);
+    --card-bg: #2d2d2d;
+    --input-bg: #1a1a1a;
+    --shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+html,
+body {
+    height: 100%;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+body {
+    margin: 0;
+    font-family: Roboto, "Helvetica Neue", sans-serif;
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+}
+
+/* Dark mode Material overrides */
+.dark-mode {
+    /* Menu panels */
+    ::ng-deep .mat-mdc-menu-panel {
+        background-color: var(--card-bg) !important;
+        color: var(--text-primary) !important;
+    }
+
+    ::ng-deep .mat-mdc-menu-item {
+        color: var(--text-primary) !important;
+
+        &:hover {
+            background-color: var(--bg-secondary) !important;
+        }
+    }
+
+    /* Dialogs */
+    ::ng-deep .mat-mdc-dialog-container {
+        background-color: var(--card-bg) !important;
+        color: var(--text-primary) !important;
+    }
+
+    /* Snackbar */
+    ::ng-deep .mat-mdc-snack-bar-container {
+        background-color: var(--card-bg) !important;
+        color: var(--text-primary) !important;
+    }
+
+    /* Form fields */
+    /* Form fields */
+    ::ng-deep .mdc-text-field {
+        .mdc-floating-label, .mat-mdc-select-placeholder {
+            color: var(--text-secondary) !important;
+        }
+
+        &.mdc-text-field--focused:not(.mdc-text-field--invalid) {
+             .mdc-floating-label {
+                 color: #90caf9 !important; /* Light blue for focus in dark mode */
+             }
+             .mdc-notched-outline__leading,
+             .mdc-notched-outline__notch,
+             .mdc-notched-outline__trailing {
+                 border-color: #90caf9 !important;
+                 border-width: 2px !important;
+             }
+        }
+
+        &.mdc-text-field--invalid {
+             .mdc-floating-label {
+                 color: #ef5350 !important; /* Red for invalid */
+             }
+             .mdc-notched-outline__leading,
+             .mdc-notched-outline__notch,
+             .mdc-notched-outline__trailing {
+                 border-color: #ef5350 !important;
+             }
+        }
+
+        /* Default border color */
+        :not(.mdc-text-field--focused):not(.mdc-text-field--invalid) {
+            .mdc-notched-outline__leading,
+            .mdc-notched-outline__notch,
+            .mdc-notched-outline__trailing {
+                border-color: var(--border-color) !important;
+            }
+        }
+    }
+
+    /* Input fields and Selects */
+    ::ng-deep .mat-mdc-input-element,
+    ::ng-deep .mat-mdc-select-value-text,
+    ::ng-deep .mat-mdc-select-arrow {
+        color: var(--text-primary) !important;
+        caret-color: var(--text-primary) !important;
+    }
+
+    ::ng-deep .mat-mdc-input-element {
+        background-color: transparent !important; /* Allow card bg to show through for outline, or input-bg if filled */
+
+        &::placeholder {
+            color: var(--text-secondary) !important;
+        }
+    }
+
+    ::ng-deep .mat-mdc-select-value {
+        color: var(--text-primary) !important;
+    }
+
+    ::ng-deep .mat-mdc-form-field-input-control {
+         color: var(--text-primary) !important; /* Force input color */
+    }
+
+    /* Buttons */
+    ::ng-deep .mat-mdc-button,
+    ::ng-deep .mat-mdc-raised-button,
+    ::ng-deep .mat-mdc-icon-button {
+        color: var(--text-primary) !important;
+
+        &.mat-primary {
+             color: white !important; /* Keep primary buttons white text if colored bg */
+        }
+        &.mat-accent {
+             color: white !important;
+        }
+        &.mat-warn {
+             color: white !important;
+        }
+    }
+
+    /* Dividers */
+    ::ng-deep .mat-divider {
+        border-color: var(--border-color) !important;
+    }
+
+    /* Tooltips */
+    ::ng-deep .mat-tooltip {
+        background-color: var(--bg-secondary) !important;
+        color: var(--text-primary) !important;
+    }
+
+    /* Button toggle */
+    ::ng-deep .mat-button-toggle-group {
+        background-color: var(--input-bg) !important;
+        border-color: var(--border-color) !important;
+    }
+
+    ::ng-deep .mat-button-toggle {
+        color: var(--text-primary) !important;
+
+        &.mat-button-toggle-checked {
+            background-color: var(--bg-secondary) !important;
+        }
+    }
+
+    /* Select dropdown panel */
+    ::ng-deep .mat-mdc-select-panel {
+        background-color: var(--card-bg) !important;
+
+        .mat-mdc-option {
+            color: var(--text-primary) !important;
+
+            &:hover {
+                background-color: var(--bg-secondary) !important;
+            }
+
+            &.mdc-list-item--selected {
+                 background-color: rgba(63, 81, 181, 0.2) !important; /* Visibly selected */
+            }
+        }
+    }
+}
 
 /* Global Map Marker Styles */
 .custom-div-icon {

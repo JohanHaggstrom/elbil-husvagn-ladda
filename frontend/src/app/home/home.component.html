@@ -39,6 +39,16 @@
             <h1>{{ title }}</h1>
             <button
                 mat-icon-button
+                (click)="themeService.toggleDarkMode()"
+                class="theme-button"
+                [title]="themeService.isDarkMode() ? 'Ljus läge' : 'Mörkt läge'"
+            >
+                <mat-icon>{{
+                    themeService.isDarkMode() ? "light_mode" : "dark_mode"
+                }}</mat-icon>
+            </button>
+            <button
+                mat-icon-button
                 [matMenuTriggerFor]="userMenu"
                 class="user-menu-button"
             >

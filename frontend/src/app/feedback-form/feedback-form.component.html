@@ -15,9 +15,9 @@
             </p>
 
             <form #feedbackForm="ngForm" (ngSubmit)="submitFeedback()">
-                <mat-form-field appearance="outline" class="full-width">
+                <mat-form-field appearance="outline" class="full-width text-color-primary">
                     <mat-label>Typ</mat-label>
-                    <mat-select [(ngModel)]="feedbackType" name="type" required>
+                    <mat-select [(ngModel)]="feedbackType" name="type" class="text-color-secondary" required>
                         @for (type of feedbackTypes; track type.value) {
                             <mat-option [value]="type.value">
                                 {{ type.label }}
@@ -29,6 +29,7 @@
                 <mat-form-field appearance="outline" class="full-width">
                     <mat-label>Titel</mat-label>
                     <input
+                        class="text-color-secondary"
                         matInput
                         [(ngModel)]="title"
                         name="title"
@@ -42,6 +43,7 @@
                 <mat-form-field appearance="outline" class="full-width">
                     <mat-label>Beskrivning</mat-label>
                     <textarea
+                        class="text-color-secondary"
                         matInput
                         [(ngModel)]="description"
                         name="description"
@@ -56,6 +58,7 @@
                 <mat-form-field appearance="outline" class="full-width">
                     <mat-label>E-post (valfritt)</mat-label>
                     <input
+                        class="text-color-secondary"
                         matInput
                         type="email"
                         [(ngModel)]="email"

@@ -31,12 +31,12 @@
 
 .search-box {
     display: flex;
-    background: white;
+    background: var(--card-bg);
     border-radius: 24px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
     padding: 4px;
     transition: all 0.3s ease;
-    border: 1px solid rgba(0, 0, 0, 0.1);
+    border: 1px solid var(--border-color);
 
     &:focus-within {
         box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
@@ -52,7 +52,12 @@
     font-size: 16px;
     border-radius: 20px 0 0 20px;
     background: transparent;
+    color: var(--text-primary);
     min-width: 0; // Fix flexbox overflow
+
+    &::placeholder {
+        color: var(--text-secondary);
+    }
 }
 
 .search-btn {
@@ -108,13 +113,14 @@
 }
 
 .location-btn {
-    background: white;
-    border: 2px solid rgba(0, 0, 0, 0.2);
+    background: var(--card-bg);
+    border: 2px solid var(--border-color);
     border-radius: 8px;
     padding: 8px 16px;
     font-size: 14px;
     font-weight: 500;
     cursor: pointer;
+    color: var(--text-primary);
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     transition: all 0.2s ease;
     display: flex;
@@ -122,7 +128,7 @@
     gap: 6px;
 
     &:hover {
-        background: #f8f9fa;
+        background: var(--bg-secondary);
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
         transform: translateY(-1px);
     }
@@ -134,13 +140,14 @@
 }
 
 .satellite-btn {
-    background: white;
-    border: 2px solid rgba(0, 0, 0, 0.2);
+    background: var(--card-bg);
+    border: 2px solid var(--border-color);
     border-radius: 8px;
     padding: 8px 16px;
     font-size: 14px;
     font-weight: 500;
     cursor: pointer;
+    color: var(--text-primary);
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     transition: all 0.2s ease;
     display: flex;
@@ -148,7 +155,7 @@
     gap: 6px;
 
     &:hover {
-        background: #f8f9fa;
+        background: var(--bg-secondary);
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
         transform: translateY(-1px);
     }
@@ -167,10 +174,11 @@
 
 // Map legend
 .map-legend {
-    background: white;
-    border: 2px solid rgba(0, 0, 0, 0.2);
+    background: var(--card-bg);
+    border: 2px solid var(--border-color);
     border-radius: 8px;
     padding: 12px;
+    color: var(--text-primary);
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
@@ -206,7 +214,7 @@
 .legend-text {
     font-size: 12px;
     font-weight: 500;
-    color: #333;
+    color: var(--text-primary);
     white-space: nowrap;
 }
 

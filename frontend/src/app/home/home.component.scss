@@ -99,12 +99,18 @@ p {
         }
 
         .user-menu-button,
-        .menu-button {
+        .menu-button,
+        .theme-button {
             flex-shrink: 0;
         }
 
         .auth-icon {
             color: #1976d2; // Primary color to indicate logged in
+        }
+
+        .theme-button {
+            color: var(--text-primary);
+            transition: color 0.3s ease;
         }
     }
 
@@ -127,22 +133,23 @@ p {
     min-width: 200px;
 }
 
-.menu-header {
+
+::ng-deep .menu-header {
     display: flex;
     align-items: center;
     gap: 0.5rem;
     padding: 12px 16px;
     font-weight: 500;
-    color: var(--gray-900);
+    color: var(--text-primary);
 }
 
-.menu-header-button {
+::ng-deep .menu-header-button {
     display: flex;
     align-items: center;
     gap: 0.5rem;
     padding: 12px 16px;
     font-weight: 500;
-    color: var(--gray-900);
+    color: var(--text-primary);
     cursor: pointer;
 
     &:hover {
