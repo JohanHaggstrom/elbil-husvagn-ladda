@@ -1,5 +1,8 @@
 using ElbilHusvagnLadda.WebApi.Models;
+using ElbilHusvagnLadda.WebApi.Data;
+using ElbilHusvagnLadda.WebApi.Services;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -13,34 +16,35 @@ public class AuthController : ControllerBase
 {
     private readonly IConfiguration _configuration;
     private readonly ILogger<AuthController> _logger;
+    private readonly AppDbContext _context;
+    private readonly IPasswordService _passwordService;
 
-    // TODO: Move to database
-    private const string HARDCODED_USERNAME = "admin";
-    private const string HARDCODED_PASSWORD = "password123";
-
-    public AuthController(IConfiguration configuration, ILogger<AuthController> logger)
+    public AuthController(IConfiguration configuration, ILogger<AuthController> logger, AppDbContext context, IPasswordService passwordService)
     {
         _configuration = configuration;
         _logger = logger;
+        _context = context;
+        _passwordService = passwordService;
     }
 
     [HttpPost("login")]
-    public IActionResult Login([FromBody] LoginRequest request)
+    public async Task<IActionResult> Login([FromBody] LoginRequest request)
     {
         try
         {
-            // TODO: Replace with database lookup and proper password hashing
-            if (request.Username != HARDCODED_USERNAME || request.Password != HARDCODED_PASSWORD)
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Username == request.Username);
+
+            if (user == null || !_passwordService.VerifyPassword(request.Password, user.PasswordHash))
             {
                 return Unauthorized(new { message = "Invalid username or password" });
             }
 
-            var token = GenerateJwtToken(request.Username);
+            var token = GenerateJwtToken(user);
 
             return Ok(new LoginResponse
             {
                 Token = token,
-                Username = request.Username
+                Username = user.Username
             });
         }
         catch (Exception ex)
@@ -50,7 +54,7 @@ public class AuthController : ControllerBase
         }
     }
 
-    private string GenerateJwtToken(string username)
+    private string GenerateJwtToken(User user)
     {
         var jwtKey = _configuration["Jwt:Key"] ?? throw new InvalidOperationException("JWT Key not configured");
         var jwtIssuer = _configuration["Jwt:Issuer"] ?? throw new InvalidOperationException("JWT Issuer not configured");
@@ -59,10 +63,11 @@ public class AuthController : ControllerBase
         var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey));
         var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
 
-        var claims = new[]
+        var claims = new List<Claim>
         {
-            new Claim(ClaimTypes.Name, username),
-            new Claim(JwtRegisteredClaimNames.Sub, username),
+            new Claim(ClaimTypes.Name, user.Username),
+            new Claim(ClaimTypes.Role, user.Role.ToString()),
+            new Claim(JwtRegisteredClaimNames.Sub, user.Username),
             new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
         };
 

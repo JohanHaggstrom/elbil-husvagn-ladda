@@ -1,0 +1,86 @@
+mat-dialog-content {
+    display: flex;
+    flex-direction: column;
+    padding: 32px 24px 24px 24px;
+    min-width: 400px;
+    overflow: visible !important;
+}
+
+.profile-section {
+    margin-bottom: 24px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #e0e0e0;
+
+    &:last-child {
+        border-bottom: none;
+    }
+
+    h3 {
+        margin: 0 0 16px 0;
+        font-size: 14px;
+        font-weight: 600;
+        color: #333;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+}
+
+.info-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 12px;
+
+    &:last-child {
+        margin-bottom: 0;
+    }
+
+    .label {
+        font-weight: 500;
+        color: #666;
+        min-width: 100px;
+    }
+
+    .value {
+        color: #333;
+    }
+}
+
+.role-badge {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 16px;
+    font-size: 12px;
+    font-weight: 500;
+    color: white;
+    margin-left: auto;
+
+    &.admin {
+        background-color: #2196f3;
+    }
+
+    &.superadmin {
+        background-color: #ff9800;
+    }
+
+    &.user {
+        background-color: #4caf50;
+    }
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.form-field {
+    width: 100%;
+}
+
+.form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    margin-top: 12px;
+}

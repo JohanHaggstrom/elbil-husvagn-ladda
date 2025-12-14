@@ -1,7 +1,11 @@
 <main class="main">
     <div class="header-container">
         <div class="header-top">
-            <button mat-icon-button [matMenuTriggerFor]="appMenu" class="menu-button">
+            <button
+                mat-icon-button
+                [matMenuTriggerFor]="appMenu"
+                class="menu-button"
+            >
                 <mat-icon>menu</mat-icon>
             </button>
             <mat-menu #appMenu="matMenu">
@@ -10,48 +14,71 @@
                     <span>Rapportera issue/Föreslå förbättring</span>
                 </button>
                 @if (authService.isAuthenticated()) {
-                    <mat-divider></mat-divider>
-                    <button mat-menu-item (click)="navigateToAdminFeedback()">
-                        <mat-icon>admin_panel_settings</mat-icon>
-                        <span>Ny feedback</span>
-                        @if (unhandledFeedbackCount > 0) {
-                            <span class="feedback-badge">{{ unhandledFeedbackCount }}</span>
-                        }
-                    </button>
-                    <button mat-menu-item (click)="navigateToAdminSuggestions()">
-                        <mat-icon>rate_review</mat-icon>
-                        <span>Förslag på nya laddstationer</span>
-                        @if (unhandledSuggestionsCount > 0) {
-                            <span class="feedback-badge">{{ unhandledSuggestionsCount }}</span>
-                        }
-                    </button>
+                <mat-divider></mat-divider>
+                <button mat-menu-item (click)="navigateToAdminFeedback()">
+                    <mat-icon>admin_panel_settings</mat-icon>
+                    <span>Ny feedback</span>
+                    @if (unhandledFeedbackCount > 0) {
+                    <span class="feedback-badge">{{
+                        unhandledFeedbackCount
+                    }}</span>
+                    }
+                </button>
+                <button mat-menu-item (click)="navigateToAdminSuggestions()">
+                    <mat-icon>rate_review</mat-icon>
+                    <span>Förslag på nya laddstationer</span>
+                    @if (unhandledSuggestionsCount > 0) {
+                    <span class="feedback-badge">{{
+                        unhandledSuggestionsCount
+                    }}</span>
+                    }
+                </button>
                 }
             </mat-menu>
 
             <h1>{{ title }}</h1>
-            <button mat-icon-button [matMenuTriggerFor]="userMenu" class="user-menu-button">
+            <button
+                mat-icon-button
+                [matMenuTriggerFor]="userMenu"
+                class="user-menu-button"
+            >
                 @if (authService.isAuthenticated()) {
-                    <mat-icon class="auth-icon">account_circle</mat-icon>
+                <mat-icon class="auth-icon">account_circle</mat-icon>
                 } @else {
-                    <mat-icon>account_circle</mat-icon>
+                <mat-icon>account_circle</mat-icon>
                 }
             </button>
             <mat-menu #userMenu="matMenu">
                 @if (authService.isAuthenticated()) {
-                    <div class="menu-header">
-                        <mat-icon>person</mat-icon>
-                        <span>{{ authService.currentUser() }}</span>
-                    </div>
-                    <mat-divider></mat-divider>
-                    <button mat-menu-item (click)="logout()">
-                        <mat-icon>logout</mat-icon>
-                        <span>Logga ut</span>
-                    </button>
+                <button
+                    mat-menu-item
+                    (click)="navigateToProfile()"
+                    class="menu-header-button"
+                >
+                    <mat-icon>person</mat-icon>
+                    <span>{{ authService.currentUser() }}</span>
+                </button>
+                <mat-divider></mat-divider>
+                <button mat-menu-item (click)="navigateToChangePassword()">
+                    <mat-icon>lock</mat-icon>
+                    <span>Ändra lösenord</span>
+                </button>
+                @if (authService.isSuperAdmin()) {
+                <mat-divider></mat-divider>
+                <button mat-menu-item (click)="navigateToUserList()">
+                    <mat-icon>manage_accounts</mat-icon>
+                    <span>Hantera användare</span>
+                </button>
+                }
+                <button mat-menu-item (click)="logout()">
+                    <mat-icon>logout</mat-icon>
+                    <span>Logga ut</span>
+                </button>
                 } @else {
-                    <button mat-menu-item (click)="navigateToLogin()">
-                        <mat-icon>login</mat-icon>
-                        <span>Logga in</span>
-                    </button>
+                <button mat-menu-item (click)="navigateToLogin()">
+                    <mat-icon>login</mat-icon>
+                    <span>Logga in</span>
+                </button>
                 }
             </mat-menu>
         </div>
@@ -65,7 +92,11 @@
         @if (viewMode === 'list') {
         <mat-form-field appearance="outline" class="search-field">
             <mat-label>Sök</mat-label>
-            <input matInput [(ngModel)]="searchText" placeholder="Sök på stad, plats..." />
+            <input
+                matInput
+                [(ngModel)]="searchText"
+                placeholder="Sök på stad, plats..."
+            />
             <mat-icon matSuffix>search</mat-icon>
         </mat-form-field>
         }
@@ -73,18 +104,18 @@
 
     <!-- Offline Banner -->
     @if (!isOnline) {
-        <div class="offline-banner">
-            <mat-icon>cloud_off</mat-icon>
-            <span>Du är offline. Vissa funktioner kan vara begränsade.</span>
-        </div>
+    <div class="offline-banner">
+        <mat-icon>cloud_off</mat-icon>
+        <span>Du är offline. Vissa funktioner kan vara begränsade.</span>
+    </div>
     }
 
     <!-- Loading Spinner -->
     @if (isLoading) {
-        <div class="loading-container">
-            <mat-icon class="spinning">refresh</mat-icon>
-            <p>Laddar laddstationer...</p>
-        </div>
+    <div class="loading-container">
+        <mat-icon class="spinning">refresh</mat-icon>
+        <p>Laddar laddstationer...</p>
+    </div>
     }
 
     <div class="content">
@@ -94,11 +125,15 @@
             <div class="one-row-container">
                 <div class="image-container">
                     @if (item.hasImage) {
-                        <img [src]="getImageUrl(item.id)" alt="{{ item.title }}" loading="lazy" />
+                    <img
+                        [src]="getImageUrl(item.id)"
+                        alt="{{ item.title }}"
+                        loading="lazy"
+                    />
                     } @else {
-                        <div class="placeholder-image">
-                            <mat-icon>ev_station</mat-icon>
-                        </div>
+                    <div class="placeholder-image">
+                        <mat-icon>ev_station</mat-icon>
+                    </div>
                     }
                 </div>
                 <div class="text-content-container">
@@ -108,24 +143,24 @@
 
                 <div class="actions">
                     @if (authService.isAuthenticated()) {
-                        <button
-                            class="link-button"
-                            mat-mini-fab
-                            matTooltip="Redigera"
-                            color="accent"
-                            (click)="openEditDialog(item)"
-                        >
-                            <mat-icon>edit</mat-icon>
-                        </button>
-                        <button
-                            class="link-button"
-                            mat-mini-fab
-                            matTooltip="Ta bort"
-                            color="warn"
-                            (click)="deleteChargePoint(item)"
-                        >
-                            <mat-icon>delete</mat-icon>
-                        </button>
+                    <button
+                        class="link-button"
+                        mat-mini-fab
+                        matTooltip="Redigera"
+                        color="accent"
+                        (click)="openEditDialog(item)"
+                    >
+                        <mat-icon>edit</mat-icon>
+                    </button>
+                    <button
+                        class="link-button"
+                        mat-mini-fab
+                        matTooltip="Ta bort"
+                        color="warn"
+                        (click)="deleteChargePoint(item)"
+                    >
+                        <mat-icon>delete</mat-icon>
+                    </button>
                     }
                     <button
                         class="link-button"
@@ -150,9 +185,7 @@
             <p>Oh, snap! There are no charge points for the selected region!</p>
             }
         </div>
-        }
-
-        @if (viewMode === 'map') {
+        } @if (viewMode === 'map') {
         <div class="map-view">
             <app-map
                 [chargePoints]="filteredChargePoints"
@@ -168,7 +201,11 @@
         mat-fab
         color="primary"
         class="add-fab"
-        [matTooltip]="authService.isAuthenticated() ? 'Lägg till laddstation' : 'Föreslå laddstation'"
+        [matTooltip]="
+            authService.isAuthenticated()
+                ? 'Lägg till laddstation'
+                : 'Föreslå laddstation'
+        "
         (click)="openCreateDialog()"
     >
         <mat-icon>add</mat-icon>

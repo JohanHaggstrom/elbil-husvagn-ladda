@@ -8,6 +8,7 @@ namespace ElbilHusvagnLadda.WebApi.Services;
 public interface IEmailService
 {
     Task SendFeedbackResponseAsync(string toEmail, string feedbackTitle, string adminResponse);
+    Task SendEmailAsync(string toEmail, string subject, string body);
 }
 
 public class EmailService : IEmailService
@@ -56,6 +57,41 @@ public class EmailService : IEmailService
         {
             _logger.LogError(ex, "Failed to send feedback response email to {Email}", toEmail);
             // Don't throw - we don't want email failures to break the API response
+        }
+    }
+
+    public async Task SendEmailAsync(string toEmail, string subject, string body)
+    {
+        try
+        {
+            if (string.IsNullOrEmpty(_emailSettings.SmtpServer) || string.IsNullOrEmpty(_emailSettings.FromEmail))
+            {
+                _logger.LogWarning("Email settings not configured. Skipping email send.");
+                return;
+            }
+
+            using var smtpClient = new SmtpClient(_emailSettings.SmtpServer, _emailSettings.SmtpPort)
+            {
+                Credentials = new NetworkCredential(_emailSettings.SmtpUsername, _emailSettings.SmtpPassword),
+                EnableSsl = _emailSettings.EnableSsl
+            };
+
+            var mailMessage = new MailMessage
+            {
+                From = new MailAddress(_emailSettings.FromEmail, _emailSettings.FromName),
+                Subject = subject,
+                Body = body,
+                IsBodyHtml = false // Default to false for generic emails, or true if we want to support it?
+            };
+
+            mailMessage.To.Add(toEmail);
+
+            await smtpClient.SendMailAsync(mailMessage);
+            _logger.LogInformation("Email sent to {Email}", toEmail);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to send email to {Email}", toEmail);
         }
     }
 

@@ -4,15 +4,15 @@
 
 ## Teknologi
 
-- .NET 8
-- ASP.NET Core Web API
-- Entity Framework Core (InMemory Database)
+-   .NET 8
+-   ASP.NET Core Web API
+-   Entity Framework Core (InMemory Database)
 
 ## Kom igång
 
 ### Förutsättningar
 
-- .NET 8 SDK
+-   .NET 8 SDK
 
 ### Köra backend
 
@@ -25,8 +25,8 @@ API:et kommer att köras på `http://localhost:5171` (eller annan port som visas
 
 ### API Endpoints
 
-- `GET /api/chargingpoints` - Hämta alla laddstationer
-- `GET /api/chargingpoints/{id}` - Hämta en specifik laddstation
+-   `GET /api/chargingpoints` - Hämta alla laddstationer
+-   `GET /api/chargingpoints/{id}` - Hämta en specifik laddstation
 
 ### Swagger
 
@@ -41,3 +41,5 @@ I framtiden kan detta bytas ut mot en riktig databas (SQL Server, PostgreSQL, et
 ## CORS
 
 API:et är konfigurerat att tillåta requests från Angular-frontend på `http://localhost:4200`.
+
+Verify: You should be able to access the admin routes.

@@ -13,6 +13,7 @@ public class AppDbContext : DbContext
     public DbSet<ChargePointComment> ChargePointComments { get; set; }
     public DbSet<Feedback> Feedbacks { get; set; }
     public DbSet<SuggestedChargingPoint> SuggestedChargingPoints { get; set; }
+    public DbSet<User> Users { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

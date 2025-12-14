@@ -7,7 +7,11 @@ using Microsoft.EntityFrameworkCore;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.Services.AddControllers();
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.Converters.Add(new System.Text.Json.Serialization.JsonStringEnumConverter());
+    });
 
 // Configure DbContext with MariaDB
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
@@ -17,6 +21,7 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 // Configure Email Settings
 builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings"));
 builder.Services.AddScoped<IEmailService, EmailService>();
+builder.Services.AddScoped<IPasswordService, PasswordService>();
 
 // Configure CORS to allow Angular frontend
 builder.Services.AddCors(options =>
@@ -60,6 +65,21 @@ using (var scope = app.Services.CreateScope())
 {
     var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
     context.Database.EnsureCreated();
+
+    var passwordService = scope.ServiceProvider.GetRequiredService<IPasswordService>();
+    if (!context.Users.Any())
+    {
+        var superAdmin = new User
+        {
+            Username = "superadmin",
+            Email = "superadmin@example.com",
+            Role = Role.SuperAdmin,
+            PasswordHash = passwordService.HashPassword("ChangeMe123!"),
+            CreatedAt = DateTime.UtcNow
+        };
+        context.Users.Add(superAdmin);
+        context.SaveChanges();
+    }
 }
 
 // Configure the HTTP request pipeline.

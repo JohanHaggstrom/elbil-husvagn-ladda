@@ -1,5 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, inject, signal } from '@angular/core';
+import { jwtDecode } from 'jwt-decode';
 import { Observable, tap } from 'rxjs';
 import { environment } from '../../environments/environment';
 
@@ -23,6 +24,7 @@ export class AuthService {
     // Signal to track authentication state
     isAuthenticated = signal(false);
     currentUser = signal<string | null>(null);
+    currentUserRole = signal<string | null>(null);
 
     constructor() {
         // Check if user is already logged in
@@ -30,6 +32,7 @@ export class AuthService {
         if (token) {
             this.isAuthenticated.set(true);
             this.currentUser.set(localStorage.getItem('username'));
+            this.decodeToken(token);
         }
     }
 
@@ -40,6 +43,7 @@ export class AuthService {
                 localStorage.setItem('username', response.username);
                 this.isAuthenticated.set(true);
                 this.currentUser.set(response.username);
+                this.decodeToken(response.token);
             })
         );
     }
@@ -49,9 +53,35 @@ export class AuthService {
         localStorage.removeItem('username');
         this.isAuthenticated.set(false);
         this.currentUser.set(null);
+        this.currentUserRole.set(null);
     }
 
     getToken(): string | null {
         return localStorage.getItem('token');
+    }
+
+    private decodeToken(token: string): void {
+        try {
+            const decoded: any = jwtDecode(token);
+            // Default claim type for Role in .NET Identity
+            const role = decoded['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'] || decoded['role'];
+            this.currentUserRole.set(role);
+        } catch (error) {
+            console.error('Error decoding token', error);
+            this.logout();
+        }
+    }
+
+    hasRole(role: string): boolean {
+        return this.currentUserRole() === role;
+    }
+
+    isAdmin(): boolean {
+        const role = this.currentUserRole();
+        return role === 'Admin' || role === 'SuperAdmin';
+    }
+
+    isSuperAdmin(): boolean {
+        return this.currentUserRole() === 'SuperAdmin';
     }
 }

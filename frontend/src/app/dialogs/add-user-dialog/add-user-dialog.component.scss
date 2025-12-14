@@ -1,0 +1,26 @@
+mat-dialog-content {
+    display: flex;
+    flex-direction: column;
+    padding: 20px 24px;
+    min-width: 400px;
+    overflow: visible !important;
+
+    form {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+    }
+}
+
+.form-field {
+    width: 100%;
+}
+
+mat-dialog-actions {
+    padding: 8px 16px;
+    gap: 8px;
+}
+
+mat-spinner {
+    vertical-align: middle;
+}

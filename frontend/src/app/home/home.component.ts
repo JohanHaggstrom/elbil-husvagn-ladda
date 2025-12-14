@@ -21,6 +21,8 @@ import { ChargingStationService } from '../services/charging-station.service';
 import { ConnectionService } from '../services/connection.service';
 import { ErrorService } from '../services/error.service';
 import { FeedbackService } from '../services/feedback.service';
+import { ChangePasswordComponent } from '../users/change-password/change-password.component';
+import { UserProfileComponent } from '../users/user-profile/user-profile.component';
 
 @Component({
     selector: 'app-home',
@@ -34,10 +36,10 @@ import { FeedbackService } from '../services/feedback.service';
         MatButtonToggleModule,
         MatInputModule,
         MatFormFieldModule,
-        FormsModule
+        FormsModule,
     ],
     templateUrl: './home.component.html',
-    styleUrl: './home.component.scss'
+    styleUrl: './home.component.scss',
 })
 export class HomeComponent implements OnInit {
     protected title = 'Elbil. Husvagn. Ladda.';
@@ -52,10 +54,12 @@ export class HomeComponent implements OnInit {
             return this.identifiedChargePoints;
         }
         const lowerSearch = this.searchText.toLowerCase();
-        return this.identifiedChargePoints.filter(point =>
-            point.title.toLowerCase().includes(lowerSearch) ||
-            point.city.toLowerCase().includes(lowerSearch) ||
-            (point.address1 && point.address1.toLowerCase().includes(lowerSearch))
+        return this.identifiedChargePoints.filter(
+            (point) =>
+                point.title.toLowerCase().includes(lowerSearch) ||
+                point.city.toLowerCase().includes(lowerSearch) ||
+                (point.address1 &&
+                    point.address1.toLowerCase().includes(lowerSearch))
         );
     }
 
@@ -85,6 +89,18 @@ export class HomeComponent implements OnInit {
         this.router.navigate(['/admin/suggestions']);
     }
 
+    navigateToProfile(): void {
+        this.dialog.open(UserProfileComponent);
+    }
+
+    navigateToChangePassword(): void {
+        this.dialog.open(ChangePasswordComponent);
+    }
+
+    navigateToUserList(): void {
+        this.router.navigate(['/admin/users']);
+    }
+
     logout(): void {
         this.authService.logout();
     }
@@ -99,7 +115,7 @@ export class HomeComponent implements OnInit {
         }
 
         // Monitor connection status
-        this.connectionService.online$.subscribe(isOnline => {
+        this.connectionService.online$.subscribe((isOnline) => {
             this.isOnline = isOnline;
             if (isOnline && this.identifiedChargePoints.length === 0) {
                 // Retry loading when connection is restored
@@ -112,7 +128,7 @@ export class HomeComponent implements OnInit {
         const dialogRef = this.dialog.open(EditChargingPointDialogComponent, {
             data: point,
             width: '600px',
-            maxWidth: '95vw'
+            maxWidth: '95vw',
         });
 
         const result = await firstValueFrom(dialogRef.afterClosed());
@@ -125,7 +141,7 @@ export class HomeComponent implements OnInit {
         const dialogRef = this.dialog.open(EditChargingPointDialogComponent, {
             data: null,
             width: '600px',
-            maxWidth: '95vw'
+            maxWidth: '95vw',
         });
 
         const result = await firstValueFrom(dialogRef.afterClosed());
@@ -134,10 +150,14 @@ export class HomeComponent implements OnInit {
         }
     }
 
-    async deleteChargePoint(point: IdentifiedCaravanChargePoint): Promise<void> {
+    async deleteChargePoint(
+        point: IdentifiedCaravanChargePoint
+    ): Promise<void> {
         if (confirm(`Är du säker på att du vill ta bort "${point.title}"?`)) {
             try {
-                await firstValueFrom(this.chargingStationService.deleteChargingPoint(point.id));
+                await firstValueFrom(
+                    this.chargingStationService.deleteChargingPoint(point.id)
+                );
                 await this.loadChargingPoints();
             } catch (err) {
                 console.error('Error deleting charging point:', err);
@@ -151,7 +171,7 @@ export class HomeComponent implements OnInit {
             data: point,
             width: '700px',
             maxWidth: '95vw',
-            maxHeight: '90vh'
+            maxHeight: '90vh',
         });
     }
 
@@ -166,7 +186,9 @@ export class HomeComponent implements OnInit {
 
         this.isLoading = true;
         try {
-            const points = await firstValueFrom(this.chargingStationService.getChargingPoints());
+            const points = await firstValueFrom(
+                this.chargingStationService.getChargingPoints()
+            );
             this.identifiedChargePoints = points.map((point) => ({
                 id: point.id,
                 title: point.title,
@@ -179,10 +201,13 @@ export class HomeComponent implements OnInit {
                 mapCoordinates: point.mapCoordinates,
                 numberOfChargePoints: point.numberOfChargePoints,
                 capacity: point.capacity,
-                hasImage: point.hasImage
+                hasImage: point.hasImage,
             }));
         } catch (error) {
-            this.errorService.handleError(error, 'Kunde inte ladda laddstationer');
+            this.errorService.handleError(
+                error,
+                'Kunde inte ladda laddstationer'
+            );
             // Keep any existing data if reload fails
         } finally {
             this.isLoading = false;
@@ -197,7 +222,7 @@ export class HomeComponent implements OnInit {
             error: (error) => {
                 console.error('Error loading unhandled feedback count:', error);
                 // Silently fail - not critical
-            }
+            },
         });
     }
 
@@ -209,8 +234,11 @@ export class HomeComponent implements OnInit {
                 this.unhandledSuggestionsCount = count;
             },
             error: (error) => {
-                console.error('Error loading unhandled suggestions count:', error);
-            }
+                console.error(
+                    'Error loading unhandled suggestions count:',
+                    error
+                );
+            },
         });
     }
 
