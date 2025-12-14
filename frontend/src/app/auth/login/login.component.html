@@ -2,7 +2,7 @@
     <mat-card class="login-card">
         <mat-card-header>
             <mat-card-title>Logga in</mat-card-title>
-            <mat-card-subtitle>Elbil. Husvagn. Ladda.</mat-card-subtitle>
+            <img src="assets/images/ehl-logo.png" alt="EHL Logo" class="logo" />
         </mat-card-header>
 
         <mat-card-content>
@@ -47,7 +47,7 @@
                         class="submit-button"
                         [disabled]="isLoading || !loginForm.valid"
                     >
-                        {{ isLoading ? 'Loggar in...' : 'Logga in' }}
+                        {{ isLoading ? "Loggar in..." : "Logga in" }}
                     </button>
                 </div>
             </form>
