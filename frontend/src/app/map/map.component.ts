@@ -30,11 +30,16 @@ import { ChargePointPopupComponent } from './charge-point-popup/charge-point-pop
     templateUrl: './map.component.html',
     styleUrl: './map.component.scss',
 })
-export class MapComponent implements OnInit, AfterViewInit, OnChanges, OnDestroy {
+export class MapComponent
+    implements OnInit, AfterViewInit, OnChanges, OnDestroy
+{
     @Input() chargePoints: IdentifiedCaravanChargePoint[] = [];
-    @Output() chargePointSelected = new EventEmitter<IdentifiedCaravanChargePoint>();
-    @Output() editChargePoint = new EventEmitter<IdentifiedCaravanChargePoint>();
-    @Output() deleteChargePoint = new EventEmitter<IdentifiedCaravanChargePoint>();
+    @Output() chargePointSelected =
+        new EventEmitter<IdentifiedCaravanChargePoint>();
+    @Output() editChargePoint =
+        new EventEmitter<IdentifiedCaravanChargePoint>();
+    @Output() deleteChargePoint =
+        new EventEmitter<IdentifiedCaravanChargePoint>();
     @Output() viewComments = new EventEmitter<IdentifiedCaravanChargePoint>();
 
     private map: L.Map | null = null;
@@ -48,6 +53,9 @@ export class MapComponent implements OnInit, AfterViewInit, OnChanges, OnDestroy
     public searchQuery: string = '';
     public searchResults: any[] = [];
     public isSearching: boolean = false;
+    public isSatelliteMode: boolean = false;
+    private osmLayer: L.TileLayer | null = null;
+    private satelliteLayer: L.TileLayer | null = null;
 
     ngOnInit(): void {
         // Fix for default marker icons in Leaflet with webpack
@@ -87,11 +95,24 @@ export class MapComponent implements OnInit, AfterViewInit, OnChanges, OnDestroy
         });
 
         // Add OpenStreetMap tiles
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            maxZoom: 19,
-            attribution:
-                '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
-        }).addTo(this.map);
+        this.osmLayer = L.tileLayer(
+            'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+            {
+                maxZoom: 19,
+                attribution:
+                    '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+            }
+        );
+        this.osmLayer.addTo(this.map);
+
+        // Add satellite layer (USGS Satellite)
+        this.satelliteLayer = L.tileLayer(
+            'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+            {
+                maxZoom: 19,
+                attribution: '&copy; Esri, DigitalGlobe, Earthstar Geographics',
+            }
+        );
 
         // Initialize marker cluster group
         this.markerClusterGroup = L.markerClusterGroup({
@@ -101,7 +122,6 @@ export class MapComponent implements OnInit, AfterViewInit, OnChanges, OnDestroy
             zoomToBoundsOnClick: true,
         });
         this.map.addLayer(this.markerClusterGroup);
-
     }
 
     private addMarkers(): void {
@@ -115,8 +135,9 @@ export class MapComponent implements OnInit, AfterViewInit, OnChanges, OnDestroy
             const coords = this.parseCoordinates(point.mapCoordinates);
             if (coords && this.markerClusterGroup) {
                 const icon = this.getMarkerIcon(point.capacity);
-                const marker = L.marker(coords, { icon })
-                    .bindPopup(this.createPopupContent(point));
+                const marker = L.marker(coords, { icon }).bindPopup(
+                    this.createPopupContent(point)
+                );
 
                 marker.on('click', () => {
                     this.chargePointSelected.emit(point);
@@ -156,7 +177,9 @@ export class MapComponent implements OnInit, AfterViewInit, OnChanges, OnDestroy
 
     private parseCoordinates(coordString: string): [number, number] | null {
         try {
-            const parts = coordString.split(',').map((s) => parseFloat(s.trim()));
+            const parts = coordString
+                .split(',')
+                .map((s) => parseFloat(s.trim()));
             if (parts.length === 2 && !isNaN(parts[0]) && !isNaN(parts[1])) {
                 return [parts[0], parts[1]];
             }
@@ -166,15 +189,18 @@ export class MapComponent implements OnInit, AfterViewInit, OnChanges, OnDestroy
         return null;
     }
 
-    private createPopupContent(point: IdentifiedCaravanChargePoint): HTMLElement {
+    private createPopupContent(
+        point: IdentifiedCaravanChargePoint
+    ): HTMLElement {
         // Create the component dynamically
         const componentRef = createComponent(ChargePointPopupComponent, {
-            environmentInjector: this.injector
+            environmentInjector: this.injector,
         });
 
         // Set the inputs
         componentRef.instance.chargePoint = point;
-        componentRef.instance.isAuthenticated = this.authService.isAuthenticated();
+        componentRef.instance.isAuthenticated =
+            this.authService.isAuthenticated();
 
         // Subscribe to outputs
         componentRef.instance.edit.subscribe(() => {
@@ -194,7 +220,8 @@ export class MapComponent implements OnInit, AfterViewInit, OnChanges, OnDestroy
         this.appRef.attachView(componentRef.hostView);
 
         // Get the DOM element
-        const domElem = (componentRef.hostView as any).rootNodes[0] as HTMLElement;
+        const domElem = (componentRef.hostView as any)
+            .rootNodes[0] as HTMLElement;
 
         return domElem;
     }
@@ -222,7 +249,9 @@ export class MapComponent implements OnInit, AfterViewInit, OnChanges, OnDestroy
                     });
 
                     // Add marker for user location
-                    this.userLocationMarker = L.marker(userCoords, { icon: userIcon })
+                    this.userLocationMarker = L.marker(userCoords, {
+                        icon: userIcon,
+                    })
                         .addTo(this.map!)
                         .bindPopup('Din position')
                         .openPopup();
@@ -232,7 +261,9 @@ export class MapComponent implements OnInit, AfterViewInit, OnChanges, OnDestroy
                 },
                 (error) => {
                     console.error('Error getting user location:', error);
-                    alert('Kunde inte hämta din position. Kontrollera att du har gett tillåtelse för platsåtkomst.');
+                    alert(
+                        'Kunde inte hämta din position. Kontrollera att du har gett tillåtelse för platsåtkomst.'
+                    );
                 }
             );
         } else {
@@ -243,7 +274,9 @@ export class MapComponent implements OnInit, AfterViewInit, OnChanges, OnDestroy
         if (!this.searchQuery || this.searchQuery.length < 3) return;
 
         this.isSearching = true;
-        const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(this.searchQuery)}`;
+        const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(
+            this.searchQuery
+        )}`;
 
         try {
             const results = await firstValueFrom(this.http.get<any[]>(url));
@@ -264,6 +297,30 @@ export class MapComponent implements OnInit, AfterViewInit, OnChanges, OnDestroy
             this.isSearching = false;
             console.error('Search error:', err);
             alert('Ett fel uppstod vid sökning.');
+        }
+    }
+
+    toggleSatelliteMode(): void {
+        if (!this.map) return;
+
+        if (this.isSatelliteMode) {
+            // Switch back to OSM
+            if (this.satelliteLayer) {
+                this.map.removeLayer(this.satelliteLayer);
+            }
+            if (this.osmLayer) {
+                this.map.addLayer(this.osmLayer);
+            }
+            this.isSatelliteMode = false;
+        } else {
+            // Switch to satellite
+            if (this.osmLayer) {
+                this.map.removeLayer(this.osmLayer);
+            }
+            if (this.satelliteLayer) {
+                this.map.addLayer(this.satelliteLayer);
+            }
+            this.isSatelliteMode = true;
         }
     }
 }

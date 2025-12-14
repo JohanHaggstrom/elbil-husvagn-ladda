@@ -1,23 +1,43 @@
 <div class="map-container">
     <div class="search-container">
         <div class="search-box">
-            <input type="text"
-                   [(ngModel)]="searchQuery"
-                   (keyup.enter)="searchLocation()"
-                   placeholder="Sök ort..."
-                   class="search-input">
-            <button (click)="searchLocation()" class="search-btn" [disabled]="isSearching" title="Sök">
+            <input
+                type="text"
+                [(ngModel)]="searchQuery"
+                (keyup.enter)="searchLocation()"
+                placeholder="Sök ort..."
+                class="search-input"
+            />
+            <button
+                (click)="searchLocation()"
+                class="search-btn"
+                [disabled]="isSearching"
+                title="Sök"
+            >
                 @if (!isSearching) {
-                    <mat-icon>search</mat-icon>
+                <mat-icon>search</mat-icon>
                 } @else {
-                    <mat-icon class="spinner">refresh</mat-icon>
+                <mat-icon class="spinner">refresh</mat-icon>
                 }
             </button>
         </div>
     </div>
     <div class="map-controls">
-        <button class="location-btn" (click)="showUserLocation()" title="Visa min position">
+        <button
+            class="location-btn"
+            (click)="showUserLocation()"
+            title="Visa min position"
+        >
             <mat-icon>my_location</mat-icon> Min position
+        </button>
+        <button
+            class="satellite-btn"
+            (click)="toggleSatelliteMode()"
+            [class.active]="isSatelliteMode"
+            title="Satelitvy"
+        >
+            <mat-icon>{{ isSatelliteMode ? "map" : "satellite_alt" }}</mat-icon>
+            {{ isSatelliteMode ? "Karta" : "Satelit" }}
         </button>
         <div class="map-legend">
             <div class="legend-item">
