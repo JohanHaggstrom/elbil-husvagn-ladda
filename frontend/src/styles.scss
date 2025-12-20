@@ -4,11 +4,14 @@
 :root,
 .light-mode {
     --bg-primary: #ffffff;
+    --bg-primary-rgb: 255, 255, 255;
     --bg-secondary: #f8f9fa;
     --text-primary: #1a1a1a;
+    --text-primary-rgb: 26, 26, 26;
     --text-secondary: #666666;
     --border-color: rgba(0, 0, 0, 0.1);
     --card-bg: #ffffff;
+    --bg-card-rgb: 255, 255, 255;
     --input-bg: #f8f9fa;
     --shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
@@ -16,11 +19,14 @@
 // Dark mode
 .dark-mode {
     --bg-primary: #1a1a1a;
+    --bg-primary-rgb: 26, 26, 26;
     --bg-secondary: #2d2d2d;
     --text-primary: #ffffff;
+    --text-primary-rgb: 255, 255, 255;
     --text-secondary: #b0b0b0;
     --border-color: rgba(255, 255, 255, 0.1);
     --card-bg: #2d2d2d;
+    --bg-card-rgb: 45, 45, 45;
     --input-bg: #1a1a1a;
     --shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
 }
@@ -187,6 +193,53 @@ body {
                  background-color: rgba(63, 81, 181, 0.2) !important; /* Visibly selected */
             }
         }
+    }
+}
+
+/* Premium Material Button Overrides */
+::ng-deep {
+    .mat-mdc-raised-button {
+        &.mat-primary {
+            background: linear-gradient(90deg, #3f51b5, #5c6bc0) !important;
+            color: white !important;
+            box-shadow: 0 4px 15px rgba(63, 81, 181, 0.3) !important;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
+            border-radius: 12px !important;
+            font-weight: 600 !important;
+
+            &:not(:disabled):hover {
+                transform: scale(1.03);
+                box-shadow: 0 8px 25px rgba(63, 81, 181, 0.4) !important;
+                filter: brightness(1.1);
+            }
+
+            &:not(:disabled):active {
+                transform: scale(0.98);
+            }
+
+            &:disabled {
+                background: #cccccc !important;
+            }
+        }
+    }
+
+    .mat-mdc-button, .mat-mdc-stroked-button {
+        &.mat-secondary-style { // Custom semantic class if we want standard material but consistent feel
+            border-radius: 12px !important;
+            transition: all 0.23s ease !important;
+
+            &:not(:disabled):hover {
+                background: rgba(var(--text-secondary-rgb, 102, 102, 102), 0.1) !important;
+            }
+        }
+    }
+
+    /* Large button modifier */
+    .btn-large {
+        height: 60px !important;
+        padding: 0 2rem !important;
+        font-size: 1.15rem !important;
+        border-radius: 18px !important;
     }
 }
 

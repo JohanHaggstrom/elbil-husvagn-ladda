@@ -32,9 +32,9 @@
 
                 <div class="button-group">
                     <button
-                        mat-stroked-button
+                        mat-button
                         type="button"
-                        class="cancel-button"
+                        class="btn-large cancel-button"
                         [disabled]="isLoading"
                         (click)="onCancel()"
                     >
@@ -44,7 +44,7 @@
                         mat-raised-button
                         color="primary"
                         type="submit"
-                        class="submit-button"
+                        class="btn-large submit-button"
                         [disabled]="isLoading || !loginForm.valid"
                     >
                         {{ isLoading ? "Loggar in..." : "Logga in" }}

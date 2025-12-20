@@ -117,3 +117,166 @@
 mat-spinner {
     margin: 0 auto;
 }
+
+// Mobile Responsive Adjustments
+@media screen and (max-width: 600px) {
+    .users-container {
+        padding: 12px;
+    }
+
+    .users-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        margin-bottom: 20px;
+        position: relative;
+        width: 100%;
+
+        .back-button {
+            position: relative !important;
+            left: auto !important;
+            top: auto !important;
+            transform: none !important;
+            z-index: 50;
+            flex-shrink: 0;
+            margin: 0;
+        }
+
+        h1 {
+            flex: 1;
+            margin: 0;
+            font-size: 1.25rem;
+            text-align: center;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            pointer-events: none;
+        }
+
+        .add-button {
+            position: relative !important; // Override desktop absolute
+            right: auto !important;
+            top: auto !important;
+            bottom: auto !important;
+            transform: none !important;
+            z-index: 50;
+            flex-shrink: 0;
+            margin: 0;
+
+            // Make it circular
+            min-width: 40px !important;
+            width: 40px !important;
+            height: 40px !important;
+            border-radius: 50% !important;
+            padding: 0 !important;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 3px 5px -1px rgba(0,0,0,.2), 0 6px 10px 0 rgba(0,0,0,.14), 0 1px 18px 0 rgba(0,0,0,.12); // Add FAB-like shadow for niceness
+
+            span {
+                display: none;
+            }
+
+            mat-icon {
+                margin: 0 !important;
+            }
+        }
+    }
+
+    // Transform Table to Cards
+    .users-table {
+        background: transparent;
+
+        thead,
+        .mat-mdc-header-row,
+        tr.mat-mdc-header-row {
+            display: none !important;
+        }
+
+        tbody,
+        tr,
+        td {
+            display: block;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        tr {
+            background-color: var(--card-bg);
+            margin-bottom: 16px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            padding: 16px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            height: auto !important;
+        }
+
+        td {
+            // Stack label and value vertically
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            justify-content: flex-start;
+            padding: 8px 0;
+            border-bottom: 1px solid var(--border-color);
+            min-height: auto !important;
+            height: auto !important;
+            text-align: left;
+
+            // Allow text wrapping
+            white-space: normal;
+            word-break: break-word;
+
+            // Label style
+            &::before {
+                font-size: 0.75rem;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+                color: var(--text-secondary);
+                margin-bottom: 4px;
+                font-weight: 500;
+                display: block;
+            }
+
+            // Username (Title)
+            &:nth-of-type(1) {
+                border-bottom: 2px solid var(--border-color);
+                padding-top: 0;
+                padding-bottom: 12px;
+                margin-bottom: 8px;
+                font-size: 1.25rem;
+                font-weight: 600;
+                color: var(--text-primary);
+
+                // No label for title
+                &::before { display: none; }
+            }
+
+            // Email
+            &:nth-of-type(2)::before { content: "Email"; }
+
+            // Role
+            &:nth-of-type(3)::before { content: "Roll"; }
+
+            // Created
+            &:nth-of-type(4) {
+                 border-bottom: none;
+                 &::before { content: "Skapad"; }
+            }
+
+            // Actions
+            &:last-child {
+                border-top: 1px solid var(--border-color);
+                margin-top: 8px;
+                padding-top: 12px;
+                padding-bottom: 0;
+                flex-direction: row; // Keep actions horizontal
+                justify-content: flex-end;
+
+                &::before { display: none; }
+            }
+        }
+    }
+}
