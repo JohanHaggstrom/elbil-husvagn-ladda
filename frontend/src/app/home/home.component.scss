@@ -3,29 +3,44 @@
         flex-direction: column;
         width: 100%;
         max-width: 100%;
+        height: calc(100vh - 280px);
+    }
+}
+
+@media screen and (max-width: 600px) {
+    .main {
+        padding: 0.5rem;
     }
 
-    .left-side {
-        min-width: unset;
-        width: 100%;
+    h1 {
+        display: none;
     }
 
-    .right-side {
-        min-width: unset;
-        width: 100%;
-        order: -1; // Show map first on mobile
+    .header-container {
+        margin-bottom: 0.5rem;
+
+        h5 {
+            display: none;
+        }
     }
 
-    .one-row-container .text-content-container {
-        min-width: unset;
-        width: 100%;
+    .content {
+        height: calc(100vh - 220px);
     }
 
-    .divider {
-        height: 1px;
-        width: 100%;
-        background: var(--red-to-pink-to-purple-horizontal-gradient);
-        margin-block: 1.5rem;
+    .one-row-container {
+        .text-content-container {
+            padding: 0 12px;
+
+            .left-side-content {
+                max-width: 150px; // Limit width to prevent overflow
+            }
+        }
+    }
+
+    .add-fab {
+        bottom: 1.5rem;
+        right: 1.5rem;
     }
 }
 
