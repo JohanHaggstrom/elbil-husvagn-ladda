@@ -8,7 +8,6 @@ import {
 } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
-import { MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
@@ -26,7 +25,6 @@ import { UserService } from '../../services/user.service';
     imports: [
         CommonModule,
         ReactiveFormsModule,
-        MatDialogModule,
         MatCardModule,
         MatFormFieldModule,
         MatInputModule,
@@ -43,7 +41,6 @@ export class ChangePasswordComponent implements OnInit {
     private authService = inject(AuthService);
     private snackBar = inject(MatSnackBar);
     private router = inject(Router);
-    private dialogRef = inject(MatDialogRef<ChangePasswordComponent>);
     private fb = inject(FormBuilder);
 
     form: FormGroup;
@@ -89,7 +86,7 @@ export class ChangePasswordComponent implements OnInit {
         if (
             this.form.invalid ||
             this.form.get('newPassword')?.value !==
-                this.form.get('confirmPassword')?.value
+            this.form.get('confirmPassword')?.value
         ) {
             this.snackBar.open('Vänligen fyll i alla fält korrekt', 'Stäng', {
                 duration: 3000,
@@ -109,8 +106,7 @@ export class ChangePasswordComponent implements OnInit {
             this.snackBar.open('Lösenord ändrat', 'Stäng', {
                 duration: 3000,
             });
-            // Close dialog and navigate home
-            this.dialogRef.close();
+            // Navigate home
             setTimeout(() => {
                 this.router.navigate(['/']);
             }, 100);
@@ -127,6 +123,6 @@ export class ChangePasswordComponent implements OnInit {
     }
 
     onCancel(): void {
-        this.dialogRef.close();
+        this.router.navigate(['/user/profile']);
     }
 }

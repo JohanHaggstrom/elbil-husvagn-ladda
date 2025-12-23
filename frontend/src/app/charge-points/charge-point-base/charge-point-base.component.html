@@ -1,0 +1,145 @@
+<div class="page-container">
+  <mat-card class="card">
+    <mat-card-header>
+      <div class="header-content">
+        <button mat-icon-button (click)="onCancel()" class="back-button">
+          <mat-icon>arrow_back</mat-icon>
+        </button>
+        <mat-card-title>{{ title }}</mat-card-title>
+      </div>
+    </mat-card-header>
+
+    <mat-card-content>
+      <form [formGroup]="form" class="edit-form">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Titel</mat-label>
+          <input matInput formControlName="title" required>
+        </mat-form-field>
+
+        <div class="row">
+          <mat-form-field appearance="outline">
+            <mat-label>Adress 1</mat-label>
+            <input matInput formControlName="address1" required>
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>Adress 2</mat-label>
+            <input matInput formControlName="address2">
+          </mat-form-field>
+        </div>
+
+        <div class="row">
+          <mat-form-field appearance="outline">
+            <mat-label>Postnummer</mat-label>
+            <input matInput formControlName="postalCode" required>
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>Stad</mat-label>
+            <input matInput formControlName="city" required>
+          </mat-form-field>
+        </div>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Land</mat-label>
+          <input matInput formControlName="country" required>
+        </mat-form-field>
+
+        <div class="map-container">
+          <div id="edit-map"></div>
+          <p class="help-text">Klicka på kartan eller dra markören för att ändra position.</p>
+        </div>
+
+        <div class="row">
+          <mat-form-field appearance="outline">
+            <mat-label>Koordinater (lat, lng)</mat-label>
+            <input matInput formControlName="mapCoordinates" required>
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>Kapacitet (kW)</mat-label>
+            <input matInput type="number" formControlName="capacity" required>
+            @if (form.get('capacity')?.hasError('notInteger')) {
+              <mat-error>
+                Kapacitet måste vara ett heltal
+              </mat-error>
+            }
+            @if (form.get('capacity')?.hasError('required')) {
+              <mat-error>
+                Kapacitet krävs
+              </mat-error>
+            }
+          </mat-form-field>
+        </div>
+
+          <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Antal laddpunkter</mat-label>
+          <input matInput type="number" formControlName="numberOfChargePoints">
+          @if (form.get('numberOfChargePoints')?.hasError('notInteger')) {
+            <mat-error>
+              Antal laddpunkter måste vara ett heltal
+            </mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Kommentarer</mat-label>
+          <textarea matInput formControlName="comments" rows="3"></textarea>
+        </mat-form-field>
+
+        <div class="image-section">
+          <h3>Bild</h3>
+
+          <!-- Display stored image -->
+          @if (chargePointId && hasImage && !imagePreview) {
+            <div class="current-image">
+              <img [src]="getImageUrl()" alt="Laddstation" />
+              <!-- Show delete button only if instant mode enabled OR it's up to the parent. Typically deletion is instant or part of edit.
+                   The original code had instant delete. We emit deleteImage. -->
+              <button mat-icon-button color="warn" (click)="triggerDeleteImage()" matTooltip="Ta bort bild" type="button">
+                <mat-icon>delete</mat-icon>
+              </button>
+            </div>
+          }
+
+          <!-- Image Preview -->
+          @if (imagePreview) {
+            <div class="image-preview">
+              <img [src]="imagePreview" alt="Förhandsvisning" />
+              <div class="preview-actions">
+                <button mat-button (click)="cancelImageSelection()" type="button">Ta bort val</button>
+
+                <!-- Instant upload button if enabled (for edit mode) -->
+                @if (showInstantImageUpload) {
+                  <button mat-raised-button color="primary" (click)="triggerUploadImage()" [disabled]="isUploadingImage" type="button">
+                    @if (isUploadingImage) {
+                      <span>
+                        <mat-icon class="spinning">refresh</mat-icon>
+                        Laddar upp...
+                      </span>
+                    } @else {
+                      <span>Ladda upp</span>
+                    }
+                  </button>
+                }
+              </div>
+            </div>
+          }
+
+          <!-- Upload Input -->
+          @if (!imagePreview && (!hasImage || !chargePointId)) {
+            <div class="upload-section">
+              <input type="file" #fileInput (change)="onFileSelected($event)" accept="image/jpeg,image/jpg,image/png,image/webp" style="display: none" />
+              <button mat-raised-button (click)="fileInput.click()" type="button">
+                <mat-icon>add_photo_alternate</mat-icon>
+                {{ hasImage ? 'Byt bild' : 'Lägg till bild' }}
+              </button>
+              <p class="help-text">JPG, PNG eller WebP. Max 5MB.</p>
+            </div>
+          }
+        </div>
+
+        <div class="actions">
+          <button mat-raised-button color="primary" (click)="onSubmit()" [disabled]="!form.valid">{{ submitLabel }}</button>
+        </div>
+      </form>
+    </mat-card-content>
+  </mat-card>
+</div>

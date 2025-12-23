@@ -3,7 +3,6 @@ import { Component, OnInit, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
-import { MatDialog } from '@angular/material/dialog';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
@@ -16,8 +15,6 @@ import { firstValueFrom } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { IdentifiedCaravanChargePoint } from '../app.model';
 import { AuthService } from '../auth/auth.service';
-import { ChargePointCommentsDialogComponent } from '../dialogs/charge-point-comments-dialog/charge-point-comments-dialog.component';
-import { EditChargingPointDialogComponent } from '../dialogs/edit-charging-point-dialog/edit-charging-point-dialog.component';
 import { MapComponent } from '../map/map.component';
 import { BackupService } from '../services/backup.service';
 import { ChargingStationService } from '../services/charging-station.service';
@@ -25,8 +22,6 @@ import { ConnectionService } from '../services/connection.service';
 import { ErrorService } from '../services/error.service';
 import { FeedbackService } from '../services/feedback.service';
 import { ThemeService } from '../services/theme.service';
-import { ChangePasswordComponent } from '../users/change-password/change-password.component';
-import { UserProfileComponent } from '../users/user-profile/user-profile.component';
 
 @Component({
     selector: 'app-home',
@@ -72,7 +67,6 @@ export class HomeComponent implements OnInit {
     protected themeService = inject(ThemeService);
     private router = inject(Router);
     private chargingStationService = inject(ChargingStationService);
-    private dialog = inject(MatDialog);
     private connectionService = inject(ConnectionService);
     private errorService = inject(ErrorService);
     private feedbackService = inject(FeedbackService);
@@ -98,11 +92,11 @@ export class HomeComponent implements OnInit {
     }
 
     navigateToProfile(): void {
-        this.dialog.open(UserProfileComponent);
+        this.router.navigate(['/user/profile']);
     }
 
     navigateToChangePassword(): void {
-        this.dialog.open(ChangePasswordComponent);
+        this.router.navigate(['/user/change-password']);
     }
 
     navigateToUserList(): void {
@@ -141,45 +135,28 @@ export class HomeComponent implements OnInit {
     ngOnInit(): void {
         this.loadChargingPoints();
 
-        // Load unhandled feedback and suggestions count if admin
         if (this.authService.isAuthenticated()) {
             this.loadUnhandledFeedbackCount();
             this.loadUnhandledSuggestionsCount();
         }
 
-        // Monitor connection status
         this.connectionService.online$.subscribe((isOnline) => {
             this.isOnline = isOnline;
             if (isOnline && this.identifiedChargePoints.length === 0) {
-                // Retry loading when connection is restored
                 this.loadChargingPoints();
             }
         });
     }
 
-    async openEditDialog(point: IdentifiedCaravanChargePoint): Promise<void> {
-        const dialogRef = this.dialog.open(EditChargingPointDialogComponent, {
-            data: point,
-            width: '600px',
-            maxWidth: '95vw',
-        });
-
-        const result = await firstValueFrom(dialogRef.afterClosed());
-        if (result) {
-            await this.loadChargingPoints();
-        }
+    navigateToEdit(point: IdentifiedCaravanChargePoint): void {
+        this.router.navigate(['/charge-points', point.id, 'edit']);
     }
 
-    async openCreateDialog(): Promise<void> {
-        const dialogRef = this.dialog.open(EditChargingPointDialogComponent, {
-            data: null,
-            width: '600px',
-            maxWidth: '95vw',
-        });
-
-        const result = await firstValueFrom(dialogRef.afterClosed());
-        if (result) {
-            await this.loadChargingPoints();
+    navigateToCreate(): void {
+        if (this.authService.isAdmin()) {
+            this.router.navigate(['/charge-points', 'new']);
+        } else {
+            this.router.navigate(['/charge-points', 'suggest']);
         }
     }
 
@@ -199,13 +176,8 @@ export class HomeComponent implements OnInit {
         }
     }
 
-    openCommentsDialog(point: IdentifiedCaravanChargePoint): void {
-        this.dialog.open(ChargePointCommentsDialogComponent, {
-            data: point,
-            width: '700px',
-            maxWidth: '95vw',
-            maxHeight: '90vh',
-        });
+    navigateToDetails(point: IdentifiedCaravanChargePoint): void {
+        this.router.navigate(['/charge-points', point.id]);
     }
 
     private async loadChargingPoints(): Promise<void> {

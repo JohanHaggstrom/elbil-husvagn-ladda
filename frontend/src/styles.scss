@@ -21,14 +21,15 @@
     --bg-primary: #1a1a1a;
     --bg-primary-rgb: 26, 26, 26;
     --bg-secondary: #2d2d2d;
-    --text-primary: #ffffff;
-    --text-primary-rgb: 255, 255, 255;
+    --text-primary: #e8e8e8;
+    --text-primary-rgb: 232, 232, 232;
     --text-secondary: #b0b0b0;
-    --border-color: rgba(255, 255, 255, 0.1);
+    --border-color: rgba(255, 255, 255, 0.12);
     --card-bg: #2d2d2d;
     --bg-card-rgb: 45, 45, 45;
     --input-bg: #1a1a1a;
-    --shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    --shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+    --divider-color: rgba(255, 255, 255, 0.12);
 }
 
 html,
@@ -47,12 +48,12 @@ body {
 /* Dark mode Material overrides */
 .dark-mode {
     /* Menu panels */
-    ::ng-deep .mat-mdc-menu-panel {
+    .mat-mdc-menu-panel {
         background-color: var(--card-bg) !important;
         color: var(--text-primary) !important;
     }
 
-    ::ng-deep .mat-mdc-menu-item {
+    .mat-mdc-menu-item {
         color: var(--text-primary) !important;
 
         &:hover {
@@ -61,27 +62,45 @@ body {
     }
 
     /* Dialogs */
-    ::ng-deep .mat-mdc-dialog-container {
+    .mat-mdc-dialog-container {
         background-color: var(--card-bg) !important;
         color: var(--text-primary) !important;
     }
 
     /* Snackbar */
-    ::ng-deep .mat-mdc-snack-bar-container {
+    .mat-mdc-snack-bar-container {
         background-color: var(--card-bg) !important;
         color: var(--text-primary) !important;
     }
 
-    /* Form fields */
-    /* Form fields */
-    ::ng-deep .mdc-text-field {
-        .mdc-floating-label, .mat-mdc-select-placeholder {
+    /* Cards */
+    .mat-mdc-card {
+        background-color: var(--card-bg) !important;
+        color: var(--text-primary) !important;
+    }
+
+    .mat-mdc-card-title,
+    .mat-mdc-card-subtitle,
+    .mat-mdc-card-content {
+        color: var(--text-primary) !important;
+    }
+
+    /* Form fields - More aggressive */
+    .mat-mdc-form-field {
+        color: var(--text-primary) !important;
+    }
+
+    .mdc-text-field {
+        background-color: transparent !important;
+
+        .mdc-floating-label,
+        .mat-mdc-select-placeholder {
             color: var(--text-secondary) !important;
         }
 
         &.mdc-text-field--focused:not(.mdc-text-field--invalid) {
              .mdc-floating-label {
-                 color: #90caf9 !important; /* Light blue for focus in dark mode */
+                 color: #90caf9 !important;
              }
              .mdc-notched-outline__leading,
              .mdc-notched-outline__notch,
@@ -93,7 +112,7 @@ body {
 
         &.mdc-text-field--invalid {
              .mdc-floating-label {
-                 color: #ef5350 !important; /* Red for invalid */
+                 color: #ef5350 !important;
              }
              .mdc-notched-outline__leading,
              .mdc-notched-outline__notch,
@@ -102,48 +121,86 @@ body {
              }
         }
 
-        /* Default border color */
-        :not(.mdc-text-field--focused):not(.mdc-text-field--invalid) {
-            .mdc-notched-outline__leading,
-            .mdc-notched-outline__notch,
-            .mdc-notched-outline__trailing {
-                border-color: var(--border-color) !important;
-            }
+        /* Default border color - more visible */
+        .mdc-notched-outline__leading,
+        .mdc-notched-outline__notch,
+        .mdc-notched-outline__trailing {
+            border-color: rgba(255, 255, 255, 0.3) !important;
+        }
+
+        /* Fix for the vertical line artifact */
+        .mdc-notched-outline__leading {
+            border-right: none !important;
+            border-top-left-radius: 4px !important;
+            border-bottom-left-radius: 4px !important;
+        }
+
+        .mdc-notched-outline__trailing {
+            border-left: none !important;
+            border-top-right-radius: 4px !important;
+            border-bottom-right-radius: 4px !important;
+        }
+
+        .mdc-notched-outline__notch {
+            border-left: none !important;
+            border-right: none !important;
         }
     }
 
-    /* Input fields and Selects */
-    ::ng-deep .mat-mdc-input-element,
-    ::ng-deep .mat-mdc-select-value-text,
-    ::ng-deep .mat-mdc-select-arrow {
+    /* Input fields and Selects - Force text color */
+    .mat-mdc-input-element,
+    .mat-mdc-select-value-text,
+    .mat-mdc-select-arrow,
+    .mat-mdc-form-field-input-control {
         color: var(--text-primary) !important;
-        caret-color: var(--text-primary) !important;
+        caret-color: #90caf9 !important; /* Light blue caret for visibility */
     }
 
-    ::ng-deep .mat-mdc-input-element {
-        background-color: transparent !important; /* Allow card bg to show through for outline, or input-bg if filled */
+    .mat-mdc-input-element {
+        background-color: transparent !important;
 
         &::placeholder {
             color: var(--text-secondary) !important;
+            opacity: 0.7 !important;
         }
     }
 
-    ::ng-deep .mat-mdc-select-value {
+    .mat-mdc-select-value {
         color: var(--text-primary) !important;
     }
 
-    ::ng-deep .mat-mdc-form-field-input-control {
-         color: var(--text-primary) !important; /* Force input color */
+    /* Textarea */
+    textarea.mat-mdc-input-element {
+        color: var(--text-primary) !important;
+    }
+
+    /* Form field hints and errors */
+    .mat-mdc-form-field-hint,
+    .mat-mdc-form-field-error {
+        color: var(--text-secondary) !important;
+    }
+
+    .mat-mdc-form-field-error {
+        color: #ef5350 !important;
+    }
+
+    /* Labels */
+    .mat-mdc-form-field-label,
+    label {
+        color: var(--text-secondary) !important;
     }
 
     /* Buttons */
-    ::ng-deep .mat-mdc-button,
-    ::ng-deep .mat-mdc-raised-button,
-    ::ng-deep .mat-mdc-icon-button {
+    .mat-mdc-button,
+    .mat-mdc-raised-button,
+    .mat-mdc-icon-button,
+    .mat-mdc-outlined-button {
         color: var(--text-primary) !important;
 
         &.mat-primary {
-             color: white !important; /* Keep primary buttons white text if colored bg */
+             /* Primary buttons should keep their gradient background from global styles */
+             color: white !important;
+             background: linear-gradient(90deg, #3f51b5, #5c6bc0) !important;
         }
         &.mat-accent {
              color: white !important;
@@ -154,23 +211,23 @@ body {
     }
 
     /* Dividers */
-    ::ng-deep .mat-divider {
+    .mat-divider {
         border-color: var(--border-color) !important;
     }
 
     /* Tooltips */
-    ::ng-deep .mat-tooltip {
-        background-color: var(--bg-secondary) !important;
-        color: var(--text-primary) !important;
+    .mat-tooltip {
+        background-color: #424242 !important;
+        color: #ffffff !important;
     }
 
     /* Button toggle */
-    ::ng-deep .mat-button-toggle-group {
+    .mat-button-toggle-group {
         background-color: var(--input-bg) !important;
         border-color: var(--border-color) !important;
     }
 
-    ::ng-deep .mat-button-toggle {
+    .mat-button-toggle {
         color: var(--text-primary) !important;
 
         &.mat-button-toggle-checked {
@@ -179,7 +236,7 @@ body {
     }
 
     /* Select dropdown panel */
-    ::ng-deep .mat-mdc-select-panel {
+    .mat-mdc-select-panel {
         background-color: var(--card-bg) !important;
 
         .mat-mdc-option {
@@ -190,9 +247,73 @@ body {
             }
 
             &.mdc-list-item--selected {
-                 background-color: rgba(63, 81, 181, 0.2) !important; /* Visibly selected */
+                 background-color: rgba(63, 81, 181, 0.2) !important;
             }
         }
+    }
+
+    /* Table */
+    .mat-mdc-table {
+        background-color: var(--card-bg) !important;
+        color: var(--text-primary) !important;
+    }
+
+    .mat-mdc-header-cell {
+        color: var(--text-primary) !important;
+        font-weight: 600 !important;
+    }
+
+    .mat-mdc-cell {
+        color: var(--text-primary) !important;
+    }
+
+    .mat-mdc-row:hover {
+        background-color: var(--bg-secondary) !important;
+    }
+
+    /* Spinner */
+    .mat-mdc-progress-spinner circle {
+        stroke: var(--text-primary) !important;
+    }
+
+    /* Chips */
+    .mat-mdc-chip {
+        background-color: var(--bg-secondary) !important;
+        color: var(--text-primary) !important;
+    }
+
+    /* Additional text elements */
+    h1, h2, h3, h4, h5, h6, p, span, div {
+        color: inherit;
+    }
+}
+
+/* Global dark mode overrides (outside .dark-mode for CDK overlays) */
+.dark-mode ~ .cdk-overlay-container,
+.dark-mode .cdk-overlay-container {
+    .mat-mdc-select-panel {
+        background-color: #2d2d2d !important;
+
+        .mat-mdc-option {
+            color: #e8e8e8 !important;
+
+            &:hover {
+                background-color: #3d3d3d !important;
+            }
+        }
+    }
+
+    .mat-mdc-menu-panel {
+        background-color: #2d2d2d !important;
+
+        .mat-mdc-menu-item {
+            color: #e8e8e8 !important;
+        }
+    }
+
+    .mat-mdc-dialog-container {
+        background-color: #2d2d2d !important;
+        color: #e8e8e8 !important;
     }
 }
 

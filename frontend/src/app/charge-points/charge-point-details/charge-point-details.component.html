@@ -1,0 +1,179 @@
+<div class="page-container">
+    <div class="header">
+        <button mat-icon-button (click)="onBack()" class="back-button">
+            <mat-icon>arrow_back</mat-icon>
+        </button>
+        <h1>{{ chargePoint?.title || 'Laddstation' }}</h1>
+    </div>
+
+    @if (chargePoint) {
+        <div class="details-content">
+            <div class="info-section">
+
+                @if (chargePoint.hasImage) {
+                    <div class="image-container">
+                         <img [src]="getImageUrl()" alt="Laddstation" />
+                    </div>
+                }
+
+                <div class="info-grid">
+                    <div class="info-item">
+                        <mat-icon>location_on</mat-icon>
+                        <div>
+                            <h3>Adress</h3>
+                            <p>{{ chargePoint.address1 }}</p>
+                            @if (chargePoint.address2) { <p>{{ chargePoint.address2 }}</p> }
+                            <p>{{ chargePoint.postalCode }} {{ chargePoint.city }}</p>
+                            <p>{{ chargePoint.country }}</p>
+                        </div>
+                    </div>
+
+                    <div class="info-item">
+                        <mat-icon>ev_station</mat-icon>
+                        <div>
+                            <h3>Kapacitet</h3>
+                            <p>{{ chargePoint.capacity }} kW</p>
+                        </div>
+                    </div>
+
+                    @if (chargePoint.numberOfChargePoints) {
+                        <div class="info-item">
+                            <mat-icon>tag</mat-icon>
+                            <div>
+                                <h3>Antal platser</h3>
+                                <p>{{ chargePoint.numberOfChargePoints }}</p>
+                            </div>
+                        </div>
+                    }
+
+                    @if (chargePoint.comments) {
+                        <div class="info-item">
+                            <mat-icon>info</mat-icon>
+                            <div>
+                                <h3>Info</h3>
+                                <p>{{ chargePoint.comments }}</p>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+
+            <div class="comments-section-wrapper">
+                <div class="stats-container">
+                    <div class="stat">
+                        <mat-icon class="stat-icon">comment</mat-icon>
+                        <span class="stat-value">{{ stats.totalComments }}</span>
+                        <span class="stat-label">kommentarer</span>
+                    </div>
+                    <div class="stat upvote">
+                        <mat-icon class="stat-icon">thumb_up</mat-icon>
+                        <span class="stat-value">{{ stats.upVotes }}</span>
+                        <span class="stat-label">positiva</span>
+                    </div>
+                    <div class="stat downvote">
+                        <mat-icon class="stat-icon">thumb_down</mat-icon>
+                        <span class="stat-value">{{ stats.downVotes }}</span>
+                        <span class="stat-label">negativa</span>
+                    </div>
+                </div>
+
+                <!-- Add Comment Form -->
+                <mat-card class="add-comment-card">
+                    <mat-card-header>
+                        <mat-card-title>Lägg till kommentar</mat-card-title>
+                    </mat-card-header>
+                    <mat-card-content>
+                        <mat-form-field appearance="outline" class="full-width">
+                            <mat-label>Din kommentar</mat-label>
+                            <textarea
+                                matInput
+                                [(ngModel)]="newComment"
+                                rows="3"></textarea>
+                        </mat-form-field>
+
+                        <div class="vote-buttons">
+                            <button
+                                mat-raised-button
+                                [class.selected]="selectedVote === VoteType.UpVote"
+                                (click)="selectVote(VoteType.UpVote)"
+                                class="vote-button upvote-button">
+                                <mat-icon>thumb_up</mat-icon>
+                                Rekommenderar
+                            </button>
+                            <button
+                                mat-raised-button
+                                [class.selected]="selectedVote === VoteType.DownVote"
+                                (click)="selectVote(VoteType.DownVote)"
+                                class="vote-button downvote-button">
+                                <mat-icon>thumb_down</mat-icon>
+                                Rekommenderar ej
+                            </button>
+                        </div>
+
+                        <button
+                            mat-raised-button
+                            color="primary"
+                            (click)="onSubmit()"
+                            [disabled]="selectedVote === null || isSaving"
+                            class="submit-button">
+                            @if (isSaving) {
+                                <span>Sparar...</span>
+                            } @else {
+                                <span>Lägg till kommentar</span>
+                            }
+                        </button>
+                    </mat-card-content>
+                </mat-card>
+
+                <!-- Comments List -->
+                <div class="comments-section">
+                    <h3>Kommentarer</h3>
+
+                    @if (isLoading) {
+                        <div class="loading">Laddar kommentarer...</div>
+                    } @else if (comments.length === 0) {
+                        <div class="no-comments">
+                            <mat-icon>chat_bubble_outline</mat-icon>
+                            <p>Inga kommentarer än. Var först med att dela din erfarenhet!</p>
+                        </div>
+                    } @else {
+                        @for (comment of comments; track comment.id) {
+                            <mat-card class="comment-card">
+                                <mat-card-content>
+                                    <div class="comment-header">
+                                        <div class="vote-indicator" [class.upvote]="comment.vote === VoteType.UpVote" [class.downvote]="comment.vote === VoteType.DownVote">
+                                            @if (comment.vote === VoteType.UpVote) {
+                                                <mat-icon>thumb_up</mat-icon>
+                                            } @else {
+                                                <mat-icon>thumb_down</mat-icon>
+                                            }
+                                        </div>
+                                        <div class="comment-meta">
+                                            <span class="comment-date">{{ formatDate(comment.createdAt) }}</span>
+                                        </div>
+                                        @if (authService.isAuthenticated()) {
+                                            <button
+                                                mat-icon-button
+                                                (click)="deleteComment(comment)"
+                                                matTooltip="Ta bort kommentar"
+                                                class="delete-button">
+                                                <mat-icon>delete</mat-icon>
+                                            </button>
+                                        }
+                                    </div>
+                                    @if (comment.comment) {
+                                        <p class="comment-text">{{ comment.comment }}</p>
+                                    }
+                                </mat-card-content>
+                            </mat-card>
+                        }
+                    }
+                </div>
+            </div>
+        </div>
+    } @else {
+        <div class="loading-page">
+            <mat-spinner></mat-spinner>
+        </div>
+    }
+</div>

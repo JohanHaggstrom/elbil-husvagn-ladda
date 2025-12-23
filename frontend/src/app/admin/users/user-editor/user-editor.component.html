@@ -5,31 +5,54 @@
                 <button mat-icon-button (click)="onCancel()" class="back-button">
                     <mat-icon>arrow_back</mat-icon>
                 </button>
-                <mat-card-title>Ändra lösenord</mat-card-title>
+                <mat-card-title>Lägg till ny användare</mat-card-title>
             </div>
         </mat-card-header>
 
         <mat-card-content>
-            <form [formGroup]="form" (ngSubmit)="changePassword()">
+            <form [formGroup]="form" (ngSubmit)="onSubmit()">
                 <mat-form-field appearance="outline" class="full-width">
-                    <mat-label>Gamla lösenordet</mat-label>
+                    <mat-label>Användarnamn</mat-label>
                     <input
                         matInput
-                        type="password"
-                        formControlName="oldPassword"
+                        formControlName="username"
                     />
-                    @if (form.get('oldPassword')?.invalid &&
-                    form.get('oldPassword')?.touched) {
-                    <mat-error>Lösenord är obligatoriskt</mat-error>
+                    @if (form.get('username')?.invalid && form.get('username')?.touched)
+                    {
+                    <mat-error>{{ usernameError }}</mat-error>
                     }
                 </mat-form-field>
 
                 <mat-form-field appearance="outline" class="full-width">
-                    <mat-label>Nya lösenordet</mat-label>
+                    <mat-label>Email</mat-label>
+                    <input
+                        matInput
+                        type="email"
+                        formControlName="email"
+                    />
+                    @if (form.get('email')?.invalid && form.get('email')?.touched) {
+                    <mat-error>{{ emailError }}</mat-error>
+                    }
+                </mat-form-field>
+
+                <mat-form-field appearance="outline" class="full-width">
+                    <mat-label>Roll</mat-label>
+                    <mat-select formControlName="role">
+                        @for (role of roles; track role) {
+                        <mat-option [value]="role">{{ role }}</mat-option>
+                        }
+                    </mat-select>
+                    @if (form.get('role')?.invalid && form.get('role')?.touched) {
+                    <mat-error>Roll är obligatorisk</mat-error>
+                    }
+                </mat-form-field>
+
+                <mat-form-field appearance="outline" class="full-width">
+                    <mat-label>Lösenord</mat-label>
                     <input
                         matInput
                         [type]="hidePassword ? 'password' : 'text'"
-                        formControlName="newPassword"
+                        formControlName="password"
                     />
                     <button
                         type="button"
@@ -43,15 +66,15 @@
                             hidePassword ? "visibility_off" : "visibility"
                         }}</mat-icon>
                     </button>
-                    @if (form.get('newPassword')?.invalid &&
-                    form.get('newPassword')?.touched) {
-                    <mat-error>Lösenord är obligatoriskt</mat-error>
+                    @if (form.get('password')?.invalid && form.get('password')?.touched)
+                    {
+                    <mat-error>{{ passwordError }}</mat-error>
                     }
                 </mat-form-field>
 
                 <app-password-strength-indicator
-                    [password]="form.get('newPassword')?.value || ''"
-                    (validityChange)="isNewPasswordValid = $event"
+                    [password]="form.get('password')?.value || ''"
+                    (validityChange)="isPasswordValid = $event"
                 ></app-password-strength-indicator>
 
                 <mat-form-field appearance="outline" class="full-width">
@@ -75,31 +98,28 @@
                     </button>
                     @if (form.get('confirmPassword')?.invalid &&
                     form.get('confirmPassword')?.touched) {
-                    <mat-error>{{ getConfirmPasswordError() }}</mat-error>
+                    <mat-error>{{ confirmPasswordError }}</mat-error>
                     }
                 </mat-form-field>
 
                 <div class="actions">
-
                     <button
                         mat-raised-button
                         color="primary"
                         type="submit"
                         [disabled]="
-                            isChangingPassword ||
-                            !isNewPasswordValid ||
-                            form.get('oldPassword')?.invalid ||
-                            form.get('confirmPassword')?.invalid ||
-                            form.get('newPassword')?.value !==
-                                form.get('confirmPassword')?.value
+                            isSubmitting ||
+                            !isPasswordValid ||
+                            form.invalid ||
+                            form.get('password')?.value !== form.get('confirmPassword')?.value
                         "
                     >
-                        @if (isChangingPassword) {
+                        @if (isSubmitting) {
                         <mat-spinner
                             diameter="20"
                             style="display: inline-block; margin-right: 8px"
                         ></mat-spinner>
-                        Uppdaterar... } @else { Byt lösenord }
+                        Skapar... } @else { Skapa användare }
                     </button>
                 </div>
             </form>
