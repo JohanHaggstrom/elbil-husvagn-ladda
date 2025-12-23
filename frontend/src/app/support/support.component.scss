@@ -1,0 +1,152 @@
+.support-container {
+    padding: 16px;
+    display: flex;
+    justify-content: center;
+    min-height: calc(100vh - 64px);
+    background-color: var(--bg-secondary);
+}
+
+.support-card {
+    width: 100%;
+    max-width: 600px;
+    margin-top: 16px;
+    background-color: var(--card-bg);
+    color: var(--text-primary);
+}
+
+.header-content {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 16px;
+
+    mat-card-title {
+        margin: 0;
+        font-size: 1.5rem;
+        color: var(--text-primary);
+    }
+
+    .back-button {
+         color: var(--text-primary);
+    }
+}
+
+.section {
+    padding: 16px 0;
+
+    h3 {
+        margin-top: 0;
+        margin-bottom: 16px;
+        font-size: 1.2rem;
+        color: var(--text-primary);
+    }
+
+    p {
+        line-height: 1.6;
+        margin-bottom: 12px;
+        color: var(--text-secondary);
+    }
+}
+
+.support-options {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.support-option {
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    flex: 1;
+    min-width: 200px;
+    background-color: var(--bg-secondary);
+
+    .icon-wrapper {
+        background-color: var(--card-bg);
+        color: var(--text-primary);
+        border-radius: 50%;
+        width: 64px;
+        height: 64px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 16px;
+        border: 1px solid var(--border-color);
+
+        .payment-icon {
+            font-size: 32px;
+            width: 32px;
+            height: 32px;
+            color: var(--text-primary);
+        }
+    }
+
+    h4 {
+        margin: 0 0 8px 0;
+        font-size: 1.1rem;
+        color: var(--text-primary);
+    }
+
+    .swish-number {
+        font-weight: 500;
+        font-size: 1.2rem;
+        margin-bottom: 16px;
+        letter-spacing: 1px;
+        color: var(--text-primary);
+    }
+
+    .qr-code-container {
+        margin-bottom: 16px;
+        padding: 16px;
+        background-color: white; /* QR codes need white background to be scannable */
+        border-radius: 8px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        max-width: 100%;
+
+        .qr-code {
+            width: 100%;
+            max-width: 300px; /* Increased size */
+            height: auto; /* Maintain aspect ratio */
+            display: block;
+            object-fit: contain;
+        }
+    }
+}
+
+.contact-links {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+
+    .contact-link {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        text-decoration: none;
+        color: var(--text-primary);
+        padding: 8px;
+        border-radius: 8px;
+        transition: background-color 0.2s;
+
+        &:hover {
+            background-color: var(--bg-secondary);
+        }
+
+        mat-icon {
+            color: var(--text-primary);
+        }
+    }
+}
+
+mat-divider {
+    border-top-color: var(--border-color);
+    margin: 8px 0;
+}

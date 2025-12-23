@@ -13,6 +13,10 @@
                     <mat-icon>feedback</mat-icon>
                     <span>Ge feedback</span>
                 </button>
+                <button mat-menu-item (click)="navigateToSupport()">
+                    <mat-icon>favorite</mat-icon>
+                    <span>Om & Stöd</span>
+                </button>
                 @if (authService.isAuthenticated()) {
                 <mat-divider></mat-divider>
                 <button mat-menu-item (click)="navigateToAdminFeedback()">

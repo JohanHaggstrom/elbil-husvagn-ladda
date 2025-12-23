@@ -1,0 +1,79 @@
+<div class="support-container">
+    <mat-card class="support-card">
+        <mat-card-header>
+            <div class="header-content">
+                <button mat-icon-button (click)="goBack()" class="back-button">
+                    <mat-icon>arrow_back</mat-icon>
+                </button>
+                <mat-card-title>Om & Stöd ⛺</mat-card-title>
+            </div>
+        </mat-card-header>
+
+        <mat-card-content>
+            <section class="section">
+                <h3>Om utvecklaren</h3>
+                <p>
+                    Hej! Jag heter Johan och när jag skaffade elbil så upplevde jag att det finns
+                    många bra appar för att hitta och navigera till laddstationer.
+
+                    <br/>
+                    Men, när man hänger på en husvagn så blir det lite knepigare att hitta laddstationer som
+                    faktiskt är smidiga att använda. Har man ett stort ekipage så är det inte alltid
+                    lika enkelt att tråckla sig in på trånga laddstationer. Kanske det ibland kan
+                    gå, men oftast är det inte helt smidigt.
+                    <br/>
+                    Därför började jag bygga denna webbappen för att samla de där supersmidiga
+                    laddstationerna på en plats så att det blir lättare för oss alla att hitta dom.
+                </p>
+
+                <p>
+                    Jag bygger denna på min fritid och hostar den själv - vill du stödja mig så får
+                    du gärna göra det genom att "bjuda mig på en kaffe", eller genom att föreslå
+                    en riktigt bra laddstation.
+                </p>
+
+                <p>
+                    Vi ses därute på vägarna!
+                </p>
+            </section>
+
+            <mat-divider></mat-divider>
+
+            <section class="section">
+                <h3>Vill du bjuda på en kaffe? ☕</h3>
+                <div class="support-options">
+                    <div class="support-option swish-card">
+
+                        <div class="qr-code-container">
+                             <img src="assets/images/swish-QR-small.png" alt="Swish QR Code" class="qr-code" loading="lazy">
+                        </div>
+                    </div>
+
+                    <!-- Placeholder for Buy Me A Coffee or other services -->
+                    <!--
+                    <div class="support-option">
+                        <div class="icon-wrapper">
+                             <mat-icon class="payment-icon">coffee</mat-icon>
+                        </div>
+                        <h4>Buy Me a Coffee</h4>
+                        <button mat-raised-button color="accent">Bjud på en kaffe</button>
+                    </div>
+                    -->
+                </div>
+            </section>
+
+            <mat-divider></mat-divider>
+
+            <section class="section">
+                <h3>Kontakt</h3>
+                <div class="contact-links">
+                    <a href="mailto:johan.haggstrom@gmail.com" class="contact-link">
+                        <mat-icon>email</mat-icon>
+                        <span>johan.haggstrom@gmail.com</span>
+                    </a>
+                    <!-- Add Real GitHub or other links if available -->
+                </div>
+            </section>
+        </mat-card-content>
+    </mat-card>
+</div>

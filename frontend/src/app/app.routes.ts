@@ -12,6 +12,7 @@ import { ChargePointEditComponent } from './charge-points/charge-point-edit/char
 import { ChargePointSuggestComponent } from './charge-points/charge-point-suggest/charge-point-suggest.component';
 import { FeedbackFormComponent } from './feedback-form/feedback-form.component';
 import { HomeComponent } from './home/home.component';
+import { SupportComponent } from './support/support.component';
 import { ChangePasswordComponent } from './users/change-password/change-password.component';
 import { UserListComponent } from './users/user-list/user-list.component';
 import { UserProfileComponent } from './users/user-profile/user-profile.component';
@@ -28,6 +29,10 @@ export const routes: Routes = [
     {
         path: 'feedback',
         component: FeedbackFormComponent,
+    },
+    {
+        path: 'support',
+        component: SupportComponent,
     },
     {
         path: 'user',

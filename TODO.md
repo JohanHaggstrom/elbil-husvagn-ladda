@@ -4,7 +4,7 @@
 
 -   [x] **Byta namn**: Ändra applikationens namn till "Elbil-husvagn-ladda" (EHL).
 -   [ ] **Reklam**: Lägga till reklam på huvudsidan. Så att man kan få in pengar?
--   [ ] **Patreon-ish**: Lägga till en Patreon-ish funktion där man kan stödja utvecklingen.
+-   [x] **Patreon-ish**: Lägga till en Patreon-ish funktion där man kan stödja utvecklingen.
 
 ## Infrastruktur & DevOps
 
@@ -17,7 +17,7 @@
 ## Backend (.NET)
 
 -   [x] **Databas**: Byta ut InMemory-databasen mot en riktig databas (t.ex. PostgreSQL eller SQL Server).
--   [ ] **Data-modell**: Utöka modellen för laddstationer (fler fält, riktiga koordinater).
+-   [x] **Data-modell**: Utöka modellen för laddstationer (fler fält, riktiga koordinater).
 -   [x] **API-säkerhet (Läs)**: Implementera API-nyckel för att läsa laddstationer (konfigureras via miljövariabler).
 -   [x] **Autentisering (Skriv)**: Implementera Login-funktionalitet för administrativa åtgärder.
 -   [x] **Redigering**: Möjlighet att redigera laddstationer (kräver inloggning).
@@ -30,7 +30,7 @@
     -   [x] Möjlighet att lägga till kommentarer på en punkt.
     -   [x] Möjlighet att ge tumme upp/ner på en punkt.
 -   [x] **Användarhantering**: Möjlighet att hantera admin användare. Kunna byta psw, ta bort användare, etc. Spara i ny tabell. Obs saltat.
--   [ ] **Backup**: Möjlighet att backup laddstationer till en json-fil.
+-   [x] **Backup**: Möjlighet att backup laddstationer till en json-fil.
 -   [ ] **Restore**: Möjlighet att restore laddstationer från en json-fil.
 
 ## Frontend (Angular)
@@ -55,7 +55,7 @@
     -   Flytta `apiKey` och `apiUrl` från `environment.ts` till runtime config
     -   Detta gör att samma Docker-image kan användas i olika miljöer
 -   [ ] **Byt till riktig Captcha**: Byt till riktig Captcha, när det stöder Angular 21.
--   [ ] **Exportera**: Möjlighet att exportera laddstationer till en json-fil.
+-   [x] **Exportera**: Möjlighet att exportera laddstationer till en json-fil.
 -   [ ] **Importera**: Möjlighet att importera laddstationer från en json-fil.
 
 ## Dokumentation

@@ -83,6 +83,10 @@ export class HomeComponent implements OnInit {
         this.router.navigate(['/feedback']);
     }
 
+    navigateToSupport(): void {
+        this.router.navigate(['/support']);
+    }
+
     navigateToAdminFeedback(): void {
         this.router.navigate(['/admin/feedback']);
     }
