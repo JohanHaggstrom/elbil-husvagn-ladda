@@ -7,23 +7,24 @@ import {
     Validators,
 } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
-import { MatDialogModule, MatDialogRef } from '@angular/material/dialog';
+import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { ActivatedRoute, Router } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
-import { UserService } from '../../services/user.service';
-import { PasswordStrengthIndicatorComponent } from '../password-strength-indicator/password-strength-indicator.component';
+import { PasswordStrengthIndicatorComponent } from '../../../dialogs/password-strength-indicator/password-strength-indicator.component';
+import { UserService } from '../../../services/user.service';
 
 @Component({
-    selector: 'app-add-user-dialog',
+    selector: 'app-user-editor',
     standalone: true,
     imports: [
         CommonModule,
-        MatDialogModule,
+        MatCardModule,
         MatButtonModule,
         MatFormFieldModule,
         MatInputModule,
@@ -33,13 +34,14 @@ import { PasswordStrengthIndicatorComponent } from '../password-strength-indicat
         MatProgressSpinnerModule,
         PasswordStrengthIndicatorComponent,
     ],
-    templateUrl: './add-user-dialog.component.html',
-    styleUrl: './add-user-dialog.component.scss',
+    templateUrl: './user-editor.component.html',
+    styleUrl: './user-editor.component.scss',
 })
-export class AddUserDialogComponent {
+export class UserEditorComponent {
     private userService = inject(UserService);
     private snackBar = inject(MatSnackBar);
-    private dialogRef = inject(MatDialogRef<AddUserDialogComponent>);
+    private router = inject(Router);
+    private route = inject(ActivatedRoute);
     private fb = inject(FormBuilder);
 
     form: FormGroup;
@@ -104,7 +106,7 @@ export class AddUserDialogComponent {
             this.form.invalid ||
             !this.isPasswordValid ||
             this.form.get('password')?.value !==
-                this.form.get('confirmPassword')?.value
+            this.form.get('confirmPassword')?.value
         ) {
             this.snackBar.open('Vänligen fyll i alla fält korrekt', 'Stäng', {
                 duration: 3000,
@@ -117,13 +119,13 @@ export class AddUserDialogComponent {
         const { confirmPassword, ...userData } = this.form.value;
 
         try {
-            const user = await firstValueFrom(
+            await firstValueFrom(
                 this.userService.createUser(userData)
             );
             this.snackBar.open('Användare skapad framgångsrikt', 'Stäng', {
                 duration: 3000,
             });
-            this.dialogRef.close(user);
+            this.router.navigate(['..'], { relativeTo: this.route });
         } catch (error: any) {
             const errorMsg =
                 error.error?.message ||
@@ -135,6 +137,6 @@ export class AddUserDialogComponent {
     }
 
     onCancel(): void {
-        this.dialogRef.close();
+        this.router.navigate(['..'], { relativeTo: this.route });
     }
 }

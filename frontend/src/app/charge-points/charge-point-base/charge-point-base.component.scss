@@ -1,9 +1,45 @@
+
+.page-container {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 2rem;
+    min-height: 100vh;
+    background: var(--bg-secondary);
+}
+
+.card {
+    max-width: 800px;
+    width: 100%;
+    margin-top: 2rem;
+    background-color: var(--card-bg);
+    color: var(--text-primary);
+
+    mat-card-title {
+        color: var(--text-primary);
+    }
+}
+
+.header-content {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    width: 100%;
+    margin-bottom: 1rem;
+
+    button {
+        color: var(--text-primary);
+    }
+}
+
+.back-button {
+    margin-right: -8px;
+}
+
 .edit-form {
     display: flex;
     flex-direction: column;
     gap: 0.5rem;
-    min-width: 400px;
-    padding-top: 1rem;
 
     .row {
         display: flex;
@@ -14,7 +50,7 @@
         }
     }
 
-    mat-form-field {
+    .full-width {
         width: 100%;
     }
 
@@ -25,13 +61,13 @@
             height: 300px;
             width: 100%;
             border-radius: 4px;
-            border: 1px solid #ccc;
+            border: 1px solid var(--border-color);
         }
 
         .help-text {
             margin: 0.5rem 0 0 0;
             font-size: 0.8rem;
-            color: #666;
+            color: var(--text-secondary);
             font-style: italic;
         }
     }
@@ -39,12 +75,12 @@
     .image-section {
         margin-top: 1rem;
         padding-top: 1rem;
-        border-top: 1px solid #e0e0e0;
+        border-top: 1px solid var(--divider-color, #e0e0e0);
 
         h3 {
             margin: 0 0 1rem 0;
             font-size: 1.1rem;
-            color: rgba(0, 0, 0, 0.87);
+            color: var(--text-primary);
         }
 
         .current-image,
@@ -86,7 +122,7 @@
             .help-text {
                 margin: 0;
                 font-size: 0.8rem;
-                color: #666;
+                color: var(--text-secondary);
             }
         }
 
@@ -102,11 +138,27 @@
     }
 }
 
-@media (max-width: 600px) {
-    .edit-form {
-        min-width: unset;
-        width: 100%;
+.actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+    margin-top: 1.5rem;
+}
 
+@media (max-width: 600px) {
+    .page-container {
+        padding: 0;
+        background: var(--card-bg);
+    }
+
+    .card {
+        margin-top: 0;
+        box-shadow: none;
+        border-radius: 0;
+        min-height: 100vh;
+    }
+
+    .edit-form {
         .row {
             flex-direction: column;
             gap: 0.5rem;

@@ -1,75 +1,86 @@
-<h2 mat-dialog-title>Min Profil ({{ role }})</h2>
-<mat-dialog-content>
-    @if (isLoadingProfile) {
-    <div
-        style="
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 200px;
-        "
-    >
-        <mat-spinner diameter="50"></mat-spinner>
-    </div>
-    } @else if (profileError) {
-    <p class="error-message">{{ profileError }}</p>
-    <button mat-raised-button color="primary" (click)="loadUserProfile()">
-        Försök igen
-    </button>
-    } @else {
-    <div class="profile-section">
-        <h3>Användarinformation</h3>
-        <div class="info-row">
-            <span class="label">Användarnamn:</span>
-            <span class="value">{{ username }}</span>
-        </div>
-        <div class="info-row">
-            <span class="label">Email:</span>
-            <span class="value">{{ email }}</span>
-        </div>
-    </div>
-    @if (isEditingProfile) {
-    <form (ngSubmit)="saveProfile()">
-        <mat-form-field appearance="outline" class="form-field">
-            <mat-label>Användarnamn</mat-label>
-            <input matInput [(ngModel)]="editUsername" name="editUsername" />
-        </mat-form-field>
+<div class="page-container">
+    <mat-card class="card">
+        <mat-card-header>
+            <div class="header-content">
+                <button mat-icon-button (click)="onCancel()" class="back-button">
+                    <mat-icon>arrow_back</mat-icon>
+                </button>
+                <mat-card-title>Min Profil ({{ role }})</mat-card-title>
+            </div>
+        </mat-card-header>
 
-        <mat-form-field appearance="outline" class="form-field">
-            <mat-label>Email</mat-label>
-            <input
-                matInput
-                type="email"
-                [(ngModel)]="editEmail"
-                name="editEmail"
-            />
-        </mat-form-field>
-    </form>
-    } }
-</mat-dialog-content>
+        <mat-card-content>
+            @if (isLoadingProfile) {
+            <div
+                style="
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    min-height: 200px;
+                "
+            >
+                <mat-spinner diameter="50"></mat-spinner>
+            </div>
+            } @else if (profileError) {
+            <p class="error-message">{{ profileError }}</p>
+            <button mat-raised-button color="primary" (click)="loadUserProfile()">
+                Försök igen
+            </button>
+            } @else {
+            <div class="profile-section">
+                <h3>Användarinformation</h3>
+                <div class="info-row">
+                    <span class="label">Användarnamn:</span>
+                    <span class="value">{{ username }}</span>
+                </div>
+                <div class="info-row">
+                    <span class="label">Email:</span>
+                    <span class="value">{{ email }}</span>
+                </div>
+            </div>
+            @if (isEditingProfile) {
+            <form (ngSubmit)="saveProfile()">
+                <mat-form-field appearance="outline" class="full-width">
+                    <mat-label>Användarnamn</mat-label>
+                    <input matInput [(ngModel)]="editUsername" name="editUsername" />
+                </mat-form-field>
 
-<mat-dialog-actions align="end">
-    <button mat-button (click)="onCancel()" [disabled]="isUpdatingProfile">
-        Avbryt
-    </button>
-    @if (!isEditingProfile) {
-    <button mat-raised-button color="primary" (click)="toggleEditProfile()">
-        Redigera
-    </button>
-    } @else {
-    <button
-        mat-raised-button
-        color="primary"
-        type="submit"
-        [disabled]="isUpdatingProfile"
-        (click)="saveProfile()"
-    >
-        @if (isUpdatingProfile) {
-        <mat-spinner
-            diameter="20"
-            style="display: inline-block; margin-right: 8px"
-        ></mat-spinner>
-        Sparar... } @else { Spara ändringar }
-    </button>
-    }
-</mat-dialog-actions>
+                <mat-form-field appearance="outline" class="full-width">
+                    <mat-label>Email</mat-label>
+                    <input
+                        matInput
+                        type="email"
+                        [(ngModel)]="editEmail"
+                        name="editEmail"
+                    />
+                </mat-form-field>
+            </form>
+            }
+
+            <div class="actions">
+
+                @if (!isEditingProfile) {
+                <button mat-raised-button color="primary" (click)="toggleEditProfile()">
+                    Redigera
+                </button>
+                } @else {
+                <button
+                    mat-raised-button
+                    color="primary"
+                    type="submit"
+                    [disabled]="isUpdatingProfile"
+                    (click)="saveProfile()"
+                >
+                    @if (isUpdatingProfile) {
+                    <mat-spinner
+                        diameter="20"
+                        style="display: inline-block; margin-right: 8px"
+                    ></mat-spinner>
+                    Sparar... } @else { Spara ändringar }
+                </button>
+                }
+            </div>
+            }
+        </mat-card-content>
+    </mat-card>
+</div>

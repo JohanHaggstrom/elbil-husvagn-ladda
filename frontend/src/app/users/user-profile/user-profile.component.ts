@@ -2,12 +2,13 @@ import { CommonModule } from '@angular/common';
 import { Component, OnInit, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
-import { MatDialogModule, MatDialogRef } from '@angular/material/dialog';
+import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { Router } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
 import { AuthService } from '../../auth/auth.service';
 import { UserService } from '../../services/user.service';
@@ -18,7 +19,7 @@ import { UserService } from '../../services/user.service';
     imports: [
         CommonModule,
         FormsModule,
-        MatDialogModule,
+        MatCardModule,
         MatFormFieldModule,
         MatInputModule,
         MatButtonModule,
@@ -32,7 +33,7 @@ export class UserProfileComponent implements OnInit {
     private userService = inject(UserService);
     private authService = inject(AuthService);
     private snackBar = inject(MatSnackBar);
-    private dialogRef = inject(MatDialogRef<UserProfileComponent>);
+    private router = inject(Router);
 
     // Profile info
     username: string = '';
@@ -122,7 +123,7 @@ export class UserProfileComponent implements OnInit {
     }
 
     onCancel(): void {
-        this.dialogRef.close();
+        this.router.navigate(['/']);
     }
 
     getRoleBadgeClass(): string {

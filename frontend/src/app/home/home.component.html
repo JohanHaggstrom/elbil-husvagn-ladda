@@ -11,7 +11,7 @@
             <mat-menu #appMenu="matMenu">
                 <button mat-menu-item (click)="navigateToFeedback()">
                     <mat-icon>feedback</mat-icon>
-                    <span>Rapportera issue/Föreslå förbättring</span>
+                    <span>Ge feedback</span>
                 </button>
                 @if (authService.isAuthenticated()) {
                 <mat-divider></mat-divider>
@@ -162,7 +162,7 @@
                         mat-mini-fab
                         matTooltip="Redigera"
                         color="accent"
-                        (click)="openEditDialog(item)"
+                        (click)="navigateToEdit(item)"
                     >
                         <mat-icon>edit</mat-icon>
                     </button>
@@ -203,9 +203,9 @@
         <div class="map-view">
             <app-map
                 [chargePoints]="filteredChargePoints"
-                (editChargePoint)="openEditDialog($event)"
+                (editChargePoint)="navigateToEdit($event)"
                 (deleteChargePoint)="deleteChargePoint($event)"
-                (viewComments)="openCommentsDialog($event)"
+                (viewComments)="navigateToDetails($event)"
             ></app-map>
         </div>
         }
@@ -220,7 +220,7 @@
                 ? 'Lägg till laddstation'
                 : 'Föreslå laddstation'
         "
-        (click)="openCreateDialog()"
+        (click)="navigateToCreate()"
     >
         <mat-icon>add</mat-icon>
     </button>

@@ -2,7 +2,6 @@ import { CommonModule } from '@angular/common';
 import { Component, OnInit, inject } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
-import { MatDialog } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -10,7 +9,6 @@ import { MatTableModule } from '@angular/material/table';
 import { Router } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
 import { AuthService } from '../../auth/auth.service';
-import { AddUserDialogComponent } from '../../dialogs/add-user-dialog/add-user-dialog.component';
 import { User, UserService } from '../../services/user.service';
 
 @Component({
@@ -32,7 +30,6 @@ export class UserListComponent implements OnInit {
     private authService = inject(AuthService);
     private snackBar = inject(MatSnackBar);
     private router = inject(Router);
-    private dialog = inject(MatDialog);
 
     users: User[] = [];
     isLoading = true;
@@ -119,13 +116,7 @@ export class UserListComponent implements OnInit {
         return new Date(createdAt).toLocaleDateString('sv-SE');
     }
 
-    openAddUserDialog(): void {
-        const dialogRef = this.dialog.open(AddUserDialogComponent);
-
-        dialogRef.afterClosed().subscribe((result) => {
-            if (result) {
-                this.loadUsers();
-            }
-        });
+    openAddUserPage(): void {
+        this.router.navigate(['admin', 'users', 'new']);
     }
 }

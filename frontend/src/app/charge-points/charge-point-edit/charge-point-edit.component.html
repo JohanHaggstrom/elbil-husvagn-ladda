@@ -1,0 +1,13 @@
+<app-charge-point-base
+  title="Redigera laddstation"
+  submitLabel="Spara"
+  [initialData]="initialData"
+  [chargePointId]="chargePointId"
+  [hasImage]="hasImage"
+  [showInstantImageUpload]="true"
+  [isUploadingImage]="isUploadingImage"
+  (formSubmit)="onSubmit($event)"
+  (uploadImage)="onUploadImage($event)"
+  (deleteImage)="onDeleteImage()"
+  (cancel)="onCancel()">
+</app-charge-point-base>
