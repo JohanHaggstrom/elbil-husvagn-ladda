@@ -58,7 +58,7 @@ export class UserProfileComponent implements OnInit {
 
         try {
             const response: any = await firstValueFrom(
-                this.userService.getUserByUsername('')
+                this.userService.getProfile()
             );
 
             this.username = response.username;

@@ -1,6 +1,7 @@
 import { HttpErrorResponse, HttpInterceptorFn } from '@angular/common/http';
 import { inject } from '@angular/core';
 import { catchError, retry, timer } from 'rxjs';
+import { AuthService } from '../auth/auth.service';
 import { ErrorService } from '../services/error.service';
 
 export const errorInterceptor: HttpInterceptorFn = (req, next) => {
@@ -22,8 +23,11 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
             }
         }),
         catchError((error: HttpErrorResponse) => {
-            // Don't show error for 401 (handled by auth interceptor)
-            if (error.status !== 401) {
+            if (error.status === 401) {
+                // 401 Unauthorized - Token expired or invalid
+                const authService = inject(AuthService); // Inject here to avoid circular dependency issues in construction
+                authService.logout();
+            } else {
                 errorService.handleError(error);
             }
             throw error;

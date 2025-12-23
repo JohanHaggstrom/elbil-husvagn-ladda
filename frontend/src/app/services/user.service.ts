@@ -22,7 +22,7 @@ export class UserService {
         return this.http.get<User[]>(`${this.apiUrl}/users`);
     }
 
-    getUserByUsername(username: string): Observable<User> {
+    getProfile(): Observable<User> {
         return this.http.get<User>(`${this.apiUrl}/account/profile`);
     }
 
