@@ -1,0 +1,49 @@
+services:
+  frontend:
+    # Replace <your-github-username> with your actual username, e.g. johanhaggstrom
+    # Ensure the repository name matches what is on GitHub (lowercase)
+    image: ghcr.io/${GITHUB_REPOSITORY_OWNER}/elbil-husvagn-ladda-frontend:latest
+    restart: always
+    environment:
+      - TZ=Europe/Stockholm
+    networks:
+      - app-network
+
+  backend:
+    image: ghcr.io/${GITHUB_REPOSITORY_OWNER}/elbil-husvagn-ladda-backend:latest
+    restart: always
+    environment:
+      - ConnectionStrings__DefaultConnection=Server=db;Database=charge_ev;User=root;Password=${DB_ROOT_PASSWORD};
+      - TZ=Europe/Stockholm
+    depends_on:
+      - db
+    networks:
+      - app-network
+
+  db:
+    image: mariadb:10.11
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+      MYSQL_DATABASE: charge_ev
+      TZ=Europe/Stockholm
+    volumes:
+      - db-data:/var/lib/mysql
+    networks:
+      - app-network
+
+  tunnel:
+    image: cloudflare/cloudflared:latest
+    restart: always
+    command: tunnel run
+    environment:
+      - TUNNEL_TOKEN=${TUNNEL_TOKEN}
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  db-data:
