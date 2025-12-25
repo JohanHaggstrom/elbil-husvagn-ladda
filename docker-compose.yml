@@ -4,6 +4,8 @@ services:
     # Ensure the repository name matches what is on GitHub (lowercase)
     image: ghcr.io/${GITHUB_REPOSITORY_OWNER}/elbil-husvagn-ladda-frontend:latest
     restart: always
+    ports:
+      - "8080:80"
     environment:
       - TZ=Europe/Stockholm
     networks:
@@ -26,7 +28,7 @@ services:
     environment:
       MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
       MYSQL_DATABASE: charge_ev
-      TZ=Europe/Stockholm
+      TZ: Europe/Stockholm
     volumes:
       - db-data:/var/lib/mysql
     networks:
@@ -46,4 +48,4 @@ networks:
     driver: bridge
 
 volumes:
-  db-data:
+  db-data: null
