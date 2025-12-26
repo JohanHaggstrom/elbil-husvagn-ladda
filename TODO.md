@@ -9,10 +9,10 @@
 ## Infrastruktur & DevOps
 
 -   [x] **Taskar**: Skapa task(ar) för att förenkla utvecklingen.
--   [ ] **Hosting**: Utreda hur applikationen ska hostas.
--   [ ] **HTTPS Strategi**: Planera för reverse proxy (t.ex. Nginx/Traefik) för SSL-terminering i produktion.
--   [ ] **Docker**: Skapa Dockerfiles för frontend och backend, samt en docker-compose för att köra allt lokalt.
--   [ ] **CI/CD**: Implementera CI/CD-pipeline för automatisk deployment.
+-   [x] **Hosting**: Utreda hur applikationen ska hostas.
+-   [x] **HTTPS Strategi**: Planera för reverse proxy (t.ex. Nginx/Traefik) för SSL-terminering i produktion.
+-   [x] **Docker**: Skapa Dockerfiles för frontend och backend, samt en docker-compose för att köra allt lokalt.
+-   [x] **CI/CD**: Implementera CI/CD-pipeline för automatisk deployment.
 
 ## Backend (.NET)
 
@@ -48,7 +48,7 @@
 -   [x] **Kunna enkelt föreslå en ny laddstation**: Lägg till möjlighet att kunna enkelt föreslå en ny laddstation. Med Captcha för att förhindra spam. Inklusive databas för det i backend.
 -   [ ] **Kunna lägga in ungefärlig förbrukning för ekipage**: Lägg till möjlighet att kunna lägga in ungefärlig förbrukning för ekipage. Inklusive databas för det i backend.
 -   [x] **Bild av laddstation**: Lägg till möjlighet att visa en bild av en laddstation.
--   [ ] **Runtime Config för Docker**: Implementera runtime configuration för API-nyckel i Docker
+-   [x] **Runtime Config för Docker**: Implementera runtime configuration för API-nyckel i Docker
     -   Skapa `app.initializer.ts` som läser `/assets/config.json` vid app-start
     -   Skapa `docker-entrypoint.sh` som genererar `config.json` från miljövariabler
     -   Uppdatera Dockerfile att använda entrypoint-scriptet

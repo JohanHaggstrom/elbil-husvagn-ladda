@@ -1,5 +1,5 @@
 export const environment = {
     production: true,
-    apiUrl: '/api',
+    apiUrl: '',
     apiKey: '' // TODO: Set via environment variable
 };

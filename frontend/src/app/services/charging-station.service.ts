@@ -28,7 +28,7 @@ export class ChargingStationService {
     private getHeaders() {
         return {
             headers: {
-                'X-API-Key': environment.apiKey
+                'X-API-Key': (window as any).__env?.apiKey || environment.apiKey
             }
         };
     }

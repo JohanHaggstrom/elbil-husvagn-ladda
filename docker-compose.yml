@@ -8,6 +8,7 @@ services:
       - "8080:80"
     environment:
       - TZ=Europe/Stockholm
+      - API_KEY=${API_KEY}
     networks:
       - app-network
 
@@ -17,6 +18,7 @@ services:
     environment:
       - ConnectionStrings__DefaultConnection=Server=db;Database=charge_ev;User=root;Password=${DB_ROOT_PASSWORD};
       - TZ=Europe/Stockholm
+      - ApiKey=${API_KEY}
     depends_on:
       - db
     networks:
