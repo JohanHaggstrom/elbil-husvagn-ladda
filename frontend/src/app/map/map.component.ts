@@ -31,8 +31,7 @@ import { ChargePointPopupComponent } from './charge-point-popup/charge-point-pop
     styleUrl: './map.component.scss',
 })
 export class MapComponent
-    implements OnInit, AfterViewInit, OnChanges, OnDestroy
-{
+    implements OnInit, AfterViewInit, OnChanges, OnDestroy {
     @Input() chargePoints: IdentifiedCaravanChargePoint[] = [];
     @Output() chargePointSelected =
         new EventEmitter<IdentifiedCaravanChargePoint>();
@@ -76,8 +75,11 @@ export class MapComponent
     }
 
     ngOnChanges(changes: SimpleChanges): void {
-        if (changes['chargePoints'] && !changes['chargePoints'].firstChange) {
-            this.addMarkers();
+        if (changes['chargePoints']) {
+            console.log('MapComponent: chargePoints changed', this.chargePoints.length);
+            if (this.map && this.markerClusterGroup) {
+                this.addMarkers();
+            }
         }
     }
 
@@ -125,10 +127,16 @@ export class MapComponent
     }
 
     private addMarkers(): void {
-        if (!this.map || !this.markerClusterGroup) return;
+        if (!this.map || !this.markerClusterGroup) {
+            console.log('MapComponent: Map not ready yet for markers');
+            return;
+        }
 
         // Clear existing markers
         this.markerClusterGroup.clearLayers();
+
+        console.log('MapComponent: Adding markers for', this.chargePoints.length, 'points');
+        let markersCount = 0;
 
         // Add marker for each charge point
         this.chargePoints.forEach((point) => {
@@ -144,8 +152,11 @@ export class MapComponent
                 });
 
                 this.markerClusterGroup.addLayer(marker);
+                markersCount++;
             }
         });
+
+        console.log('MapComponent: Successfully added', markersCount, 'markers');
 
         // Fit map to show all markers if there are any
         if (this.markerClusterGroup.getLayers().length > 0 && this.map) {
