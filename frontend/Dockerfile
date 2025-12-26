@@ -27,7 +27,11 @@ COPY nginx.conf /etc/nginx/conf.d/default.conf
 EXPOSE 80
 
 # Copy entrypoint script
-COPY entrypoint.sh /item/entrypoint.sh
-RUN chmod +x /item/entrypoint.sh
+# Install envsubst which is part of gettext package
+RUN apk add --no-cache gettext
 
-ENTRYPOINT ["/item/entrypoint.sh"]
+# Copy entrypoint script
+COPY entrypoint.sh /usr/local/bin/entrypoint.sh
+RUN chmod +x /usr/local/bin/entrypoint.sh
+
+ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
