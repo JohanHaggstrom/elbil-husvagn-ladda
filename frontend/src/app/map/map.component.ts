@@ -18,6 +18,7 @@ import {
 import { FormsModule } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
 import * as L from 'leaflet';
+(window as any).L = L;
 import 'leaflet.markercluster';
 import { firstValueFrom } from 'rxjs';
 import { IdentifiedCaravanChargePoint } from '../app.model';
@@ -42,7 +43,7 @@ export class MapComponent
     @Output() viewComments = new EventEmitter<IdentifiedCaravanChargePoint>();
 
     private map: L.Map | null = null;
-    private markerClusterGroup: L.MarkerClusterGroup | null = null;
+    private markerClusterGroup: any = null;
     private userLocationMarker: L.Marker | null = null;
     private http = inject(HttpClient);
     private authService = inject(AuthService);
@@ -105,7 +106,9 @@ export class MapComponent
                     '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
             }
         );
-        this.osmLayer.addTo(this.map);
+        if (this.osmLayer && this.map) {
+            this.osmLayer.addTo(this.map);
+        }
 
         // Add satellite layer (USGS Satellite)
         this.satelliteLayer = L.tileLayer(
@@ -117,13 +120,15 @@ export class MapComponent
         );
 
         // Initialize marker cluster group
-        this.markerClusterGroup = L.markerClusterGroup({
+        this.markerClusterGroup = (L as any).markerClusterGroup({
             chunkedLoading: true,
             spiderfyOnMaxZoom: true,
             showCoverageOnHover: false,
             zoomToBoundsOnClick: true,
         });
-        this.map.addLayer(this.markerClusterGroup);
+        if (this.map && this.markerClusterGroup) {
+            this.map.addLayer(this.markerClusterGroup);
+        }
     }
 
     private addMarkers(): void {
