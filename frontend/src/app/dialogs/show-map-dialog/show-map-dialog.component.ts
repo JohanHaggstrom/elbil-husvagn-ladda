@@ -1,7 +1,8 @@
 import { AfterViewInit, Component, Inject } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
-import * as L from 'leaflet';
+import type { LatLngExpression, Map } from 'leaflet';
+declare var L: any;
 
 export interface ShowMapDialogData {
   lat: number;
@@ -17,7 +18,7 @@ export interface ShowMapDialogData {
   styleUrl: './show-map-dialog.component.scss'
 })
 export class ShowMapDialogComponent implements AfterViewInit {
-  private map: L.Map | undefined;
+  private map: Map | undefined;
 
   constructor(
     public dialogRef: MatDialogRef<ShowMapDialogComponent>,
@@ -29,7 +30,7 @@ export class ShowMapDialogComponent implements AfterViewInit {
   }
 
   private initMap(): void {
-    const center: L.LatLngExpression = [this.data.lat, this.data.lng];
+    const center: LatLngExpression = [this.data.lat, this.data.lng];
     this.map = L.map('view-map').setView(center, 18);
 
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {

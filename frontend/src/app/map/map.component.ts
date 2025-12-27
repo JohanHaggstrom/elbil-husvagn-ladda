@@ -17,13 +17,13 @@ import {
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
-import * as L from 'leaflet';
-(window as any).L = L;
-import 'leaflet.markercluster';
 import { firstValueFrom } from 'rxjs';
 import { IdentifiedCaravanChargePoint } from '../app.model';
 import { AuthService } from '../auth/auth.service';
 import { ChargePointPopupComponent } from './charge-point-popup/charge-point-popup.component';
+
+import type { DivIcon, Map as LeafletMap, Marker, TileLayer } from 'leaflet';
+declare var L: any;
 
 @Component({
     selector: 'app-map',
@@ -42,9 +42,9 @@ export class MapComponent
         new EventEmitter<IdentifiedCaravanChargePoint>();
     @Output() viewComments = new EventEmitter<IdentifiedCaravanChargePoint>();
 
-    private map: L.Map | null = null;
+    private map: LeafletMap | null = null;
     private markerClusterGroup: any = null;
-    private userLocationMarker: L.Marker | null = null;
+    private userLocationMarker: Marker | null = null;
     private http = inject(HttpClient);
     private authService = inject(AuthService);
     private appRef = inject(ApplicationRef);
@@ -54,8 +54,8 @@ export class MapComponent
     public searchResults: any[] = [];
     public isSearching: boolean = false;
     public isSatelliteMode: boolean = false;
-    private osmLayer: L.TileLayer | null = null;
-    private satelliteLayer: L.TileLayer | null = null;
+    private osmLayer: TileLayer | null = null;
+    private satelliteLayer: TileLayer | null = null;
 
     ngOnInit(): void {
         // Fix for default marker icons in Leaflet with webpack
@@ -170,7 +170,7 @@ export class MapComponent
         }
     }
 
-    private getMarkerIcon(capacity: number): L.DivIcon {
+    private getMarkerIcon(capacity: number): DivIcon {
         let colorClass: string;
 
         // Color code based on capacity
