@@ -5,7 +5,7 @@
         margin-bottom: 12px;
         border-radius: 8px;
         overflow: hidden;
-        background-color: #f3f4f6;
+        background-color: var(--bg-secondary);
 
         img {
             width: 100%;
@@ -17,19 +17,19 @@
     h3 {
         margin: 0 0 8px 0;
         font-size: 16px;
-        color: #1f2937;
+        color: var(--text-primary);
     }
 
     p {
         margin: 4px 0;
         font-size: 14px;
-        color: #4b5563;
+        color: var(--text-secondary);
     }
 
     .popup-info {
         margin: 8px 0;
         padding: 8px;
-        background: #f9fafb;
+        background: var(--bg-secondary);
         border-radius: 4px;
 
         p {
@@ -44,7 +44,7 @@
     .popup-comments {
         margin: 8px 0;
         padding: 8px;
-        background: #fef3c7;
+        background: rgba(245, 158, 11, 0.1);
         border-left: 3px solid #f59e0b;
         border-radius: 4px;
     }
@@ -82,8 +82,8 @@
         margin-top: 8px;
         padding: 8px;
         text-align: center;
-        background: #f3f4f6;
-        color: #1f2937;
+        background: var(--bg-secondary);
+        color: var(--text-primary);
         text-decoration: none;
         border-radius: 4px;
         font-weight: 500;
@@ -136,13 +136,13 @@
         }
 
         .edit-btn {
-            background: #e0e7ff;
-            color: #3730a3;
+            background: rgba(63, 81, 181, 0.2);
+            color: var(--text-primary);
         }
 
         .delete-btn {
-            background: #fee2e2;
-            color: #991b1b;
+            background: rgba(239, 68, 68, 0.2);
+            color: #ef4444;
         }
     }
 }

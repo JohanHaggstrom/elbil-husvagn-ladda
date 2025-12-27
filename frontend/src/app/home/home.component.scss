@@ -55,7 +55,7 @@
 
 h1 {
     font-size: 3.125rem;
-    color: var(--gray-900);
+    color: var(--text-primary);
     font-weight: 500;
     line-height: 100%;
     letter-spacing: -0.125rem;
@@ -67,7 +67,7 @@ h1 {
 
 p {
     margin: 0;
-    color: var(--gray-700);
+    color: var(--text-secondary);
 }
 
 .main {
@@ -131,7 +131,7 @@ p {
 
     h5 {
         margin: 0 0 1.5rem 0;
-        color: var(--gray-700);
+        color: var(--text-secondary);
         font-weight: 400;
         font-size: 1.1rem;
     }
@@ -217,7 +217,7 @@ p {
     justify-content: center;
     gap: 16px;
     padding: 48px;
-    color: var(--gray-700);
+    color: var(--text-secondary);
 
     .spinning {
         font-size: 48px;
@@ -302,13 +302,13 @@ p {
         .placeholder-image {
             width: 100%;
             height: 100%;
-            background-color: #f3f4f6;
+            background-color: var(--bg-secondary);
             border-radius: 8px;
             display: flex;
             align-items: center;
             justify-content: center;
-            color: #9ca3af;
-            border: 1px solid #e5e7eb;
+            color: var(--text-secondary);
+            border: 1px solid var(--border-color);
 
             mat-icon {
                 font-size: 24px;
@@ -319,7 +319,7 @@ p {
     }
 
     .text-content-container {
-        border: 1px solid var(--gray-300, lightgrey);
+        border: 1px solid var(--border-color);
         border-radius: 12px;
         flex: 1; // Allow it to take available space instead of forcing 100%
         min-width: 0; // Critical for text-overflow to work in flex children
@@ -328,7 +328,7 @@ p {
         align-items: center;
         height: 56px;
         padding: 0 16px;
-        background-color: white;
+        background-color: var(--card-bg);
         box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 
         .left-side-content {
@@ -341,7 +341,7 @@ p {
         }
 
         .right-side-content {
-            color: var(--gray-600);
+            color: var(--text-secondary);
             white-space: nowrap;
             flex-shrink: 0; // Don't shrink the city name
         }
