@@ -140,7 +140,7 @@
         @if (viewMode === 'list') {
         <div class="list-view">
             @for (item of filteredChargePoints; track item.id) {
-            <div class="one-row-container">
+            <div class="one-row-container" (click)="navigateToDetails(item)" style="cursor: pointer;">
                 <div class="image-container">
                     @if (item.hasImage) {
                     <img
@@ -159,7 +159,7 @@
                     <span class="right-side-content">{{ item.city }}</span>
                 </div>
 
-                <div class="actions">
+                <div class="actions" (click)="$event.stopPropagation()">
                     @if (authService.isAuthenticated()) {
                     <button
                         class="link-button"
