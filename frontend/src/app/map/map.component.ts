@@ -133,14 +133,12 @@ export class MapComponent
 
     private addMarkers(): void {
         if (!this.map || !this.markerClusterGroup) {
-            console.log('MapComponent: Map not ready yet for markers');
             return;
         }
 
         // Clear existing markers
         this.markerClusterGroup.clearLayers();
 
-        console.log('MapComponent: Adding markers for', this.chargePoints.length, 'points');
         let markersCount = 0;
 
         // Add marker for each charge point
@@ -160,8 +158,6 @@ export class MapComponent
                 markersCount++;
             }
         });
-
-        console.log('MapComponent: Successfully added', markersCount, 'markers');
 
         // Fit map to show all markers if there are any
         if (this.markerClusterGroup.getLayers().length > 0 && this.map) {
