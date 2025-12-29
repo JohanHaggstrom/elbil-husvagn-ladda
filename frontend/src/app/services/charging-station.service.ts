@@ -18,6 +18,11 @@ export interface ChargingPoint {
     hasImage?: boolean;
 }
 
+export interface SystemVersion {
+    backendVersion: string;
+    lastMigration: string;
+}
+
 @Injectable({
     providedIn: 'root'
 })
@@ -128,6 +133,10 @@ export class ChargingStationService {
         const formData = new FormData();
         formData.append('image', file);
         return this.http.post(`${this.suggestedApiUrl}/${id}/image`, formData, this.getHeaders());
+    }
+
+    getSystemVersion(): Observable<SystemVersion> {
+        return this.http.get<SystemVersion>(`${environment.apiUrl}/api/systeminfo/version`);
     }
 }
 
