@@ -45,8 +45,27 @@ export class ChargingStationService {
         return this.http.put<void>(`${this.apiUrl}/${id}`, chargingPoint);
     }
 
-    createChargingPoint(chargingPoint: Omit<ChargingPoint, 'id'>): Observable<ChargingPoint> {
-        return this.http.post<ChargingPoint>(this.apiUrl, chargingPoint);
+    createChargingPoint(chargingPoint: Omit<ChargingPoint, 'id'>, file?: File | null): Observable<ChargingPoint> {
+        const formData = new FormData();
+
+        // Append all charge point fields
+        formData.append('title', chargingPoint.title);
+        formData.append('address1', chargingPoint.address1);
+        if (chargingPoint.address2) formData.append('address2', chargingPoint.address2);
+        formData.append('postalCode', chargingPoint.postalCode);
+        formData.append('city', chargingPoint.city);
+        formData.append('country', chargingPoint.country);
+        if (chargingPoint.comments) formData.append('comments', chargingPoint.comments);
+        formData.append('mapCoordinates', chargingPoint.mapCoordinates);
+        if (chargingPoint.numberOfChargePoints) formData.append('numberOfChargePoints', chargingPoint.numberOfChargePoints.toString());
+        formData.append('capacity', chargingPoint.capacity.toString());
+
+        // Append image if provided
+        if (file) {
+            formData.append('image', file);
+        }
+
+        return this.http.post<ChargingPoint>(this.apiUrl, formData);
     }
 
     deleteChargingPoint(id: number): Observable<void> {
@@ -74,8 +93,27 @@ export class ChargingStationService {
         return this.http.get<number>(`${this.suggestedApiUrl}/count`, this.getHeaders());
     }
 
-    suggestChargingPoint(chargingPoint: Omit<ChargingPoint, 'id'>): Observable<ChargingPoint> {
-        return this.http.post<ChargingPoint>(this.suggestedApiUrl, chargingPoint, this.getHeaders());
+    suggestChargingPoint(chargingPoint: Omit<ChargingPoint, 'id'>, file?: File | null): Observable<ChargingPoint> {
+        const formData = new FormData();
+
+        // Append all charge point fields
+        formData.append('title', chargingPoint.title);
+        formData.append('address1', chargingPoint.address1);
+        if (chargingPoint.address2) formData.append('address2', chargingPoint.address2);
+        formData.append('postalCode', chargingPoint.postalCode);
+        formData.append('city', chargingPoint.city);
+        formData.append('country', chargingPoint.country);
+        if (chargingPoint.comments) formData.append('comments', chargingPoint.comments);
+        formData.append('mapCoordinates', chargingPoint.mapCoordinates);
+        if (chargingPoint.numberOfChargePoints) formData.append('numberOfChargePoints', chargingPoint.numberOfChargePoints.toString());
+        formData.append('capacity', chargingPoint.capacity.toString());
+
+        // Append image if provided
+        if (file) {
+            formData.append('image', file);
+        }
+
+        return this.http.post<ChargingPoint>(this.suggestedApiUrl, formData, this.getHeaders());
     }
 
     deleteSuggestedChargingPoint(id: number): Observable<void> {
