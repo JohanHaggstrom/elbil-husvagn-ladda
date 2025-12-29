@@ -1,15 +1,13 @@
 <div class="page-container">
   <mat-card class="card">
-    <mat-card-header>
+    <mat-card-content>
       <div class="header-content">
         <button mat-icon-button (click)="onCancel()" class="back-button">
           <mat-icon>arrow_back</mat-icon>
         </button>
-        <mat-card-title>{{ title }}</mat-card-title>
+        <h2 class="page-title">{{ title }}</h2>
       </div>
-    </mat-card-header>
 
-    <mat-card-content>
       <form [formGroup]="form" class="edit-form">
         <mat-form-field appearance="outline" class="full-width">
           <mat-label>Titel</mat-label>
