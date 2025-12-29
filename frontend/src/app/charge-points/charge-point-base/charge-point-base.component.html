@@ -127,7 +127,7 @@
           @if (!imagePreview && (!hasImage || !chargePointId)) {
             <div class="upload-section">
               <input type="file" #fileInput (change)="onFileSelected($event)" accept="image/jpeg,image/jpg,image/png,image/webp" style="display: none" />
-              <button mat-raised-button (click)="fileInput.click()" type="button">
+              <button mat-raised-button color="primary" (click)="fileInput.click()" type="button">
                 <mat-icon>add_photo_alternate</mat-icon>
                 {{ hasImage ? 'Byt bild' : 'Lägg till bild' }}
               </button>
