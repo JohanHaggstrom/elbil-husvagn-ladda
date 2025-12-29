@@ -242,10 +242,12 @@
     border-radius: 12px;
     padding: 0;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    background-color: var(--card-bg) !important;
 }
 
 ::ng-deep .leaflet-popup-tip {
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    background-color: var(--card-bg) !important;
 }
 
 ::ng-deep .popup-content {
@@ -256,8 +258,8 @@
         margin: 0 0 12px 0;
         font-size: 18px;
         font-weight: 600;
-        color: #1a1a1a;
-        border-bottom: 2px solid #e5e7eb;
+        color: var(--text-primary);
+        border-bottom: 2px solid var(--border-color);
         padding-bottom: 8px;
         padding-right: 24px; // Make room for close button
     }
@@ -265,12 +267,12 @@
     p {
         margin: 6px 0;
         font-size: 14px;
-        color: #4b5563;
+        color: var(--text-secondary);
         line-height: 1.5;
     }
 
     .popup-info {
-        background: #f9fafb;
+        background: var(--bg-secondary);
         border-radius: 6px;
         padding: 10px;
         margin: 10px 0;
@@ -281,13 +283,13 @@
     }
 
     .popup-comments {
-        background: #fef3c7;
+        background: rgba(245, 158, 11, 0.1);
         border-left: 3px solid #f59e0b;
         padding: 8px 12px;
         margin: 10px 0;
         border-radius: 4px;
         font-size: 13px;
-        color: #92400e;
+        color: var(--text-primary);
     }
 
     .map-link {
