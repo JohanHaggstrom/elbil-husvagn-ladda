@@ -90,12 +90,52 @@ public class ChargingPointsController : ControllerBase
 
     [HttpPost]
     [Authorize]
-    public async Task<ActionResult<ChargingPoint>> PostChargingPoint(ChargingPoint chargingPoint)
+    public async Task<ActionResult<ChargingPoint>> PostChargingPoint([FromForm] ChargingPoint chargingPoint, [FromForm] IFormFile? image)
     {
-        _context.ChargingPoints.Add(chargingPoint);
-        await _context.SaveChangesAsync();
+        try
+        {
+            // Validate image first if provided
+            if (image != null)
+            {
+                if (image.Length == 0)
+                {
+                    return BadRequest("Image file is empty");
+                }
 
-        return CreatedAtAction("GetChargingPoint", new { id = chargingPoint.Id }, chargingPoint);
+                // Validate file type
+                var allowedTypes = new[] { "image/jpeg", "image/png", "image/webp" };
+                if (!allowedTypes.Contains(image.ContentType))
+                {
+                    return BadRequest("Invalid image type. Allowed: JPG, PNG, WebP");
+                }
+
+                // Validate size (5MB)
+                if (image.Length > 5 * 1024 * 1024)
+                {
+                    return BadRequest("Image too large. Max 5MB");
+                }
+
+                // Process image
+                using (var memoryStream = new MemoryStream())
+                {
+                    await image.CopyToAsync(memoryStream);
+                    chargingPoint.ImageData = memoryStream.ToArray();
+                    chargingPoint.ImageContentType = image.ContentType;
+                }
+            }
+
+            // Create charge point with image data (if provided)
+            _context.ChargingPoints.Add(chargingPoint);
+            await _context.SaveChangesAsync();
+
+            _logger.LogInformation("Charging point created with ID {Id}, HasImage: {HasImage}", chargingPoint.Id, image != null);
+            return CreatedAtAction("GetChargingPoint", new { id = chargingPoint.Id }, chargingPoint);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error creating charging point");
+            return StatusCode(500, "An error occurred while creating the charging point");
+        }
     }
 
     [HttpDelete("{id}")]
