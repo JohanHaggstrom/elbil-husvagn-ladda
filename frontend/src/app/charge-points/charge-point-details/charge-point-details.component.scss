@@ -160,6 +160,8 @@
             gap: 8px;
             padding: 12px 16px;
             transition: all 0.2s ease;
+            color: var(--text-primary);
+            background: var(--card-bg);
 
             mat-icon {
                 font-size: 20px;
@@ -169,11 +171,18 @@
 
             &.upvote-button {
                 border: 2px solid #10b981;
-                color: #10b981;
+
+                mat-icon {
+                    color: #10b981;
+                }
 
                 &.selected {
                     background: #10b981;
                     color: white;
+
+                    mat-icon {
+                        color: white;
+                    }
                 }
 
                 &:hover:not(.selected) {
@@ -183,11 +192,18 @@
 
             &.downvote-button {
                 border: 2px solid #ef4444;
-                color: #ef4444;
+
+                mat-icon {
+                    color: #ef4444;
+                }
 
                 &.selected {
                     background: #ef4444;
                     color: white;
+
+                    mat-icon {
+                        color: white;
+                    }
                 }
 
                 &:hover:not(.selected) {
