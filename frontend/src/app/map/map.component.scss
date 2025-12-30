@@ -112,47 +112,20 @@
     align-items: flex-end;
 }
 
-.location-btn {
+.control-btn {
     background: var(--card-bg);
     border: 2px solid var(--border-color);
-    border-radius: 8px;
-    padding: 8px 16px;
-    font-size: 14px;
-    font-weight: 500;
+    border-radius: 8px; // Or 50% if you want them round like the search btn
+    width: 40px;
+    height: 40px;
+    padding: 0;
     cursor: pointer;
     color: var(--text-primary);
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     transition: all 0.2s ease;
     display: flex;
     align-items: center;
-    gap: 6px;
-
-    &:hover {
-        background: var(--bg-secondary);
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
-        transform: translateY(-1px);
-    }
-
-    &:active {
-        transform: translateY(0);
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    }
-}
-
-.satellite-btn {
-    background: var(--card-bg);
-    border: 2px solid var(--border-color);
-    border-radius: 8px;
-    padding: 8px 16px;
-    font-size: 14px;
-    font-weight: 500;
-    cursor: pointer;
-    color: var(--text-primary);
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    transition: all 0.2s ease;
-    display: flex;
-    align-items: center;
-    gap: 6px;
+    justify-content: center;
 
     &:hover {
         background: var(--bg-secondary);
