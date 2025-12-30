@@ -77,7 +77,6 @@ export class MapComponent
 
     ngOnChanges(changes: SimpleChanges): void {
         if (changes['chargePoints']) {
-            console.log('MapComponent: chargePoints changed', this.chargePoints.length);
             if (this.map && this.markerClusterGroup) {
                 this.addMarkers();
             }
