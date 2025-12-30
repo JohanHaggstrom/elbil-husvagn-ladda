@@ -169,12 +169,12 @@ export class MapComponent
         let colorClass: string;
 
         // Color code based on capacity
-        if (capacity > 50) {
-            colorClass = 'green'; // High capacity
-        } else if (capacity >= 22) {
-            colorClass = 'yellow'; // Medium capacity
+        if (capacity > 200) {
+            colorClass = 'green'; // High capacity (> 200 kW)
+        } else if (capacity >= 100) {
+            colorClass = 'yellow'; // Medium capacity (100-200 kW)
         } else {
-            colorClass = 'red'; // Low capacity
+            colorClass = 'red'; // Low capacity (< 100 kW)
         }
 
         return L.divIcon({
