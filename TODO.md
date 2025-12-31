@@ -57,6 +57,7 @@
 -   [ ] **Byt till riktig Captcha**: Byt till riktig Captcha, när det stöder Angular 21.
 -   [x] **Exportera**: Möjlighet att exportera laddstationer till en json-fil.
 -   [ ] **Importera**: Möjlighet att importera laddstationer från en json-fil.
+- [x] **Replace the default icon**: Replace the default icon with a custom icon.
 
 ## Dokumentation
 
