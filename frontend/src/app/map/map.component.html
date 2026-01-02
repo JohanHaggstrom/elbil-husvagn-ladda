@@ -53,5 +53,8 @@
             <mat-icon>layers</mat-icon>
         </button>
     </div>
-    <div id="map"></div>
+    <div class="map-wrapper">
+        <div id="map"></div>
+        <ng-content select="[map-fab]"></ng-content>
+    </div>
 </div>
