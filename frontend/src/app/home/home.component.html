@@ -210,15 +210,31 @@
                 (editChargePoint)="navigateToEdit($event)"
                 (deleteChargePoint)="deleteChargePoint($event)"
                 (viewComments)="navigateToDetails($event)"
-            ></app-map>
+            >
+                <button
+                    map-fab
+                    mat-fab
+                    color="primary"
+                    class="map-fab-btn"
+                    [matTooltip]="
+                        authService.isAuthenticated()
+                            ? 'Lägg till laddstation'
+                            : 'Föreslå laddstation'
+                    "
+                    (click)="navigateToCreate()"
+                >
+                    <mat-icon>add</mat-icon>
+                </button>
+            </app-map>
         </div>
         }
     </div>
 
+    @if (viewMode === 'list') {
     <button
         mat-fab
         color="primary"
-        class="add-fab"
+        class="list-fab-btn"
         [matTooltip]="
             authService.isAuthenticated()
                 ? 'Lägg till laddstation'
