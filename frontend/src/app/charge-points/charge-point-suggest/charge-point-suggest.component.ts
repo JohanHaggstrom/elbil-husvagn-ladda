@@ -3,7 +3,7 @@ import { Component, inject } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
-import { ChargingPoint, ChargingStationService } from '../../services/charging-station.service';
+import { ChargingStationService } from '../../services/charging-station.service';
 import { ChargePointBaseComponent } from '../charge-point-base/charge-point-base.component';
 
 @Component({
@@ -20,17 +20,16 @@ export class ChargePointSuggestComponent {
     async onSubmit(event: { data: any, file: File | null }) {
         try {
             const { id, ...newPoint } = event.data;
-            const createdSuggestion = await firstValueFrom(this.chargingStationService.suggestChargingPoint(newPoint)) as ChargingPoint;
-
-            if (event.file && createdSuggestion.id) {
-                await firstValueFrom(this.chargingStationService.uploadSuggestionImage(createdSuggestion.id, event.file));
-            }
+            await firstValueFrom(this.chargingStationService.suggestChargingPoint(newPoint, event.file));
 
             this.snackBar.open('Tack! Ditt förslag har skickats för granskning.', 'Stäng', { duration: 5000 });
             this.router.navigate(['/']);
-        } catch (err) {
+        } catch (err: any) {
             console.error('Error suggesting charging point:', err);
-            this.snackBar.open('Kunde inte skicka förslag.', 'Stäng', { duration: 3000 });
+
+            // Show specific error message if available
+            const errorMessage = err.error?.message || err.error || 'Kunde inte skicka förslag.';
+            this.snackBar.open(errorMessage, 'Stäng', { duration: 5000 });
         }
     }
 

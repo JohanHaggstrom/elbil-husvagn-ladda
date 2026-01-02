@@ -113,7 +113,6 @@
             <input
                 matInput
                 [(ngModel)]="searchText"
-                placeholder="Sök på stad, plats..."
             />
             <mat-icon matSuffix>search</mat-icon>
         </mat-form-field>
@@ -140,7 +139,7 @@
         @if (viewMode === 'list') {
         <div class="list-view">
             @for (item of filteredChargePoints; track item.id) {
-            <div class="one-row-container">
+            <div class="one-row-container" (click)="navigateToDetails(item)" style="cursor: pointer;">
                 <div class="image-container">
                     @if (item.hasImage) {
                     <img
@@ -159,7 +158,7 @@
                     <span class="right-side-content">{{ item.city }}</span>
                 </div>
 
-                <div class="actions">
+                <div class="actions" (click)="$event.stopPropagation()">
                     @if (authService.isAuthenticated()) {
                     <button
                         class="link-button"
@@ -210,15 +209,31 @@
                 (editChargePoint)="navigateToEdit($event)"
                 (deleteChargePoint)="deleteChargePoint($event)"
                 (viewComments)="navigateToDetails($event)"
-            ></app-map>
+            >
+                <button
+                    map-fab
+                    mat-fab
+                    color="primary"
+                    class="map-fab-btn"
+                    [matTooltip]="
+                        authService.isAuthenticated()
+                            ? 'Lägg till laddstation'
+                            : 'Föreslå laddstation'
+                    "
+                    (click)="navigateToCreate()"
+                >
+                    <mat-icon>add</mat-icon>
+                </button>
+            </app-map>
         </div>
         }
     </div>
 
+    @if (viewMode === 'list') {
     <button
         mat-fab
         color="primary"
-        class="add-fab"
+        class="list-fab-btn"
         [matTooltip]="
             authService.isAuthenticated()
                 ? 'Lägg till laddstation'
@@ -228,4 +243,5 @@
     >
         <mat-icon>add</mat-icon>
     </button>
+    }
 </main>

@@ -17,12 +17,13 @@ import {
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
-import * as L from 'leaflet';
-import 'leaflet.markercluster';
 import { firstValueFrom } from 'rxjs';
 import { IdentifiedCaravanChargePoint } from '../app.model';
 import { AuthService } from '../auth/auth.service';
 import { ChargePointPopupComponent } from './charge-point-popup/charge-point-popup.component';
+
+import type { DivIcon, Map as LeafletMap, Marker, TileLayer } from 'leaflet';
+declare var L: any;
 
 @Component({
     selector: 'app-map',
@@ -31,8 +32,7 @@ import { ChargePointPopupComponent } from './charge-point-popup/charge-point-pop
     styleUrl: './map.component.scss',
 })
 export class MapComponent
-    implements OnInit, AfterViewInit, OnChanges, OnDestroy
-{
+    implements OnInit, AfterViewInit, OnChanges, OnDestroy {
     @Input() chargePoints: IdentifiedCaravanChargePoint[] = [];
     @Output() chargePointSelected =
         new EventEmitter<IdentifiedCaravanChargePoint>();
@@ -42,9 +42,9 @@ export class MapComponent
         new EventEmitter<IdentifiedCaravanChargePoint>();
     @Output() viewComments = new EventEmitter<IdentifiedCaravanChargePoint>();
 
-    private map: L.Map | null = null;
-    private markerClusterGroup: L.MarkerClusterGroup | null = null;
-    private userLocationMarker: L.Marker | null = null;
+    private map: LeafletMap | null = null;
+    private markerClusterGroup: any = null;
+    private userLocationMarker: Marker | null = null;
     private http = inject(HttpClient);
     private authService = inject(AuthService);
     private appRef = inject(ApplicationRef);
@@ -54,8 +54,8 @@ export class MapComponent
     public searchResults: any[] = [];
     public isSearching: boolean = false;
     public isSatelliteMode: boolean = false;
-    private osmLayer: L.TileLayer | null = null;
-    private satelliteLayer: L.TileLayer | null = null;
+    private osmLayer: TileLayer | null = null;
+    private satelliteLayer: TileLayer | null = null;
 
     ngOnInit(): void {
         // Fix for default marker icons in Leaflet with webpack
@@ -76,8 +76,10 @@ export class MapComponent
     }
 
     ngOnChanges(changes: SimpleChanges): void {
-        if (changes['chargePoints'] && !changes['chargePoints'].firstChange) {
-            this.addMarkers();
+        if (changes['chargePoints']) {
+            if (this.map && this.markerClusterGroup) {
+                this.addMarkers();
+            }
         }
     }
 
@@ -103,7 +105,9 @@ export class MapComponent
                     '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
             }
         );
-        this.osmLayer.addTo(this.map);
+        if (this.osmLayer && this.map) {
+            this.osmLayer.addTo(this.map);
+        }
 
         // Add satellite layer (USGS Satellite)
         this.satelliteLayer = L.tileLayer(
@@ -115,20 +119,26 @@ export class MapComponent
         );
 
         // Initialize marker cluster group
-        this.markerClusterGroup = L.markerClusterGroup({
+        this.markerClusterGroup = (L as any).markerClusterGroup({
             chunkedLoading: true,
             spiderfyOnMaxZoom: true,
             showCoverageOnHover: false,
             zoomToBoundsOnClick: true,
         });
-        this.map.addLayer(this.markerClusterGroup);
+        if (this.map && this.markerClusterGroup) {
+            this.map.addLayer(this.markerClusterGroup);
+        }
     }
 
     private addMarkers(): void {
-        if (!this.map || !this.markerClusterGroup) return;
+        if (!this.map || !this.markerClusterGroup) {
+            return;
+        }
 
         // Clear existing markers
         this.markerClusterGroup.clearLayers();
+
+        let markersCount = 0;
 
         // Add marker for each charge point
         this.chargePoints.forEach((point) => {
@@ -144,6 +154,7 @@ export class MapComponent
                 });
 
                 this.markerClusterGroup.addLayer(marker);
+                markersCount++;
             }
         });
 
@@ -154,16 +165,16 @@ export class MapComponent
         }
     }
 
-    private getMarkerIcon(capacity: number): L.DivIcon {
+    private getMarkerIcon(capacity: number): DivIcon {
         let colorClass: string;
 
         // Color code based on capacity
-        if (capacity > 50) {
-            colorClass = 'green'; // High capacity
-        } else if (capacity >= 22) {
-            colorClass = 'yellow'; // Medium capacity
+        if (capacity > 200) {
+            colorClass = 'green'; // High capacity (> 200 kW)
+        } else if (capacity >= 100) {
+            colorClass = 'yellow'; // Medium capacity (100-200 kW)
         } else {
-            colorClass = 'red'; // Low capacity
+            colorClass = 'red'; // Low capacity (< 100 kW)
         }
 
         return L.divIcon({

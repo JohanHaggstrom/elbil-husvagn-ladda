@@ -74,6 +74,25 @@
                     <!-- Add Real GitHub or other links if available -->
                 </div>
             </section>
+
+            <mat-divider></mat-divider>
+
+            <section class="section version-section">
+                <div class="version-info">
+                    <span>Systemversion</span>
+                    <div class="version-labels">
+                        <span class="version-tag">Frontend: {{ frontendVersion }}</span>
+                        @if (backendVersionInfo) {
+                            <span class="version-tag">Backend: {{ backendVersionInfo.backendVersion }}</span>
+                            @if (backendVersionInfo.lastMigration) {
+                                <span class="version-tag" title="Senaste databasmigrering">
+                                    DB: {{ backendVersionInfo.lastMigration }}
+                                </span>
+                            }
+                        }
+                    </div>
+                </div>
+            </section>
         </mat-card-content>
     </mat-card>
 </div>

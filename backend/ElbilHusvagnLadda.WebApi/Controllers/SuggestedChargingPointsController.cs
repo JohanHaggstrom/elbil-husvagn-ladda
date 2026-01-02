@@ -52,12 +52,52 @@ public class SuggestedChargingPointsController : ControllerBase
 
     // POST: api/SuggestedChargingPoints
     [HttpPost]
-    public async Task<ActionResult<SuggestedChargingPoint>> PostSuggestedChargingPoint(SuggestedChargingPoint suggestedChargingPoint)
+    public async Task<ActionResult<SuggestedChargingPoint>> PostSuggestedChargingPoint([FromForm] SuggestedChargingPoint suggestedChargingPoint, [FromForm] IFormFile? image)
     {
-        _context.SuggestedChargingPoints.Add(suggestedChargingPoint);
-        await _context.SaveChangesAsync();
+        try
+        {
+            // Validate image first if provided
+            if (image != null)
+            {
+                if (image.Length == 0)
+                {
+                    return BadRequest("Image file is empty");
+                }
 
-        return CreatedAtAction("GetSuggestedChargingPoint", new { id = suggestedChargingPoint.Id }, suggestedChargingPoint);
+                // Validate file type
+                var allowedTypes = new[] { "image/jpeg", "image/png", "image/webp" };
+                if (!allowedTypes.Contains(image.ContentType))
+                {
+                    return BadRequest("Invalid image type. Allowed: JPG, PNG, WebP");
+                }
+
+                // Validate size (5MB)
+                if (image.Length > 5 * 1024 * 1024)
+                {
+                    return BadRequest("Image too large. Max 5MB");
+                }
+
+                // Process image
+                using (var memoryStream = new MemoryStream())
+                {
+                    await image.CopyToAsync(memoryStream);
+                    suggestedChargingPoint.ImageData = memoryStream.ToArray();
+                    suggestedChargingPoint.ImageContentType = image.ContentType;
+                }
+            }
+
+            // Create suggested charge point with image data (if provided)
+            _context.SuggestedChargingPoints.Add(suggestedChargingPoint);
+            await _context.SaveChangesAsync();
+
+            _logger.LogInformation("Suggested charging point created with ID {Id}, HasImage: {HasImage}", suggestedChargingPoint.Id, image != null);
+            return CreatedAtAction("GetSuggestedChargingPoint", new { id = suggestedChargingPoint.Id }, suggestedChargingPoint);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error creating suggested charging point");
+            return StatusCode(500, "An error occurred while creating the suggested charging point");
+        }
     }
 
     // DELETE: api/SuggestedChargingPoints/5

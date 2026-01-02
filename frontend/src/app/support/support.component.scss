@@ -150,3 +150,38 @@ mat-divider {
     border-top-color: var(--border-color);
     margin: 8px 0;
 }
+
+.version-section {
+    padding-top: 24px;
+
+    .version-info {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        align-items: center;
+
+        span {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .version-labels {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+    }
+}
+
+.version-tag {
+    font-size: 0.85rem;
+    padding: 4px 12px;
+    background-color: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    color: var(--text-primary);
+    font-family: monospace;
+}

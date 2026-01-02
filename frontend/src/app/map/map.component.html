@@ -23,36 +23,38 @@
         </div>
     </div>
     <div class="map-controls">
-        <button
-            class="location-btn"
-            (click)="showUserLocation()"
-            title="Visa min position"
-        >
-            <mat-icon>my_location</mat-icon> Min position
-        </button>
-        <button
-            class="satellite-btn"
-            (click)="toggleSatelliteMode()"
-            [class.active]="isSatelliteMode"
-            title="Satelitvy"
-        >
-            <mat-icon>{{ isSatelliteMode ? "map" : "satellite_alt" }}</mat-icon>
-            {{ isSatelliteMode ? "Karta" : "Satelit" }}
-        </button>
         <div class="map-legend">
             <div class="legend-item">
                 <mat-icon class="legend-icon green">location_on</mat-icon>
-                <span class="legend-text">&gt;50 kW</span>
+                <span class="legend-text">&gt;200 kW</span>
             </div>
             <div class="legend-item">
                 <mat-icon class="legend-icon yellow">location_on</mat-icon>
-                <span class="legend-text">22-50 kW</span>
+                <span class="legend-text">100-200 kW</span>
             </div>
             <div class="legend-item">
                 <mat-icon class="legend-icon red">location_on</mat-icon>
-                <span class="legend-text">&lt;22 kW</span>
+                <span class="legend-text">&lt;100 kW</span>
             </div>
         </div>
+        <button
+            class="control-btn"
+            (click)="showUserLocation()"
+            title="Visa min position"
+        >
+            <mat-icon>my_location</mat-icon>
+        </button>
+        <button
+            class="control-btn"
+            (click)="toggleSatelliteMode()"
+            [class.active]="isSatelliteMode"
+            [title]="isSatelliteMode ? 'Visa karta' : 'Visa satellit'"
+        >
+            <mat-icon>layers</mat-icon>
+        </button>
     </div>
-    <div id="map"></div>
+    <div class="map-wrapper">
+        <div id="map"></div>
+        <ng-content select="[map-fab]"></ng-content>
+    </div>
 </div>

@@ -8,9 +8,10 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import * as L from 'leaflet';
+import type { LatLngExpression, LeafletMouseEvent, Map, Marker } from 'leaflet';
 import { environment } from '../../../environments/environment';
 import { ChargingPoint } from '../../services/charging-station.service';
+declare var L: any;
 
 @Component({
     selector: 'app-charge-point-base',
@@ -45,8 +46,8 @@ export class ChargePointBaseComponent implements OnInit, OnChanges, AfterViewIni
     form: FormGroup;
     private snackBar = inject(MatSnackBar);
 
-    private map: L.Map | undefined;
-    private marker: L.Marker | undefined;
+    private map: Map | undefined;
+    private marker: Marker | undefined;
 
     selectedFile: File | null = null;
     imagePreview: string | null = null;
@@ -123,7 +124,7 @@ export class ChargePointBaseComponent implements OnInit, OnChanges, AfterViewIni
     private initMap(): void {
         const currentCoords = this.form.get('mapCoordinates')?.value;
         const coords = currentCoords ? this.parseCoordinates(currentCoords) : null;
-        const center: L.LatLngExpression = coords ? coords : [62.0, 15.0];
+        const center: LatLngExpression = coords ? coords : [62.0, 15.0];
         const zoom = coords ? 13 : 5;
 
         this.map = L.map('edit-map').setView(center, zoom);
@@ -147,7 +148,7 @@ export class ChargePointBaseComponent implements OnInit, OnChanges, AfterViewIni
             this.setupMarkerEvents();
         }
 
-        this.map.on('click', (e: L.LeafletMouseEvent) => {
+        this.map?.on('click', (e: LeafletMouseEvent) => {
             const { lat, lng } = e.latlng;
             this.updateMapMarker(lat, lng);
             this.updateCoordinates(lat, lng);

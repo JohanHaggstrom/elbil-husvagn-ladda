@@ -1,48 +1,3 @@
-@media screen and (max-width: 1200px) {
-    .content {
-        flex-direction: column;
-        width: 100%;
-        max-width: 100%;
-        height: calc(100vh - 280px);
-    }
-}
-
-@media screen and (max-width: 600px) {
-    .main {
-        padding: 0.5rem;
-    }
-
-    h1 {
-        display: none;
-    }
-
-    .header-container {
-        margin-bottom: 0.5rem;
-
-        h5 {
-            display: none;
-        }
-    }
-
-    .content {
-        height: calc(100vh - 220px);
-    }
-
-    .one-row-container {
-        .text-content-container {
-            padding: 0 12px;
-
-            .left-side-content {
-                max-width: 150px; // Limit width to prevent overflow
-            }
-        }
-    }
-
-    .add-fab {
-        bottom: 1.5rem;
-        right: 1.5rem;
-    }
-}
 
 :host {
     font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
@@ -55,7 +10,7 @@
 
 h1 {
     font-size: 3.125rem;
-    color: var(--gray-900);
+    color: var(--text-primary);
     font-weight: 500;
     line-height: 100%;
     letter-spacing: -0.125rem;
@@ -67,7 +22,7 @@ h1 {
 
 p {
     margin: 0;
-    color: var(--gray-700);
+    color: var(--text-secondary);
 }
 
 .main {
@@ -131,7 +86,7 @@ p {
 
     h5 {
         margin: 0 0 1.5rem 0;
-        color: var(--gray-700);
+        color: var(--text-secondary);
         font-weight: 400;
         font-size: 1.1rem;
     }
@@ -217,7 +172,7 @@ p {
     justify-content: center;
     gap: 16px;
     padding: 48px;
-    color: var(--gray-700);
+    color: var(--text-secondary);
 
     .spinning {
         font-size: 48px;
@@ -302,13 +257,13 @@ p {
         .placeholder-image {
             width: 100%;
             height: 100%;
-            background-color: #f3f4f6;
+            background-color: var(--bg-secondary);
             border-radius: 8px;
             display: flex;
             align-items: center;
             justify-content: center;
-            color: #9ca3af;
-            border: 1px solid #e5e7eb;
+            color: var(--text-secondary);
+            border: 1px solid var(--border-color);
 
             mat-icon {
                 font-size: 24px;
@@ -319,7 +274,7 @@ p {
     }
 
     .text-content-container {
-        border: 1px solid var(--gray-300, lightgrey);
+        border: 1px solid var(--border-color);
         border-radius: 12px;
         flex: 1; // Allow it to take available space instead of forcing 100%
         min-width: 0; // Critical for text-overflow to work in flex children
@@ -328,7 +283,7 @@ p {
         align-items: center;
         height: 56px;
         padding: 0 16px;
-        background-color: white;
+        background-color: var(--card-bg);
         box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 
         .left-side-content {
@@ -341,7 +296,7 @@ p {
         }
 
         .right-side-content {
-            color: var(--gray-600);
+            color: var(--text-secondary);
             white-space: nowrap;
             flex-shrink: 0; // Don't shrink the city name
         }
@@ -353,9 +308,72 @@ p {
     }
 }
 
-.add-fab {
+.map-fab-btn {
+    position: absolute;
+    bottom: 24px;
+    right: 24px;
+    z-index: 1000;
+}
+
+.list-fab-btn {
     position: fixed;
     bottom: 2rem;
     right: 2rem;
     z-index: 1000;
+}
+
+@media screen and (max-width: 1200px) {
+    .content {
+        flex-direction: column;
+        justify-content: flex-start; // Align content to top instead of center
+        width: 100%;
+        max-width: 100%;
+        height: calc(100vh - 280px);
+    }
+}
+
+@media screen and (max-width: 600px) {
+    .main {
+        padding: 0.5rem;
+    }
+
+    h1 {
+        display: none;
+    }
+
+    .header-container {
+        margin-bottom: 0.5rem;
+
+        h5 {
+            display: none;
+        }
+
+        .search-field {
+            margin-top: 0.5rem; // Reduce top margin on mobile
+        }
+    }
+
+    .content {
+        height: calc(100vh - 220px);
+    }
+
+    .one-row-container {
+        .text-content-container {
+            padding: 0 12px;
+
+            .left-side-content {
+                max-width: 150px; // Limit width to prevent overflow
+            }
+        }
+    }
+
+    .map-fab-btn {
+        bottom: 1.5rem;
+        right: 1.5rem;
+    }
+
+    .list-fab-btn {
+        bottom: 1.5rem;
+        right: 1.5rem;
+    }
 }
