@@ -145,6 +145,14 @@
     }
 }
 
+.captcha-container {
+    margin-top: 1rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--divider-color, #e0e0e0);
+    display: flex;
+    justify-content: flex-start;
+}
+
 .actions {
     display: flex;
     justify-content: flex-end;
