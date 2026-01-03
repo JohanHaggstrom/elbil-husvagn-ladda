@@ -10,7 +10,9 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import type { LatLngExpression, LeafletMouseEvent, Map, Marker } from 'leaflet';
 import { environment } from '../../../environments/environment';
+import { ImageConstants } from '../../models/image-settings.model';
 import { ChargingPoint } from '../../services/charging-station.service';
+import { ImageCompressorService } from '../../services/image-compressor.service';
 declare var L: any;
 
 @Component({
@@ -209,25 +211,52 @@ export class ChargePointBaseComponent implements OnInit, OnChanges, AfterViewIni
         this.cancel.emit();
     }
 
+    private imageCompressor = inject(ImageCompressorService);
+
     onFileSelected(event: Event): void {
         const input = event.target as HTMLInputElement;
         if (input.files && input.files[0]) {
             const file = input.files[0];
-            const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
-            if (!allowedTypes.includes(file.type)) {
+
+            if (!ImageConstants.ALLOWED_TYPES.includes(file.type)) {
                 this.snackBar.open('Endast JPG, PNG och WebP bilder är tillåtna', 'Stäng', { duration: 3000 });
                 return;
             }
-            if (file.size > 5 * 1024 * 1024) {
-                this.snackBar.open('Bilden får max vara 5MB', 'Stäng', { duration: 3000 });
+            // Allow larger initial files knowing we will compress them
+            const maxInputBytes = ImageConstants.MAX_INPUT_SIZE_MB * 1024 * 1024;
+            if (file.size > maxInputBytes) {
+                this.snackBar.open(`Bilden får max vara ${ImageConstants.MAX_INPUT_SIZE_MB}MB`, 'Stäng', { duration: 3000 });
                 return;
             }
-            this.selectedFile = file;
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                this.imagePreview = e.target?.result as string;
-            };
-            reader.readAsDataURL(file);
+
+            this.snackBar.open('Bearbetar bild...', '', { duration: 1000 });
+
+            this.imageCompressor.compressImage(
+                file,
+                ImageConstants.MAX_WIDTH,
+                ImageConstants.MAX_HEIGHT,
+                ImageConstants.COMPRESSION_QUALITY
+            )
+                .then((compressedFile: File) => {
+                    this.selectedFile = compressedFile;
+                    // Check size again after compression just in case
+                    const maxUploadBytes = ImageConstants.MAX_UPLOAD_SIZE_MB * 1024 * 1024;
+                    if (this.selectedFile.size > maxUploadBytes) {
+                        this.snackBar.open('Bilden är fortfarande för stor efter komprimering. Försök med en mindre bild.', 'Stäng', { duration: 4000 });
+                        this.selectedFile = null;
+                        return;
+                    }
+
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        this.imagePreview = e.target?.result as string;
+                    };
+                    reader.readAsDataURL(this.selectedFile);
+                })
+                .catch((err: unknown) => {
+                    console.error('Image compression failed', err);
+                    this.snackBar.open('Kunde inte bearbeta bilden', 'Stäng', { duration: 3000 });
+                });
         }
     }
 
