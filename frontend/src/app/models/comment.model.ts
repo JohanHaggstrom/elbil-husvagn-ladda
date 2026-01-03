@@ -1,6 +1,6 @@
 export enum VoteType {
-    UpVote = 1,
-    DownVote = -1
+    UpVote = 'UpVote',
+    DownVote = 'DownVote'
 }
 
 export interface ChargePointComment {
