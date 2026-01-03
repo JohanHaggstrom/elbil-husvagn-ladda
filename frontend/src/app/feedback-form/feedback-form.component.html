@@ -66,7 +66,9 @@
                     <mat-hint>Om du vill få svar på din feedback</mat-hint>
                 </mat-form-field>
 
-                <app-simple-captcha (captchaValid)="onCaptchaValidChange($event)"></app-simple-captcha>
+                <div class="captcha-container">
+                    <re-captcha (resolved)="onResolved($event)"></re-captcha>
+                </div>
 
                 <div class="actions">
                     <button
