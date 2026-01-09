@@ -4,6 +4,7 @@ import { provideRouter } from '@angular/router';
 
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { RECAPTCHA_SETTINGS, RecaptchaSettings } from 'ng-recaptcha-2';
+import { environment } from '../environments/environment';
 import { routes } from './app.routes';
 import { authInterceptor } from './auth/auth.interceptor';
 import { errorInterceptor } from './interceptors/error.interceptor';
@@ -17,7 +18,7 @@ export const appConfig: ApplicationConfig = {
         {
             provide: RECAPTCHA_SETTINGS,
             useValue: {
-                siteKey: '6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI',
+                siteKey: (window as any).__env?.recaptchaSiteKey || environment.recaptchaSiteKey,
             } as RecaptchaSettings,
         },
     ],
