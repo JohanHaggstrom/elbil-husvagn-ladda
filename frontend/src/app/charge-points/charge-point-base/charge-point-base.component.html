@@ -134,8 +134,14 @@
           }
         </div>
 
+        @if (showCaptcha) {
+          <div class="captcha-container">
+            <re-captcha (resolved)="onResolved($event)"></re-captcha>
+          </div>
+        }
+
         <div class="actions">
-          <button mat-raised-button color="primary" (click)="onSubmit()" [disabled]="!form.valid">{{ submitLabel }}</button>
+          <button mat-raised-button color="primary" (click)="onSubmit()" [disabled]="!canSubmit">{{ submitLabel }}</button>
         </div>
       </form>
     </mat-card-content>

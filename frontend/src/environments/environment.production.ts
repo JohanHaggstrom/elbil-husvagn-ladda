@@ -1,5 +1,6 @@
 export const environment = {
     production: true,
     apiUrl: '',
-    apiKey: '' // TODO: Set via environment variable
+    apiKey: '', // TODO: Set via environment variable
+    recaptchaSiteKey: '' // TODO: Set via environment variable
 };

@@ -9,6 +9,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import type { LatLngExpression, LeafletMouseEvent, Map, Marker } from 'leaflet';
+import { RecaptchaModule } from 'ng-recaptcha-2';
 import { environment } from '../../../environments/environment';
 import { ImageConstants } from '../../models/image-settings.model';
 import { ChargingPoint } from '../../services/charging-station.service';
@@ -26,7 +27,8 @@ declare var L: any;
         MatInputModule,
         ReactiveFormsModule,
         MatIconModule,
-        MatTooltipModule
+        MatTooltipModule,
+        RecaptchaModule
     ],
     templateUrl: './charge-point-base.component.html',
     styleUrl: './charge-point-base.component.scss'
@@ -39,6 +41,7 @@ export class ChargePointBaseComponent implements OnInit, OnChanges, AfterViewIni
     @Input() isUploadingImage: boolean = false;
     @Input() chargePointId: number | null = null; // Needed for current image URL
     @Input() hasImage: boolean = false;
+    @Input() showCaptcha: boolean = false;
 
     @Output() formSubmit = new EventEmitter<{ data: any, file: File | null }>();
     @Output() uploadImage = new EventEmitter<File>();
@@ -54,6 +57,7 @@ export class ChargePointBaseComponent implements OnInit, OnChanges, AfterViewIni
     selectedFile: File | null = null;
     imagePreview: string | null = null;
     currentImagePath: string | null = null;
+    isCaptchaSolved: boolean = false;
 
     constructor(private fb: FormBuilder) {
         this.form = this.fb.group({
@@ -199,12 +203,20 @@ export class ChargePointBaseComponent implements OnInit, OnChanges, AfterViewIni
     }
 
     onSubmit(): void {
-        if (this.form.valid) {
+        if (this.canSubmit) {
             this.formSubmit.emit({
                 data: this.form.value,
                 file: this.selectedFile
             });
         }
+    }
+
+    onResolved(captchaResponse: string | null) {
+        this.isCaptchaSolved = !!captchaResponse;
+    }
+
+    get canSubmit(): boolean {
+        return this.form.valid && (!this.showCaptcha || this.isCaptchaSolved);
     }
 
     onCancel(): void {

@@ -9,9 +9,9 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
+import { RecaptchaModule } from 'ng-recaptcha-2';
 import { FeedbackType } from '../models/feedback.model';
 import { FeedbackService } from '../services/feedback.service';
-import { SimpleCaptchaComponent } from '../simple-captcha/simple-captcha.component';
 
 @Component({
     selector: 'app-feedback-form',
@@ -25,7 +25,7 @@ import { SimpleCaptchaComponent } from '../simple-captcha/simple-captcha.compone
         MatButtonModule,
         MatCardModule,
         MatIconModule,
-        SimpleCaptchaComponent
+        RecaptchaModule
     ],
     templateUrl: './feedback-form.component.html',
     styleUrl: './feedback-form.component.scss'
@@ -49,8 +49,8 @@ export class FeedbackFormComponent {
         { value: FeedbackType.Bug, label: 'Buggrapport' }
     ];
 
-    onCaptchaValidChange(isValid: boolean) {
-        this.isCaptchaValid = isValid;
+    onResolved(captchaResponse: string | null) {
+        this.isCaptchaValid = !!captchaResponse;
     }
 
     submitFeedback() {
@@ -62,7 +62,7 @@ export class FeedbackFormComponent {
         }
 
         if (!this.isCaptchaValid) {
-            this.snackBar.open('Vänligen lös CAPTCHA-frågan korrekt', 'Stäng', {
+            this.snackBar.open('Vänligen lös reCAPTCHA', 'Stäng', {
                 duration: 3000
             });
             return;
@@ -83,7 +83,7 @@ export class FeedbackFormComponent {
                 this.resetForm();
                 this.router.navigate(['/']);
             },
-            error: (error) => {
+            error: (error: any) => {
                 console.error('Error submitting feedback:', error);
                 this.snackBar.open('Ett fel uppstod. Försök igen senare.', 'Stäng', {
                     duration: 5000
