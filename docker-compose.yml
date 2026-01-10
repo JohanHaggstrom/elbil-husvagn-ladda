@@ -9,6 +9,7 @@ services:
     environment:
       - TZ=Europe/Stockholm
       - API_KEY=${API_KEY}
+      - RECAPTCHA_SITE_KEY=${RECAPTCHA_SITE_KEY}
     networks:
       - app-network
 
