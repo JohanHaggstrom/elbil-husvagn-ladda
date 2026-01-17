@@ -358,12 +358,12 @@
 
     .map-wrapper {
         flex: 1;
-        min-height: 0; // Important for flex item scrolling/sizing
+        min-height: 400px; // Ensure a decent map height on mobile
         border-radius: 8px 8px 0 0;
         order: 1;
 
         #map {
-            min-height: 0; // Override default min-height for mobile
+            min-height: 400px; // Override default min-height for mobile
             border-radius: 8px 8px 0 0;
         }
     }

@@ -354,7 +354,7 @@ p {
     }
 
     .content {
-        height: calc(100vh - 220px);
+        height: calc(100vh - 180px); // More space for the map on small screens
     }
 
     .one-row-container {
