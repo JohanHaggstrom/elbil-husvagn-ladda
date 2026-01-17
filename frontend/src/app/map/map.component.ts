@@ -94,6 +94,8 @@ export class MapComponent
         this.map = L.map('map', {
             center: [62.0, 15.0],
             zoom: 5,
+            tap: false, // Disable Leaflet tap handler (fixes mobile issues)
+            closePopupOnClick: false, // Don't close popup when map is clicked
         });
 
         // Add OpenStreetMap tiles
@@ -146,12 +148,12 @@ export class MapComponent
             if (coords && this.markerClusterGroup) {
                 const icon = this.getMarkerIcon(point.capacity);
                 const marker = L.marker(coords, { icon }).bindPopup(
-                    this.createPopupContent(point)
+                    this.createPopupContent(point),
+                    {
+                        autoPanPadding: L.point(20, 20),
+                        maxWidth: 300,
+                    }
                 );
-
-                marker.on('click', () => {
-                    this.chargePointSelected.emit(point);
-                });
 
                 this.markerClusterGroup.addLayer(marker);
                 markersCount++;
