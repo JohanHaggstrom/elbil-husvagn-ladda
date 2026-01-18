@@ -138,6 +138,23 @@ export class MapComponent
         if (this.map && this.markerClusterGroup) {
             this.map.addLayer(this.markerClusterGroup);
         }
+
+        // Hide controls when popup is open (for better mobile visibility)
+        if (this.map) {
+            this.map.on('popupopen', () => {
+                const mapContainer = document.querySelector('.map-container');
+                if (mapContainer) {
+                    mapContainer.classList.add('popup-open');
+                }
+            });
+
+            this.map.on('popupclose', () => {
+                const mapContainer = document.querySelector('.map-container');
+                if (mapContainer) {
+                    mapContainer.classList.remove('popup-open');
+                }
+            });
+        }
     }
 
     private addMarkers(): void {
@@ -155,13 +172,34 @@ export class MapComponent
             const coords = this.parseCoordinates(point.mapCoordinates);
             if (coords && this.markerClusterGroup) {
                 const icon = this.getMarkerIcon(point.capacity);
-                const marker = L.marker(coords, { icon }).bindPopup(
-                    this.createPopupContent(point),
-                    {
-                        autoPanPadding: L.point(20, 20),
-                        maxWidth: 300,
+                const marker = L.marker(coords, { icon });
+
+                // On mobile: show fullscreen overlay, on desktop: use Leaflet popup
+                marker.on('click', () => {
+                    if (this.isMobile) {
+                        this.showMobilePopup = true;
+                        this.mobilePopupChargePoint = point;
+                        this.chargePointSelected.emit(point);
+                        // Close any open Leaflet popups
+                        this.map?.closePopup();
+                    } else {
+                        // Desktop: popup will open automatically
+                        this.chargePointSelected.emit(point);
+                        // Close mobile popup if somehow open
+                        this.closeMobilePopup();
                     }
-                );
+                });
+
+                // Only bind popup on desktop
+                if (!this.isMobile) {
+                    marker.bindPopup(
+                        this.createPopupContent(point),
+                        {
+                            autoPan: false,
+                            maxWidth: 300,
+                        }
+                    );
+                }
 
                 this.markerClusterGroup.addLayer(marker);
                 markersCount++;
