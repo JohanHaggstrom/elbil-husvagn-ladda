@@ -57,4 +57,80 @@
         <div id="map"></div>
         <ng-content select="[map-fab]"></ng-content>
     </div>
+
+    <!-- Mobile fullscreen popup -->
+    @if (showMobilePopup && mobilePopupChargePoint) {
+        <div class="mobile-popup-overlay" (click)="closeMobilePopup()">
+            <div class="mobile-popup-content" (click)="$event.stopPropagation()">
+                <div class="mobile-popup-header">
+                    <h2>{{ mobilePopupChargePoint.title }}</h2>
+                    <button class="close-btn" (click)="closeMobilePopup()">
+                        <mat-icon>close</mat-icon>
+                    </button>
+                </div>
+
+                <div class="mobile-popup-body">
+                    @if (mobilePopupChargePoint.hasImage) {
+                        <div class="popup-image">
+                            <img [src]="getImageUrl(mobilePopupChargePoint.id)"
+                                 alt="{{ mobilePopupChargePoint.title }}"
+                                 loading="lazy" />
+                        </div>
+                    }
+
+                    <div class="info-section">
+                        <p><strong>{{ mobilePopupChargePoint.city }}</strong></p>
+                        <p>{{ mobilePopupChargePoint.address1 }}</p>
+                        @if (mobilePopupChargePoint.address2) {
+                            <p>{{ mobilePopupChargePoint.address2 }}</p>
+                        }
+                        <p>{{ mobilePopupChargePoint.postalCode }} {{ mobilePopupChargePoint.city }}</p>
+                    </div>
+
+                    <div class="stats-section">
+                        <div class="stat-item">
+                            <mat-icon>ev_station</mat-icon>
+                            <span>{{ mobilePopupChargePoint.numberOfChargePoints || 'Okänt antal' }} laddare</span>
+                        </div>
+                        <div class="stat-item">
+                            <mat-icon>bolt</mat-icon>
+                            <span>{{ mobilePopupChargePoint.capacity }} kW</span>
+                        </div>
+                    </div>
+
+                    @if (mobilePopupChargePoint.comments) {
+                        <div class="comments-section">
+                            <p>{{ mobilePopupChargePoint.comments }}</p>
+                        </div>
+                    }
+
+                    <div class="action-buttons">
+                        <button class="action-btn primary" (click)="onMobilePopupViewComments()">
+                            <mat-icon>chat_bubble</mat-icon>
+                            Visa kommentarer
+                        </button>
+
+                        <a [href]="'https://www.google.com/maps/place/' + mobilePopupChargePoint.mapCoordinates"
+                           target="_blank"
+                           rel="noopener"
+                           class="action-btn secondary">
+                            <mat-icon>map</mat-icon>
+                            Öppna i Google Maps
+                        </a>
+
+                        @if (authService.isAuthenticated()) {
+                            <button class="action-btn edit" (click)="onMobilePopupEdit()">
+                                <mat-icon>edit</mat-icon>
+                                Redigera
+                            </button>
+                            <button class="action-btn delete" (click)="onMobilePopupDelete()">
+                                <mat-icon>delete</mat-icon>
+                                Ta bort
+                            </button>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
 </div>
