@@ -16,16 +16,16 @@
   },
   "private": true,
   "dependencies": {
-    "@angular/animations": "^21.0.0",
-    "@angular/cdk": "^21.0.0",
-    "@angular/common": "^21.0.0",
-    "@angular/compiler": "^21.0.0",
-    "@angular/core": "^21.0.0",
-    "@angular/forms": "^21.0.0",
-    "@angular/material": "^21.0.0",
-    "@angular/platform-browser": "^21.0.0",
-    "@angular/platform-browser-dynamic": "^21.0.0",
-    "@angular/router": "^21.0.0",
+    "@angular/animations": "^21.1.1",
+    "@angular/cdk": "^21.1.1",
+    "@angular/common": "^21.1.1",
+    "@angular/compiler": "^21.1.1",
+    "@angular/core": "^21.1.1",
+    "@angular/forms": "^21.1.1",
+    "@angular/material": "^21.1.1",
+    "@angular/platform-browser": "^21.1.1",
+    "@angular/platform-browser-dynamic": "^21.1.1",
+    "@angular/router": "^21.1.1",
     "@types/grecaptcha": "^3.0.9",
     "@types/leaflet": "^1.9.21",
     "@types/leaflet.markercluster": "^1.5.6",
@@ -38,9 +38,9 @@
     "zone.js": "~0.15.1"
   },
   "devDependencies": {
-    "@angular/build": "^21.0.0",
-    "@angular/cli": "^21.0.0",
-    "@angular/compiler-cli": "^21.0.0",
+    "@angular/build": "^21.1.1",
+    "@angular/cli": "^21.1.1",
+    "@angular/compiler-cli": "^21.1.1",
     "@types/jasmine": "~5.1.0",
     "jasmine-core": "~5.1.0",
     "karma": "~6.4.0",
@@ -49,5 +49,8 @@
     "karma-jasmine": "~5.1.0",
     "karma-jasmine-html-reporter": "~2.1.0",
     "typescript": "~5.9.3"
+  },
+  "overrides": {
+    "qs": "6.14.1"
   }
 }
