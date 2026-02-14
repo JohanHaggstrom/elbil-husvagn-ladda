@@ -95,6 +95,10 @@ export class HomeComponent implements OnInit {
         this.router.navigate(['/admin/suggestions']);
     }
 
+    navigateToNobilImport(): void {
+        this.router.navigate(['/admin/import']);
+    }
+
     navigateToProfile(): void {
         this.router.navigate(['/user/profile']);
     }

@@ -26,6 +26,9 @@ builder.Services.AddScoped<IPasswordService, PasswordService>();
 // Configure Password Policy
 builder.Services.Configure<PasswordPolicy>(builder.Configuration.GetSection("PasswordPolicy"));
 builder.Services.AddScoped<IPasswordValidationService, PasswordValidationService>();
+// NOBIL Service
+builder.Services.AddHttpClient();
+builder.Services.AddScoped<INobilService, NobilService>();
 
 // Configure CORS to allow Angular frontend
 builder.Services.AddCors(options =>
@@ -68,7 +71,7 @@ var app = builder.Build();
 using (var scope = app.Services.CreateScope())
 {
     var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-    context.Database.EnsureCreated();
+    context.Database.Migrate();
 
     var passwordService = scope.ServiceProvider.GetRequiredService<IPasswordService>();
     if (!context.Users.Any())

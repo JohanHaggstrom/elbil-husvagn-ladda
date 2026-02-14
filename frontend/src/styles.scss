@@ -282,6 +282,29 @@ body {
         color: var(--text-primary) !important;
     }
 
+    /* Leaflet Popup Dark Mode Overrides */
+    .leaflet-popup-content-wrapper,
+    .leaflet-popup-tip {
+        background-color: var(--card-bg) !important;
+        color: var(--text-primary) !important;
+        box-shadow: 0 3px 14px rgba(0,0,0,0.6) !important;
+    }
+
+    .leaflet-popup-content {
+        color: var(--text-primary) !important;
+        h3, p, div, span, b, strong {
+            color: var(--text-primary) !important;
+        }
+    }
+
+    .leaflet-popup-close-button {
+        color: var(--text-secondary) !important;
+
+        &:hover {
+            color: var(--text-primary) !important;
+        }
+    }
+
     /* Additional text elements */
     h1, h2, h3, h4, h5, h6, p, span, div {
         color: inherit;

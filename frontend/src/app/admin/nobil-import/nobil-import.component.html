@@ -1,0 +1,64 @@
+<div class="nobil-import-container">
+  <h2>Import Stations from NOBIL</h2>
+
+  <div class="search-area">
+    <mat-form-field appearance="outline">
+      <mat-label>Country Code</mat-label>
+      <input matInput [(ngModel)]="countryCode">
+    </mat-form-field>
+    <button mat-raised-button color="primary" (click)="search()" [disabled]="isLoading">
+      Search
+    </button>
+  </div>
+
+  <div class="filter-area" *ngIf="stations.length > 0">
+    <mat-form-field appearance="outline">
+      <mat-label>Filter by Name</mat-label>
+      <input matInput [(ngModel)]="filterName" (ngModelChange)="filterStations()">
+    </mat-form-field>
+    <mat-form-field appearance="outline">
+      <mat-label>Filter by City</mat-label>
+      <input matInput [(ngModel)]="filterCity" (ngModelChange)="filterStations()">
+    </mat-form-field>
+  </div>
+
+  <div class="content-area">
+    <div class="list-area">
+      <mat-card *ngIf="stations.length > 0; else noData">
+        <mat-card-header>
+          <mat-card-title>
+            Showing {{filteredStations.length}} of {{stations.length}} stations
+          </mat-card-title>
+        </mat-card-header>
+        <div class="station-list">
+          <div *ngFor="let station of filteredStations"
+               class="station-item"
+               [class.selected]="selectedStation?.uuid === station.uuid"
+               (click)="selectStation(station)">
+            <div class="station-info">
+              <h3>{{station.name}}</h3>
+              <p>{{station.city}}, {{station.street}}</p>
+            </div>
+            <div class="station-actions" *ngIf="selectedStation?.uuid === station.uuid">
+                <button mat-mini-fab color="primary" (click)="importStation(station)" matTooltip="Import">
+                    <mat-icon>add</mat-icon>
+                </button>
+                <button mat-mini-fab color="warn" (click)="ignoreStation(station)" matTooltip="Ignore">
+                    <mat-icon>block</mat-icon>
+                </button>
+            </div>
+          </div>
+        </div>
+      </mat-card>
+
+      <ng-template #noData>
+        <p *ngIf="!isLoading">No stations to display. Try searching.</p>
+        <mat-spinner *ngIf="isLoading"></mat-spinner>
+      </ng-template>
+    </div>
+
+    <div class="map-area">
+      <div id="nobil-map"></div>
+    </div>
+  </div>
+</div>

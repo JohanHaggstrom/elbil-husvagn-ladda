@@ -11,6 +11,8 @@ public class ChargingPoint
     public required string Country { get; set; }
     public string? Comments { get; set; }
     public required string MapCoordinates { get; set; }
+    public string? ExternalId { get; set; }
+    public string? ExternalSource { get; set; }
     public int? NumberOfChargePoints { get; set; }
     public int Capacity { get; set; }
 
