@@ -6,8 +6,17 @@ namespace ElbilHusvagnLadda.WebApi.Services;
 public interface INobilService
 {
     Task<IEnumerable<NobilDumpStation>> SearchStationsAsync(string countryCode);
+    Task<IEnumerable<NobilStationMatch>> FindStationMatchesAsync(string countryCode);
+    Task LinkStationAsync(int localId, string nobilId);
     Task ImportStationAsync(NobilDumpStation station);
     Task IgnoreStationAsync(string externalId, string externalSource);
+}
+
+public class NobilStationMatch
+{
+    public ChargingPoint LocalStation { get; set; }
+    public NobilDumpStation NobilStation { get; set; }
+    public double DistanceMeters { get; set; }
 }
 
 // DTO for frontend communication (clean structure)

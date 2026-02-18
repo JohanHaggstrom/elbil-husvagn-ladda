@@ -23,45 +23,19 @@ public class NobilService : INobilService
 
     public async Task<IEnumerable<NobilDumpStation>> SearchStationsAsync(string countryCode)
     {
-        var apiKey = _configuration["Nobil:ApiKey"];
-        if (string.IsNullOrEmpty(apiKey))
-        {
-            _logger.LogWarning("NOBIL API Key is missing");
-            // Proceeding without key if NOBIL allows public dump download, but usually it requires key.
-        }
-
-        var client = _httpClientFactory.CreateClient();
-
-        // Using the Nobil simplified dump endpoint or search endpoint.
-        // For this implementation, we'll try to fetch a dump or search.
-        // Documentation says: https://nobil.no/api/server/datadump.php?apikey=...&countrycode=NOR&format=json&file=false
-
-        var url = $"https://nobil.no/api/server/datadump.php?apikey={apiKey}&countrycode={countryCode}&format=json&file=false";
-
         try
         {
-            var response = await client.GetAsync(url);
-            response.EnsureSuccessStatusCode();
-
-            var content = await response.Content.ReadAsStringAsync();
-
-            // Deserialize the response to the raw API model
-            var result = JsonSerializer.Deserialize<NobilApiResponse>(content);
-
-            // Log summary instead of entire response to avoid crashing
-            if (result?.chargerstations == null)
+            var apiKey = _configuration["Nobil:ApiKey"];
+            if (string.IsNullOrEmpty(apiKey))
             {
-                _logger.LogWarning("NOBIL API returned no charging stations. Response length: {Length} bytes", content.Length);
-                return Enumerable.Empty<NobilDumpStation>();
+                _logger.LogWarning("NOBIL API Key is missing");
+                // Proceeding without key if NOBIL allows public dump download, but usually it requires key.
             }
 
-            _logger.LogInformation("NOBIL API Response: Retrieved {Count} charging stations. Response size: {Size} bytes",
-                result.chargerstations.Count, content.Length);
-
-
+            var allStations = await FetchNobilDumpAsync(countryCode);
 
             // Filter out existing and ignored stations
-            var externalIds = result.chargerstations.Select(s => s.csmd.uuid.ToString()).ToList();
+            var externalIds = allStations.Select(s => s.uuid.ToString()).ToList();
 
             var existingExternalIds = await _context.ChargingPoints
                 .Where(cp => cp.ExternalSource == "NOBIL" && externalIds.Contains(cp.ExternalId))
@@ -73,22 +47,9 @@ public class NobilService : INobilService
                 .Select(ip => ip.ExternalId)
                 .ToListAsync();
 
-            var filteredStations = result.chargerstations
-                .Where(s => !existingExternalIds.Contains(s.csmd.uuid.ToString()) && !ignoredExternalIds.Contains(s.csmd.uuid.ToString()))
-                .Select(s => new NobilDumpStation
-                {
-                    uuid = s.csmd.uuid,
-                    name = s.csmd.name,
-                    street = s.csmd.street,
-                    house_number = s.csmd.house_number,
-                    zipcode = s.csmd.zipcode,
-                    city = s.csmd.city,
-                    municipality = s.csmd.municipality,
-                    country_code = s.csmd.country_code,
-                    description = s.csmd.description,
-                    geolocation = s.csmd.geolocation,
-                    number_charging_points = s.csmd.number_charging_points
-                })
+            var filteredStations = allStations
+                .Where(s => !existingExternalIds.Contains(s.uuid.ToString()) && !ignoredExternalIds.Contains(s.uuid.ToString()))
+                // Conversion is already done in FetchNobilDumpAsync
                 .ToList();
 
             return filteredStations;
@@ -161,6 +122,139 @@ public class NobilService : INobilService
         }
 
         return "0, 0";
+    }
+
+    public async Task<IEnumerable<NobilStationMatch>> FindStationMatchesAsync(string countryCode)
+    {
+        // 1. Get all local stations that are NOT linked to NOBIL
+        var localStations = await _context.ChargingPoints
+            .Where(cp => cp.ExternalSource != "NOBIL")
+            .ToListAsync();
+
+        if (!localStations.Any())
+        {
+            return Enumerable.Empty<NobilStationMatch>();
+        }
+
+        // 2. Get all Nobil stations
+        var nobilStations = await FetchNobilDumpAsync(countryCode);
+
+        // 3. Find matches based on distance
+        var matches = new List<NobilStationMatch>();
+
+        foreach (var local in localStations)
+        {
+            // Parse local coordinates
+            var (localLat, localLon) = ParseCoordinates(local.MapCoordinates);
+            if (localLat == 0 && localLon == 0) continue;
+
+            foreach (var nobil in nobilStations)
+            {
+                var (nobilLat, nobilLon) = ParseCoordinates(ParseGeolocation(nobil.geolocation));
+
+                var distance = CalculateDistance(localLat, localLon, nobilLat, nobilLon);
+
+                // Match if closer than 100 meters
+                if (distance < 100)
+                {
+                    matches.Add(new NobilStationMatch
+                    {
+                        LocalStation = local,
+                        NobilStation = nobil,
+                        DistanceMeters = distance
+                    });
+                }
+            }
+        }
+
+        // Sort by distance
+        return matches.OrderBy(m => m.DistanceMeters);
+    }
+
+    public async Task LinkStationAsync(int localId, string nobilId)
+    {
+        var station = await _context.ChargingPoints.FindAsync(localId);
+        if (station == null)
+        {
+            throw new Exception("Local station not found");
+        }
+
+        station.ExternalId = nobilId;
+        station.ExternalSource = "NOBIL";
+
+        await _context.SaveChangesAsync();
+    }
+
+    private async Task<List<NobilDumpStation>> FetchNobilDumpAsync(string countryCode)
+    {
+        var apiKey = _configuration["Nobil:ApiKey"];
+        if (string.IsNullOrEmpty(apiKey))
+        {
+            _logger.LogWarning("NOBIL API Key is missing");
+        }
+
+        var client = _httpClientFactory.CreateClient();
+        var url = $"https://nobil.no/api/server/datadump.php?apikey={apiKey}&countrycode={countryCode}&format=json&file=false";
+
+        var response = await client.GetAsync(url);
+        response.EnsureSuccessStatusCode();
+
+        var content = await response.Content.ReadAsStringAsync();
+        var result = JsonSerializer.Deserialize<NobilApiResponse>(content);
+
+        if (result?.chargerstations == null)
+        {
+            return new List<NobilDumpStation>();
+        }
+
+        return result.chargerstations.Select(s => new NobilDumpStation
+        {
+            uuid = s.csmd.uuid,
+            name = s.csmd.name,
+            street = s.csmd.street,
+            house_number = s.csmd.house_number,
+            zipcode = s.csmd.zipcode,
+            city = s.csmd.city,
+            municipality = s.csmd.municipality,
+            country_code = s.csmd.country_code,
+            description = s.csmd.description,
+            geolocation = s.csmd.geolocation,
+            number_charging_points = s.csmd.number_charging_points
+        }).ToList();
+    }
+
+    private (double, double) ParseCoordinates(string coordString)
+    {
+        try
+        {
+            if (string.IsNullOrWhiteSpace(coordString)) return (0,0);
+            var parts = coordString.Split(',');
+            if (parts.Length == 2 &&
+                double.TryParse(parts[0], System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out double lat) &&
+                double.TryParse(parts[1], System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out double lon))
+            {
+                return (lat, lon);
+            }
+        }
+        catch {}
+        return (0, 0);
+    }
+
+    private double CalculateDistance(double lat1, double lon1, double lat2, double lon2)
+    {
+        var R = 6371e3; // metres
+        var φ1 = lat1 * Math.PI / 180; // φ, λ in radians
+        var φ2 = lat2 * Math.PI / 180;
+        var Δφ = (lat2 - lat1) * Math.PI / 180;
+        var Δλ = (lon2 - lon1) * Math.PI / 180;
+
+        var a = Math.Sin(Δφ / 2) * Math.Sin(Δφ / 2) +
+                Math.Cos(φ1) * Math.Cos(φ2) *
+                Math.Sin(Δλ / 2) * Math.Sin(Δλ / 2);
+        var c = 2 * Math.Atan2(Math.Sqrt(a), Math.Sqrt(1 - a));
+
+        var d = R * c; // in metres
+        return d;
     }
 }
 

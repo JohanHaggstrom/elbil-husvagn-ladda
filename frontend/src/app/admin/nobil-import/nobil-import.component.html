@@ -7,58 +7,118 @@
       <input matInput [(ngModel)]="countryCode">
     </mat-form-field>
     <button mat-raised-button color="primary" (click)="search()" [disabled]="isLoading">
-      Search
+      Search New
+    </button>
+    <button mat-raised-button color="accent" (click)="loadMatches()" [disabled]="isLoading" style="margin-left: 10px;">
+      Find Matches
     </button>
   </div>
 
-  <div class="filter-area" *ngIf="stations.length > 0">
-    <mat-form-field appearance="outline">
-      <mat-label>Filter by Name</mat-label>
-      <input matInput [(ngModel)]="filterName" (ngModelChange)="filterStations()">
-    </mat-form-field>
-    <mat-form-field appearance="outline">
-      <mat-label>Filter by City</mat-label>
-      <input matInput [(ngModel)]="filterCity" (ngModelChange)="filterStations()">
-    </mat-form-field>
-  </div>
+  @if (viewMode === 'import' && stations.length > 0) {
+    <div class="filter-area">
+      <mat-form-field appearance="outline">
+        <mat-label>Filter by Name</mat-label>
+        <input matInput [(ngModel)]="filterName" (ngModelChange)="filterStations()">
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Filter by City</mat-label>
+        <input matInput [(ngModel)]="filterCity" (ngModelChange)="filterStations()">
+      </mat-form-field>
+    </div>
+  }
 
-  <div class="content-area">
-    <div class="list-area">
-      <mat-card *ngIf="stations.length > 0; else noData">
-        <mat-card-header>
-          <mat-card-title>
-            Showing {{filteredStations.length}} of {{stations.length}} stations
-          </mat-card-title>
-        </mat-card-header>
-        <div class="station-list">
-          <div *ngFor="let station of filteredStations"
-               class="station-item"
-               [class.selected]="selectedStation?.uuid === station.uuid"
-               (click)="selectStation(station)">
-            <div class="station-info">
-              <h3>{{station.name}}</h3>
-              <p>{{station.city}}, {{station.street}}</p>
+  @if (viewMode === 'import') {
+    <div class="content-area">
+      <div class="list-area">
+        @if (stations.length > 0) {
+          <mat-card>
+            <mat-card-header>
+              <mat-card-title>
+                Showing {{filteredStations.length}} of {{stations.length}} stations
+              </mat-card-title>
+            </mat-card-header>
+            <div class="station-list">
+              @for (station of filteredStations; track station.uuid) {
+                <div class="station-item"
+                     [class.selected]="selectedStation?.uuid === station.uuid"
+                     (click)="selectStation(station)">
+                  <div class="station-info">
+                    <h3>{{station.name}}</h3>
+                    <p>{{station.city}}, {{station.street}}</p>
+                  </div>
+                  @if (selectedStation?.uuid === station.uuid) {
+                    <div class="station-actions">
+                      <button mat-mini-fab color="primary" (click)="importStation(station)" matTooltip="Import">
+                        <mat-icon>add</mat-icon>
+                      </button>
+                      <button mat-mini-fab color="warn" (click)="ignoreStation(station)" matTooltip="Ignore">
+                        <mat-icon>block</mat-icon>
+                      </button>
+                    </div>
+                  }
+                </div>
+              }
             </div>
-            <div class="station-actions" *ngIf="selectedStation?.uuid === station.uuid">
-                <button mat-mini-fab color="primary" (click)="importStation(station)" matTooltip="Import">
-                    <mat-icon>add</mat-icon>
-                </button>
-                <button mat-mini-fab color="warn" (click)="ignoreStation(station)" matTooltip="Ignore">
-                    <mat-icon>block</mat-icon>
-                </button>
-            </div>
+          </mat-card>
+        } @else {
+          @if (!isLoading) {
+            <p>No stations to display. Try searching.</p>
+          }
+          @if (isLoading) {
+            <mat-spinner></mat-spinner>
+          }
+        }
+      </div>
+
+      <div class="map-area">
+        <div id="nobil-map"></div>
+      </div>
+    </div>
+  }
+
+  @if (viewMode === 'link') {
+    <div class="match-area">
+      @if (matches.length > 0) {
+        <mat-card>
+          <mat-card-header>
+            <mat-card-title>Found {{matches.length}} potential matches</mat-card-title>
+          </mat-card-header>
+          <div class="match-list">
+            @for (match of matches; track match.localStation.id) {
+              <div class="match-item">
+                <div class="match-details">
+                  <div class="station-side">
+                    <span class="badge local">Local</span>
+                    <h4>{{match.localStation.title}}</h4>
+                    <p>{{match.localStation.address1}}, {{match.localStation.city}}</p>
+                  </div>
+                  <mat-icon>link</mat-icon>
+                  <div class="station-side">
+                    <span class="badge nobil">Nobil</span>
+                    <h4>{{match.nobilStation.name}}</h4>
+                    <p>{{match.nobilStation.street}} {{match.nobilStation.house_number}}, {{match.nobilStation.city}}</p>
+                  </div>
+                  <div class="distance-info">
+                    <span>{{match.distanceMeters | number:'1.0-0'}} m</span>
+                    <button mat-raised-button color="primary" (click)="linkStation(match)">
+                      Link
+                    </button>
+                  </div>
+                </div>
+              </div>
+            }
           </div>
+        </mat-card>
+      } @else {
+        <div class="no-data-scan">
+          @if (!isLoading) {
+            <p>No matches found. Try searching for new stations instead.</p>
+          }
+          @if (isLoading) {
+            <mat-spinner></mat-spinner>
+          }
         </div>
-      </mat-card>
-
-      <ng-template #noData>
-        <p *ngIf="!isLoading">No stations to display. Try searching.</p>
-        <mat-spinner *ngIf="isLoading"></mat-spinner>
-      </ng-template>
+      }
     </div>
-
-    <div class="map-area">
-      <div id="nobil-map"></div>
-    </div>
-  </div>
+  }
 </div>

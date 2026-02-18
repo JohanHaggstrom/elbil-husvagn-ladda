@@ -16,6 +16,8 @@ export interface ChargingPoint {
     numberOfChargePoints?: number;
     capacity: number;
     hasImage?: boolean;
+    externalId?: string;
+    externalSource?: string;
 }
 
 export interface SystemVersion {

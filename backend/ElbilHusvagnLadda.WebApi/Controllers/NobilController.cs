@@ -64,8 +64,44 @@ public class NobilController : ControllerBase
         }
     }
 
+    [HttpGet("matches")]
+    public async Task<ActionResult<IEnumerable<NobilStationMatch>>> GetMatches([FromQuery] string countryCode = "SWE")
+    {
+        try
+        {
+            var matches = await _nobilService.FindStationMatchesAsync(countryCode);
+            return Ok(matches);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error finding matches");
+            return StatusCode(500, "Error finding matches");
+        }
+    }
+
+    [HttpPost("link")]
+    public async Task<IActionResult> Link([FromBody] LinkRequest request)
+    {
+        try
+        {
+            await _nobilService.LinkStationAsync(request.LocalId, request.NobilId);
+            return Ok(new { message = "Station linked successfully" });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error linking station {LocalId} to {NobilId}", request.LocalId, request.NobilId);
+            return StatusCode(500, "Error linking station");
+        }
+    }
+
     public class IgnoreRequest
     {
         public string ExternalId { get; set; }
+    }
+
+    public class LinkRequest
+    {
+        public int LocalId { get; set; }
+        public string NobilId { get; set; }
     }
 }

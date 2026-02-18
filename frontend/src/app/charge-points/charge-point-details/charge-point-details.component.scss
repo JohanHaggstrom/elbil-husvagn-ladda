@@ -77,6 +77,31 @@
                 color: var(--text-primary);
                 line-height: 1.5;
             }
+
+            .nobil-badge {
+                display: flex;
+                align-items: center;
+                gap: 4px;
+                margin-top: 4px;
+                font-weight: 500;
+                color: var(--text-secondary);
+
+                mat-icon {
+                    font-size: 16px;
+                    width: 16px;
+                    height: 16px;
+                    color: #10b981; /* Green color for link */
+                }
+
+                a {
+                    color: var(--primary-color, #1976d2);
+                    text-decoration: none;
+
+                    &:hover {
+                        text-decoration: underline;
+                    }
+                }
+            }
         }
     }
 }

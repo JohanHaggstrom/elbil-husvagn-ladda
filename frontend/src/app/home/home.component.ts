@@ -215,6 +215,8 @@ export class HomeComponent implements OnInit {
                 numberOfChargePoints: point.numberOfChargePoints,
                 capacity: point.capacity,
                 hasImage: point.hasImage,
+                externalId: point.externalId,
+                externalSource: point.externalSource
             }));
         } catch (error) {
             this.errorService.handleError(

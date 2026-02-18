@@ -10,7 +10,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import * as L from 'leaflet';
 import 'leaflet.markercluster';
-import { NobilDumpStation, NobilService } from '../../services/nobil.service';
+import { NobilDumpStation, NobilService, NobilStationMatch } from '../../services/nobil.service';
 
 @Component({
   selector: 'app-nobil-import',
@@ -35,6 +35,8 @@ export class NobilImportComponent implements OnInit {
   filterName: string = '';
   filterCity: string = '';
   filteredStations: NobilDumpStation[] = [];
+  matches: NobilStationMatch[] = [];
+  viewMode: 'import' | 'link' = 'import';
   isLoading: boolean = false;
   selectedStation: NobilDumpStation | null = null;
   map: L.Map | undefined;
@@ -84,6 +86,7 @@ export class NobilImportComponent implements OnInit {
   }
 
   search() {
+    this.viewMode = 'import';
     this.isLoading = true;
     this.stations = [];
     this.selectedStation = null;
@@ -185,6 +188,42 @@ export class NobilImportComponent implements OnInit {
       error: (err) => {
         console.error(err);
         this.snackBar.open('Error ignoring station', 'Close', { duration: 3000 });
+        this.isLoading = false;
+      }
+    });
+  }
+
+  loadMatches() {
+    this.viewMode = 'link';
+    this.isLoading = true;
+    this.matches = [];
+    this.nobilService.getMatches(this.countryCode).subscribe({
+      next: (data) => {
+        this.matches = data;
+        this.isLoading = false;
+        if (data.length === 0) {
+          this.snackBar.open('No matches found based on distance', 'Close', { duration: 3000 });
+        }
+      },
+      error: (err) => {
+        console.error(err);
+        this.isLoading = false;
+        this.snackBar.open('Error fetching matches', 'Close', { duration: 3000 });
+      }
+    });
+  }
+
+  linkStation(match: NobilStationMatch) {
+    this.isLoading = true;
+    this.nobilService.linkStation(match.localStation.id, match.nobilStation.uuid.toString()).subscribe({
+      next: () => {
+        this.snackBar.open('Station linked successfully', 'Close', { duration: 3000 });
+        this.matches = this.matches.filter(m => m.localStation.id !== match.localStation.id);
+        this.isLoading = false;
+      },
+      error: (err) => {
+        console.error(err);
+        this.snackBar.open('Error linking station', 'Close', { duration: 3000 });
         this.isLoading = false;
       }
     });

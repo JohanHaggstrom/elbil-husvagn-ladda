@@ -10,6 +10,8 @@ export interface CaravanChargePoint {
     numberOfChargePoints?: number;
     capacity: number;
     hasImage?: boolean;
+    externalId?: string;
+    externalSource?: string;
 }
 
 export interface IdentifiedCaravanChargePoint extends CaravanChargePoint {

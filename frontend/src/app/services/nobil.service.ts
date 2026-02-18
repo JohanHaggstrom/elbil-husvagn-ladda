@@ -44,4 +44,18 @@ export class NobilService {
     ignoreStation(externalId: string): Observable<any> {
         return this.http.post(`${this.apiUrl}/ignore`, { externalId }, this.getHeaders());
     }
+
+    getMatches(countryCode: string = 'SWE'): Observable<NobilStationMatch[]> {
+        return this.http.get<NobilStationMatch[]>(`${this.apiUrl}/matches?countryCode=${countryCode}`, this.getHeaders());
+    }
+
+    linkStation(localId: number, nobilId: string): Observable<any> {
+        return this.http.post(`${this.apiUrl}/link`, { localId, nobilId }, this.getHeaders());
+    }
+}
+
+export interface NobilStationMatch {
+    localStation: any; // Ideally typed as ChargingPoint
+    nobilStation: NobilDumpStation;
+    distanceMeters: number;
 }
