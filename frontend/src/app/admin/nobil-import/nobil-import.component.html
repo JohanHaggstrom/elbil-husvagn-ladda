@@ -1,16 +1,17 @@
 <div class="nobil-import-container">
-  <h2>Import Stations from NOBIL</h2>
+  <div class="header">
+    <button mat-icon-button (click)="onBack()" class="back-button">
+      <mat-icon>arrow_back</mat-icon>
+    </button>
+    <h2>Importera från NOBIL</h2>
+  </div>
 
   <div class="search-area">
-    <mat-form-field appearance="outline">
-      <mat-label>Country Code</mat-label>
-      <input matInput [(ngModel)]="countryCode">
-    </mat-form-field>
     <button mat-raised-button color="primary" (click)="search()" [disabled]="isLoading">
-      Search New
+      Sök nya
     </button>
-    <button mat-raised-button color="accent" (click)="loadMatches()" [disabled]="isLoading" style="margin-left: 10px;">
-      Find Matches
+    <button mat-button (click)="loadMatches()" [disabled]="isLoading" style="margin-left: 10px;">
+      Hitta matchningar
     </button>
   </div>
 

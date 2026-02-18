@@ -14,6 +14,7 @@ public class AppDbContext : DbContext
     public DbSet<Feedback> Feedbacks { get; set; }
     public DbSet<SuggestedChargingPoint> SuggestedChargingPoints { get; set; }
     public DbSet<IgnoredChargingPoint> IgnoredChargingPoints { get; set; }
+    public DbSet<NobilCache> NobilCaches { get; set; }
     public DbSet<User> Users { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)

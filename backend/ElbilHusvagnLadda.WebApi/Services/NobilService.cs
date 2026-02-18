@@ -187,6 +187,48 @@ public class NobilService : INobilService
 
     private async Task<List<NobilDumpStation>> FetchNobilDumpAsync(string countryCode)
     {
+        var cacheDays = _configuration.GetValue<int>("Nobil:CacheDays", 7);
+        var cacheExpiry = DateTime.UtcNow.AddDays(-cacheDays);
+
+        var cached = await _context.NobilCaches
+            .Where(c => c.CountryCode == countryCode && c.FetchedAt > cacheExpiry)
+            .OrderByDescending(c => c.FetchedAt)
+            .FirstOrDefaultAsync();
+
+        if (cached != null)
+        {
+            _logger.LogInformation("Returning cached NOBIL data for {CountryCode} (fetched {FetchedAt})", countryCode, cached.FetchedAt);
+            return JsonSerializer.Deserialize<List<NobilDumpStation>>(cached.JsonData) ?? new List<NobilDumpStation>();
+        }
+
+        _logger.LogInformation("Cache miss for NOBIL {CountryCode} – fetching from API", countryCode);
+        var stations = await FetchFromNobilApiAsync(countryCode);
+
+        // Upsert cache
+        var existingCache = await _context.NobilCaches
+            .FirstOrDefaultAsync(c => c.CountryCode == countryCode);
+
+        if (existingCache != null)
+        {
+            existingCache.JsonData = JsonSerializer.Serialize(stations);
+            existingCache.FetchedAt = DateTime.UtcNow;
+        }
+        else
+        {
+            _context.NobilCaches.Add(new NobilCache
+            {
+                CountryCode = countryCode,
+                JsonData = JsonSerializer.Serialize(stations),
+                FetchedAt = DateTime.UtcNow
+            });
+        }
+
+        await _context.SaveChangesAsync();
+        return stations;
+    }
+
+    private async Task<List<NobilDumpStation>> FetchFromNobilApiAsync(string countryCode)
+    {
         var apiKey = _configuration["Nobil:ApiKey"];
         if (string.IsNullOrEmpty(apiKey))
         {

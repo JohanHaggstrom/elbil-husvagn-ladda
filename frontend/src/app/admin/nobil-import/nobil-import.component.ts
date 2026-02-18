@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+import { CommonModule, Location } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
@@ -45,7 +45,8 @@ export class NobilImportComponent implements OnInit {
 
   constructor(
     private nobilService: NobilService,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+    private location: Location
   ) {
     this.icon = L.icon({
       iconUrl: 'assets/marker-icon.png',
@@ -58,7 +59,16 @@ export class NobilImportComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.initMap();
+    // Kartan initieras lazy vid första sökning
+  }
+
+  onBack(): void {
+    this.location.back();
+  }
+
+  initMapIfNeeded() {
+    if (this.map) return;
+    setTimeout(() => this.initMap(), 0);
   }
 
   initMap() {
@@ -87,6 +97,7 @@ export class NobilImportComponent implements OnInit {
 
   search() {
     this.viewMode = 'import';
+    this.initMapIfNeeded();
     this.isLoading = true;
     this.stations = [];
     this.selectedStation = null;
