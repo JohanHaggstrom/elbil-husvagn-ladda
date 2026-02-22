@@ -58,7 +58,7 @@ export const routes: Routes = [
         children: [
             { path: 'feedback', component: AdminFeedbackComponent, canActivate: [adminGuard] },
             { path: 'suggestions', component: AdminSuggestionsComponent, canActivate: [adminGuard] },
-            { path: 'import', component: NobilImportComponent, canActivate: [adminGuard] },
+            { path: 'import/nobil', component: NobilImportComponent, canActivate: [adminGuard] },
             {
                 path: 'users',
                 canActivate: [superAdminGuard],

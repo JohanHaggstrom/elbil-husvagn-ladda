@@ -141,6 +141,8 @@ public class SuggestedChargingPointsController : ControllerBase
             MapCoordinates = suggestion.MapCoordinates,
             NumberOfChargePoints = suggestion.NumberOfChargePoints,
             Capacity = suggestion.Capacity,
+            ExternalId = suggestion.ExternalId,
+            ExternalSource = suggestion.ExternalSource,
             ImageData = suggestion.ImageData,
             ImageContentType = suggestion.ImageContentType
         };

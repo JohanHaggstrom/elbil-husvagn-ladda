@@ -66,6 +66,8 @@ export class ChargingStationService {
         formData.append('mapCoordinates', chargingPoint.mapCoordinates);
         if (chargingPoint.numberOfChargePoints) formData.append('numberOfChargePoints', chargingPoint.numberOfChargePoints.toString());
         formData.append('capacity', chargingPoint.capacity.toString());
+        if (chargingPoint.externalId) formData.append('externalId', chargingPoint.externalId);
+        if (chargingPoint.externalSource) formData.append('externalSource', chargingPoint.externalSource);
 
         // Append image if provided
         if (file) {
@@ -114,6 +116,8 @@ export class ChargingStationService {
         formData.append('mapCoordinates', chargingPoint.mapCoordinates);
         if (chargingPoint.numberOfChargePoints) formData.append('numberOfChargePoints', chargingPoint.numberOfChargePoints.toString());
         formData.append('capacity', chargingPoint.capacity.toString());
+        if (chargingPoint.externalId) formData.append('externalId', chargingPoint.externalId);
+        if (chargingPoint.externalSource) formData.append('externalSource', chargingPoint.externalSource);
 
         // Append image if provided
         if (file) {

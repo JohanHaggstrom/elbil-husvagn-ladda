@@ -33,4 +33,5 @@ public class NobilDumpStation
     public string description { get; set; }
     public string geolocation { get; set; } // "(lat,long)"
     public int number_charging_points { get; set; }
+    public int capacity { get; set; }
 }

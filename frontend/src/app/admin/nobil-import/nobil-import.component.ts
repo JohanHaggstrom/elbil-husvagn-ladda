@@ -2,12 +2,15 @@ import { CommonModule, Location } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
+import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { Router } from '@angular/router';
 import * as L from 'leaflet';
 import 'leaflet.markercluster';
 import { NobilDumpStation, NobilService, NobilStationMatch } from '../../services/nobil.service';
@@ -24,7 +27,9 @@ import { NobilDumpStation, NobilService, NobilStationMatch } from '../../service
     MatFormFieldModule,
     MatIconModule,
     MatProgressSpinnerModule,
-    MatSnackBarModule
+    MatSnackBarModule,
+    MatButtonToggleModule,
+    MatTooltipModule
   ],
   templateUrl: './nobil-import.component.html',
   styleUrls: ['./nobil-import.component.scss']
@@ -34,6 +39,7 @@ export class NobilImportComponent implements OnInit {
   stations: NobilDumpStation[] = [];
   filterName: string = '';
   filterCity: string = '';
+  minCapacity: number = 0;
   filteredStations: NobilDumpStation[] = [];
   matches: NobilStationMatch[] = [];
   viewMode: 'import' | 'link' = 'import';
@@ -42,11 +48,15 @@ export class NobilImportComponent implements OnInit {
   map: L.Map | undefined;
   marker: L.Marker | undefined;
   icon: L.Icon;
+  private streetLayer: L.TileLayer | undefined;
+  private satelliteLayer: L.TileLayer | undefined;
+  isSatelliteMode: boolean = false;
 
   constructor(
     private nobilService: NobilService,
     private snackBar: MatSnackBar,
-    private location: Location
+    private location: Location,
+    private router: Router
   ) {
     this.icon = L.icon({
       iconUrl: 'assets/marker-icon.png',
@@ -72,27 +82,42 @@ export class NobilImportComponent implements OnInit {
   }
 
   initMap() {
-    const streetLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    this.streetLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       maxZoom: 19,
       attribution: '© OpenStreetMap'
     });
 
-    const satelliteLayer = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+    this.satelliteLayer = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
       attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community'
     });
 
     this.map = L.map('nobil-map', {
       center: [59.3293, 18.0686],
       zoom: 5,
-      layers: [streetLayer]
+      layers: this.streetLayer ? [this.streetLayer] : []
     });
+  }
 
-    const baseMaps = {
-      "Karta": streetLayer,
-      "Satellit": satelliteLayer
-    };
+  toggleSatelliteMode() {
+    if (!this.map) return;
 
-    L.control.layers(baseMaps).addTo(this.map);
+    if (this.isSatelliteMode) {
+      if (this.satelliteLayer) {
+        this.map.removeLayer(this.satelliteLayer);
+      }
+      if (this.streetLayer) {
+        this.map.addLayer(this.streetLayer);
+      }
+      this.isSatelliteMode = false;
+    } else {
+      if (this.streetLayer) {
+        this.map.removeLayer(this.streetLayer);
+      }
+      if (this.satelliteLayer) {
+        this.map.addLayer(this.satelliteLayer);
+      }
+      this.isSatelliteMode = true;
+    }
   }
 
   search() {
@@ -110,6 +135,7 @@ export class NobilImportComponent implements OnInit {
         this.stations = data;
         this.filterName = '';
         this.filterCity = '';
+        this.minCapacity = 0;
         this.filterStations();
         this.isLoading = false;
         if (data.length === 0) {
@@ -133,7 +159,12 @@ export class NobilImportComponent implements OnInit {
 
       const matchName = !filterN || name.includes(filterN);
       const matchCity = !filterC || city.includes(filterC);
-      return matchName && matchCity;
+
+      const stationCap = Number(station.capacity) || 0;
+      const filterCap = Number(this.minCapacity) || 0;
+      const matchCapacity = stationCap >= filterCap;
+
+      return matchName && matchCity && matchCapacity;
     });
   }
 
@@ -166,23 +197,8 @@ export class NobilImportComponent implements OnInit {
     }
   }
 
-  importStation(station: NobilDumpStation) {
-    this.isLoading = true;
-    this.nobilService.importStation(station).subscribe({
-      next: () => {
-        this.snackBar.open('Station imported', 'Close', { duration: 3000 });
-        this.stations = this.stations.filter(s => s.uuid !== station.uuid);
-        this.filterStations();
-        this.selectedStation = null;
-        if (this.marker) this.map?.removeLayer(this.marker);
-        this.isLoading = false;
-      },
-      error: (err) => {
-        console.error(err);
-        this.snackBar.open('Error importing station', 'Close', { duration: 3000 });
-        this.isLoading = false;
-      }
-    });
+  reviewAndAddStation(station: NobilDumpStation) {
+    this.router.navigate(['/charge-points/new'], { state: { nobilStation: station } });
   }
 
   ignoreStation(station: NobilDumpStation) {

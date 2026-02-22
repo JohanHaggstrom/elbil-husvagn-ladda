@@ -15,6 +15,7 @@ export interface NobilDumpStation {
     description: string;
     geolocation: string; // "(lat,long)"
     number_charging_points: number;
+    capacity: number;
 }
 
 @Injectable({

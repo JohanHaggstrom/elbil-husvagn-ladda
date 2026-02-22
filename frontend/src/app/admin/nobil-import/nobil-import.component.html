@@ -25,6 +25,17 @@
         <mat-label>Filter by City</mat-label>
         <input matInput [(ngModel)]="filterCity" (ngModelChange)="filterStations()">
       </mat-form-field>
+
+      <div class="capacity-filter">
+        <span class="filter-label">Min kW:</span>
+        <mat-button-toggle-group [(ngModel)]="minCapacity" name="minCapacity" (ngModelChange)="filterStations()" aria-label="Capacity Filter">
+          <mat-button-toggle [value]="0">Alla</mat-button-toggle>
+          <mat-button-toggle [value]="50">50+</mat-button-toggle>
+          <mat-button-toggle [value]="100">100+</mat-button-toggle>
+          <mat-button-toggle [value]="150">150+</mat-button-toggle>
+          <mat-button-toggle [value]="200">200+</mat-button-toggle>
+        </mat-button-toggle-group>
+      </div>
     </div>
   }
 
@@ -46,13 +57,21 @@
                   <div class="station-info">
                     <h3>{{station.name}}</h3>
                     <p>{{station.city}}, {{station.street}}</p>
+                    <div class="station-stats">
+                      <span class="stat-item" title="Max kapacitet">
+                        <mat-icon>bolt</mat-icon> {{station.capacity}} kW
+                      </span>
+                      <span class="stat-item" title="Antal laddpunkter">
+                        <mat-icon>ev_station</mat-icon> {{station.number_charging_points}} st
+                      </span>
+                    </div>
                   </div>
                   @if (selectedStation?.uuid === station.uuid) {
                     <div class="station-actions">
-                      <button mat-mini-fab color="primary" (click)="importStation(station)" matTooltip="Import">
-                        <mat-icon>add</mat-icon>
+                      <button mat-mini-fab color="primary" (click)="reviewAndAddStation(station)" matTooltip="Granska och lägg till">
+                        <mat-icon>rate_review</mat-icon>
                       </button>
-                      <button mat-mini-fab color="warn" (click)="ignoreStation(station)" matTooltip="Ignore">
+                      <button mat-mini-fab color="warn" (click)="ignoreStation(station)" matTooltip="Ignorera">
                         <mat-icon>block</mat-icon>
                       </button>
                     </div>
@@ -72,6 +91,15 @@
       </div>
 
       <div class="map-area">
+        <div class="map-controls">
+          <button
+            class="control-btn"
+            (click)="toggleSatelliteMode()"
+            [class.active]="isSatelliteMode"
+            [title]="isSatelliteMode ? 'Visa karta' : 'Visa satellit'">
+            <mat-icon>layers</mat-icon>
+          </button>
+        </div>
         <div id="nobil-map"></div>
       </div>
     </div>

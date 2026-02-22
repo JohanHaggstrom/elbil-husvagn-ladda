@@ -78,7 +78,7 @@ public class NobilService : INobilService
             Comments = station.description, // using description as comments
             MapCoordinates = ParseGeolocation(station.geolocation), // Lat, Long
             NumberOfChargePoints = station.number_charging_points,
-            Capacity = 0, // Need to parse connectors to get max capacity, defaulting to 0 for now
+            Capacity = station.capacity,
             ExternalId = station.uuid.ToString(),
             ExternalSource = "NOBIL"
         };
@@ -242,7 +242,10 @@ public class NobilService : INobilService
         response.EnsureSuccessStatusCode();
 
         var content = await response.Content.ReadAsStringAsync();
+
+
         var result = JsonSerializer.Deserialize<NobilApiResponse>(content);
+
 
         if (result?.chargerstations == null)
         {
@@ -261,8 +264,79 @@ public class NobilService : INobilService
             country_code = s.csmd.country_code,
             description = s.csmd.description,
             geolocation = s.csmd.geolocation,
-            number_charging_points = s.csmd.number_charging_points
+            number_charging_points = s.csmd.number_charging_points,
+            capacity = ExtractMaxCapacity(s.attr)
         }).ToList();
+    }
+
+    private int ExtractMaxCapacity(JsonElement attr)
+    {
+        try
+        {
+            if (attr.ValueKind == JsonValueKind.Object)
+            {
+
+                if (attr.TryGetProperty("conn", out var conn) && conn.ValueKind == JsonValueKind.Object)
+                {
+                    int maxCap = 0;
+                    foreach (var connector in conn.EnumerateObject())
+                    {
+
+                        foreach (var attribute in connector.Value.EnumerateObject())
+                        {
+                            string attrId = attribute.Name;
+                            // Sometimes there is an internal attrid property, but the key is usually the ID
+                            if (attribute.Value.ValueKind == JsonValueKind.Object && attribute.Value.TryGetProperty("attrid", out var idProp))
+                            {
+                                attrId = idProp.GetRawText().Trim('"');
+                            }
+
+                            if (attrId == "5") // "Charging capacity"
+                            {
+                                if (attribute.Value.ValueKind == JsonValueKind.Object && attribute.Value.TryGetProperty("trans", out var valProp))
+                                {
+                                    var valStr = valProp.GetString()?.ToLower() ?? "";
+
+                                    if (!string.IsNullOrEmpty(valStr))
+                                    {
+                                        if (valStr.Contains("kw"))
+                                        {
+                                            var partsArray = valStr.Split("kw");
+                                            var numericPart = new string(partsArray[0].Trim().Reverse().TakeWhile(c => char.IsDigit(c) || c == '.' || c == ',').Reverse().ToArray());
+                                            if (double.TryParse(numericPart.Replace(',', '.'), System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out double parsedCap))
+                                            {
+                                                if (parsedCap > maxCap) maxCap = (int)parsedCap;
+                                            }
+                                        }
+                                        else if (attribute.Value.TryGetProperty("attrvalid", out var validProp))
+                                        {
+                                            var validId = validProp.GetRawText().Trim('"');
+                                            int mappedCap = validId switch {
+                                                "7" => 3,   // 230V 1-phase 16A
+                                                "8" => 7,   // 230V 1-phase 32A
+                                                "29" => 6,  // 230V 3-phase 16A
+                                                "30" => 12, // 230V 3-phase 32A
+                                                "27" => 11, // 400V 3-phase 16A
+                                                "28" => 22, // 400V 3-phase 32A
+                                                "31" => 43, // 400V 3-phase 63A
+                                                _ => 0
+                                            };
+                                            if (mappedCap > maxCap) maxCap = mappedCap;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    return maxCap;
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogWarning(ex, "Error extracting capacity from NOBIL attributes");
+        }
+        return 0;
     }
 
     private (double, double) ParseCoordinates(string coordString)
@@ -309,7 +383,7 @@ public class NobilApiResponse
 public class NobilApiStationContainer
 {
     public NobilApiStation csmd { get; set; }
-    // attr stubs if needed
+    public JsonElement attr { get; set; }
 }
 
 public class NobilApiStation
