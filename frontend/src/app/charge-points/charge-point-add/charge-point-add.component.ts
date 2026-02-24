@@ -19,12 +19,16 @@ export class ChargePointAddComponent {
     private route = inject(ActivatedRoute);
     private location = inject(Location);
     initialData: any = null;
+    private returnTo: string | null = null;
 
     ngOnInit() {
         // Check for NOBIL data in router state
         const state = window.history.state;
         if (state && state.nobilStation) {
             this.initialData = this.mapNobilToChargingPoint(state.nobilStation);
+        }
+        if (state && typeof state.returnTo === 'string') {
+            this.returnTo = state.returnTo;
         }
     }
 
@@ -65,7 +69,11 @@ export class ChargePointAddComponent {
             await firstValueFrom(this.chargingStationService.createChargingPoint(newPoint, event.file));
 
             this.snackBar.open('Laddstation skapad!', 'Stäng', { duration: 3000 });
-            this.router.navigate(['..'], { relativeTo: this.route });
+            if (this.returnTo) {
+                this.router.navigateByUrl(this.returnTo, { state: { restoreNobilState: true } });
+            } else {
+                this.router.navigate(['..'], { relativeTo: this.route });
+            }
         } catch (err: any) {
             console.error('Error creating charging point:', err);
 
