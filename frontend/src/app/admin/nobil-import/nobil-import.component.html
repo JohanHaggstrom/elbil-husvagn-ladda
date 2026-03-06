@@ -6,6 +6,8 @@
         <h2>Importera från NOBIL</h2>
     </div>
 
+    <mat-card class="nobil-import-card">
+        <mat-card-content>
     <div class="search-area">
         <button mat-raised-button color="primary" (click)="search()" [disabled]="isLoading">
             Hämta stationslista
@@ -18,11 +20,11 @@
     @if (viewMode === 'import' && stations.length > 0) {
     <div class="filter-area">
         <mat-form-field appearance="outline">
-            <mat-label>Filter by Name</mat-label>
+            <mat-label>Filtrera på namn</mat-label>
             <input matInput [(ngModel)]="filterName" (ngModelChange)="filterStations()">
         </mat-form-field>
         <mat-form-field appearance="outline">
-            <mat-label>Filter by City</mat-label>
+            <mat-label>Filtrera på ort</mat-label>
             <input matInput [(ngModel)]="filterCity" (ngModelChange)="filterStations()">
         </mat-form-field>
 
@@ -52,11 +54,18 @@
                 </mat-card-header>
                 <div class="station-list">
                     @for (station of filteredStations; track station.uuid) {
-                    <div class="station-item" [class.selected]="selectedStation?.uuid === station.uuid"
+                    <div class="station-row" [class.selected]="selectedStation?.uuid === station.uuid"
                         (click)="selectStation(station)">
-                        <div class="station-info">
-                            <h3>{{station.name}}</h3>
-                            <p>{{station.city}}, {{station.street}}</p>
+                        <div class="image-container">
+                            <div class="placeholder-image">
+                                <mat-icon>ev_station</mat-icon>
+                            </div>
+                        </div>
+                        <div class="text-content-container">
+                            <div class="station-info">
+                                <span class="station-name">{{station.name}}</span>
+                                <span class="station-city">{{station.city}}</span>
+                            </div>
                             <div class="station-stats">
                                 <span class="stat-item" title="Max kapacitet">
                                     <mat-icon>bolt</mat-icon> {{station.capacity}} kW
@@ -67,7 +76,7 @@
                             </div>
                         </div>
                         @if (selectedStation?.uuid === station.uuid) {
-                        <div class="station-actions">
+                        <div class="station-actions" (click)="$event.stopPropagation()">
                             <button mat-mini-fab color="primary" (click)="reviewAndAddStation(station)"
                                 matTooltip="Granska och lägg till">
                                 <mat-icon>rate_review</mat-icon>
@@ -144,4 +153,6 @@
         }
     </div>
     }
+        </mat-card-content>
+    </mat-card>
 </div>

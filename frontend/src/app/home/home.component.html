@@ -105,6 +105,16 @@
             </mat-menu>
         </div>
         <h5>Anpassade, eller lämpliga, när man har husvagn</h5>
+        @if (!isLoading) {
+        <p class="station-count">
+            @if (viewMode === 'list' && searchText) {
+            Visar {{ filteredChargePoints.length }} av
+            {{ identifiedChargePoints.length }} laddstationer
+            } @else {
+            {{ identifiedChargePoints.length }} laddstationer tillgängliga
+            }
+        </p>
+        }
 
         <mat-button-toggle-group [(value)]="viewMode" aria-label="View Mode">
             <mat-button-toggle value="map">Karta</mat-button-toggle>
