@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 
@@ -49,29 +49,29 @@ namespace ElbilHusvagnLadda.WebApi.Migrations
             //     })
             //     .Annotation("MySql:CharSet", "utf8mb4");
 
-            migrationBuilder.CreateTable(
-                name: "ChargePointComments",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
-                    ChargePointId = table.Column<int>(type: "int", nullable: false),
-                    Comment = table.Column<string>(type: "longtext", nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    Vote = table.Column<int>(type: "int", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "datetime(6)", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_ChargePointComments", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_ChargePointComments_ChargingPoints_ChargePointId",
-                        column: x => x.ChargePointId,
-                        principalTable: "ChargingPoints",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                })
-                .Annotation("MySql:CharSet", "utf8mb4");
+            // migrationBuilder.CreateTable(
+            //     name: "ChargePointComments",
+            //     columns: table => new
+            //     {
+            //         Id = table.Column<int>(type: "int", nullable: false)
+            //             .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+            //         ChargePointId = table.Column<int>(type: "int", nullable: false),
+            //         Comment = table.Column<string>(type: "longtext", nullable: false)
+            //             .Annotation("MySql:CharSet", "utf8mb4"),
+            //         Vote = table.Column<int>(type: "int", nullable: false),
+            //         CreatedAt = table.Column<DateTime>(type: "datetime(6)", nullable: false)
+            //     },
+            //     constraints: table =>
+            //     {
+            //         table.PrimaryKey("PK_ChargePointComments", x => x.Id);
+            //         table.ForeignKey(
+            //             name: "FK_ChargePointComments_ChargingPoints_ChargePointId",
+            //             column: x => x.ChargePointId,
+            //             principalTable: "ChargingPoints",
+            //             principalColumn: "Id",
+            //             onDelete: ReferentialAction.Cascade);
+            //     })
+            //     .Annotation("MySql:CharSet", "utf8mb4");
 
             // Data already exists
             // migrationBuilder.InsertData(
@@ -90,10 +90,10 @@ namespace ElbilHusvagnLadda.WebApi.Migrations
             //         { 9, "Parkgatan 1", "", 360, "Gällivare", "", "Sweden", "67.13804586955752, 20.65923215302954", 4, "982 31", "Circle K" }
             //     });
 
-            migrationBuilder.CreateIndex(
-                name: "IX_ChargePointComments_ChargePointId",
-                table: "ChargePointComments",
-                column: "ChargePointId");
+            // migrationBuilder.CreateIndex(
+            //     name: "IX_ChargePointComments_ChargePointId",
+            //     table: "ChargePointComments",
+            //     column: "ChargePointId");
         }
 
         /// <inheritdoc />
