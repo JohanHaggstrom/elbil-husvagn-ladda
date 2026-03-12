@@ -18,6 +18,11 @@
             <strong>Kapacitet:</strong>
             <span [style.color]="capacityColor" class="capacity">{{ chargePoint.capacity }} kW</span>
         </p>
+        @if (isNobil) {
+            <p class="nobil-info">
+                <mat-icon inline matTooltip="Nobil: {{ chargePoint.externalId }}">link</mat-icon>
+            </p>
+        }
     </div>
 
     @if (chargePoint.comments) {

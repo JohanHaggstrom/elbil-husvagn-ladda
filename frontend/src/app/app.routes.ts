@@ -1,6 +1,7 @@
 import { Routes } from '@angular/router';
 import { AdminFeedbackComponent } from './admin-feedback/admin-feedback.component';
 import { AdminSuggestionsComponent } from './admin-suggestions/admin-suggestions.component';
+import { NobilImportComponent } from './admin/nobil-import/nobil-import.component';
 import { UserEditorComponent } from './admin/users/user-editor/user-editor.component';
 import { adminGuard } from './auth/admin.guard';
 import { authGuard } from './auth/auth.guard';
@@ -57,6 +58,7 @@ export const routes: Routes = [
         children: [
             { path: 'feedback', component: AdminFeedbackComponent, canActivate: [adminGuard] },
             { path: 'suggestions', component: AdminSuggestionsComponent, canActivate: [adminGuard] },
+            { path: 'import/nobil', component: NobilImportComponent, canActivate: [adminGuard] },
             {
                 path: 'users',
                 canActivate: [superAdminGuard],

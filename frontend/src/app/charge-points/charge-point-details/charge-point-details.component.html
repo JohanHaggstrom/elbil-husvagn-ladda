@@ -25,6 +25,11 @@
                             @if (chargePoint.address2) { <p>{{ chargePoint.address2 }}</p> }
                             <p>{{ chargePoint.postalCode }} {{ chargePoint.city }}</p>
                             <p>{{ chargePoint.country }}</p>
+                            @if (chargePoint.externalSource === 'NOBIL') {
+                                <p class="nobil-badge">
+                                    <mat-icon inline matTooltip="Nobil: {{ chargePoint.externalId }}">link</mat-icon>
+                                </p>
+                            }
                         </div>
                     </div>
 

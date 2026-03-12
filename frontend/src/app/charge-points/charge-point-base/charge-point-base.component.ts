@@ -71,7 +71,9 @@ export class ChargePointBaseComponent implements OnInit, OnChanges, AfterViewIni
             comments: [''],
             mapCoordinates: ['', Validators.required],
             numberOfChargePoints: [null, this.integerValidator()],
-            capacity: [null, [Validators.required, this.integerValidator()]]
+            capacity: [null, [Validators.required, this.integerValidator()]],
+            externalId: [''],
+            externalSource: ['']
         });
     }
 
@@ -103,7 +105,9 @@ export class ChargePointBaseComponent implements OnInit, OnChanges, AfterViewIni
             comments: data.comments,
             mapCoordinates: data.mapCoordinates,
             numberOfChargePoints: data.numberOfChargePoints,
-            capacity: data.capacity
+            capacity: data.capacity,
+            externalId: data.externalId ?? '',
+            externalSource: data.externalSource ?? ''
         });
 
         // Update map if it is already initialized (e.g. if initialData comes late) or if we init later it will pick up form value

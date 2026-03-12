@@ -1,12 +1,13 @@
 import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { environment } from '../../../environments/environment';
 import { IdentifiedCaravanChargePoint } from '../../app.model';
 
 @Component({
     selector: 'app-charge-point-popup',
-    imports: [CommonModule, MatIconModule],
+    imports: [CommonModule, MatIconModule, MatTooltipModule],
     templateUrl: './charge-point-popup.component.html',
     styleUrl: './charge-point-popup.component.scss'
 })
@@ -26,6 +27,12 @@ export class ChargePointPopupComponent {
     get googleMapsUrl(): string {
         return `https://www.google.com/maps/place/${this.chargePoint.mapCoordinates}`;
     }
+
+    get isNobil(): boolean {
+        return this.chargePoint.externalSource === 'NOBIL';
+    }
+
+
 
     onEdit(): void {
         this.edit.emit();

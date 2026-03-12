@@ -1,0 +1,423 @@
+using System.Text.Json;
+using System.Text.Json.Serialization;
+using ElbilHusvagnLadda.WebApi.Data;
+using ElbilHusvagnLadda.WebApi.Models;
+using Microsoft.EntityFrameworkCore;
+
+namespace ElbilHusvagnLadda.WebApi.Services;
+
+public class NobilService : INobilService
+{
+    private readonly AppDbContext _context;
+    private readonly IHttpClientFactory _httpClientFactory;
+    private readonly ILogger<NobilService> _logger;
+    private readonly IConfiguration _configuration;
+
+    public NobilService(AppDbContext context, IHttpClientFactory httpClientFactory, ILogger<NobilService> logger, IConfiguration configuration)
+    {
+        _context = context;
+        _httpClientFactory = httpClientFactory;
+        _logger = logger;
+        _configuration = configuration;
+    }
+
+    public async Task<IEnumerable<NobilDumpStation>> SearchStationsAsync(string countryCode)
+    {
+        try
+        {
+            var apiKey = _configuration["Nobil:ApiKey"];
+            if (string.IsNullOrEmpty(apiKey))
+            {
+                _logger.LogWarning("NOBIL API Key is missing");
+                // Proceeding without key if NOBIL allows public dump download, but usually it requires key.
+            }
+
+            var allStations = await FetchNobilDumpAsync(countryCode);
+
+            // Filter out existing and ignored stations
+            var externalIds = allStations.Select(s => s.uuid.ToString()).ToList();
+
+            var existingExternalIds = await _context.ChargingPoints
+                .Where(cp => cp.ExternalSource == "NOBIL" && externalIds.Contains(cp.ExternalId))
+                .Select(cp => cp.ExternalId)
+                .ToListAsync();
+
+            var ignoredExternalIds = await _context.IgnoredChargingPoints
+                .Where(ip => ip.ExternalSource == "NOBIL" && externalIds.Contains(ip.ExternalId))
+                .Select(ip => ip.ExternalId)
+                .ToListAsync();
+
+            var filteredStations = allStations
+                .Where(s => !existingExternalIds.Contains(s.uuid.ToString()) && !ignoredExternalIds.Contains(s.uuid.ToString()))
+                // Conversion is already done in FetchNobilDumpAsync
+                .ToList();
+
+            return filteredStations;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error fetching data from NOBIL");
+            throw;
+        }
+    }
+
+    public async Task ImportStationAsync(NobilDumpStation station)
+    {
+        if (await _context.ChargingPoints.AnyAsync(cp => cp.ExternalId == station.uuid.ToString() && cp.ExternalSource == "NOBIL"))
+        {
+            return; // Already exists
+        }
+
+        var newPoint = new ChargingPoint
+        {
+            Title = station.name,
+            Address1 = string.IsNullOrEmpty(station.street) ? station.name : (station.street + " " + station.house_number).Trim(),
+            City = station.city,
+            PostalCode = station.zipcode,
+            Country = station.country_code,
+            Comments = station.description, // using description as comments
+            MapCoordinates = ParseGeolocation(station.geolocation), // Lat, Long
+            NumberOfChargePoints = station.number_charging_points,
+            Capacity = station.capacity,
+            ExternalId = station.uuid.ToString(),
+            ExternalSource = "NOBIL"
+        };
+
+        _context.ChargingPoints.Add(newPoint);
+        await _context.SaveChangesAsync();
+    }
+
+    public async Task IgnoreStationAsync(string externalId, string externalSource)
+    {
+        if (await _context.IgnoredChargingPoints.AnyAsync(ip => ip.ExternalId == externalId && ip.ExternalSource == externalSource))
+        {
+            return;
+        }
+
+        _context.IgnoredChargingPoints.Add(new IgnoredChargingPoint
+        {
+            ExternalId = externalId,
+            ExternalSource = externalSource
+        });
+        await _context.SaveChangesAsync();
+    }
+
+    private string ParseGeolocation(string geolocation)
+    {
+        if (string.IsNullOrEmpty(geolocation)) return "0, 0";
+
+        // Format is "(59.93255,10.71514)"
+        try
+        {
+            var trimmed = geolocation.Trim('(', ')');
+            var parts = trimmed.Split(',');
+            if (parts.Length == 2)
+            {
+                return $"{parts[0].Trim()}, {parts[1].Trim()}";
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error parsing geolocation: {Geolocation}", geolocation);
+        }
+
+        return "0, 0";
+    }
+
+    public async Task<IEnumerable<NobilStationMatch>> FindStationMatchesAsync(string countryCode)
+    {
+        // 1. Get all local stations that are NOT linked to NOBIL
+        var localStations = await _context.ChargingPoints
+            .Where(cp => cp.ExternalSource != "NOBIL")
+            .ToListAsync();
+
+        if (!localStations.Any())
+        {
+            return Enumerable.Empty<NobilStationMatch>();
+        }
+
+        // 2. Get all Nobil stations
+        var nobilStations = await FetchNobilDumpAsync(countryCode);
+
+        // 3. Find matches based on distance
+        var matches = new List<NobilStationMatch>();
+
+        foreach (var local in localStations)
+        {
+            // Parse local coordinates
+            var (localLat, localLon) = ParseCoordinates(local.MapCoordinates);
+            if (localLat == 0 && localLon == 0) continue;
+
+            foreach (var nobil in nobilStations)
+            {
+                var (nobilLat, nobilLon) = ParseCoordinates(ParseGeolocation(nobil.geolocation));
+
+                var distance = CalculateDistance(localLat, localLon, nobilLat, nobilLon);
+
+                // Match if closer than 100 meters
+                if (distance < 100)
+                {
+                    matches.Add(new NobilStationMatch
+                    {
+                        LocalStation = local,
+                        NobilStation = nobil,
+                        DistanceMeters = distance
+                    });
+                }
+            }
+        }
+
+        // Sort by distance
+        return matches.OrderBy(m => m.DistanceMeters);
+    }
+
+    public async Task LinkStationAsync(int localId, string nobilId)
+    {
+        var station = await _context.ChargingPoints.FindAsync(localId);
+        if (station == null)
+        {
+            throw new Exception("Local station not found");
+        }
+
+        station.ExternalId = nobilId;
+        station.ExternalSource = "NOBIL";
+
+        await _context.SaveChangesAsync();
+    }
+
+    private async Task<List<NobilDumpStation>> FetchNobilDumpAsync(string countryCode)
+    {
+        var cacheDays = _configuration.GetValue<int>("Nobil:CacheDays", 7);
+        var cacheExpiry = DateTime.UtcNow.AddDays(-cacheDays);
+
+        var cached = await _context.NobilCaches
+            .Where(c => c.CountryCode == countryCode && c.FetchedAt > cacheExpiry)
+            .OrderByDescending(c => c.FetchedAt)
+            .FirstOrDefaultAsync();
+
+        if (cached != null)
+        {
+            _logger.LogInformation("Returning cached NOBIL data for {CountryCode} (fetched {FetchedAt})", countryCode, cached.FetchedAt);
+            return JsonSerializer.Deserialize<List<NobilDumpStation>>(cached.JsonData) ?? new List<NobilDumpStation>();
+        }
+
+        _logger.LogInformation("Cache miss for NOBIL {CountryCode} – fetching from API", countryCode);
+        var stations = await FetchFromNobilApiAsync(countryCode);
+
+        // Upsert cache
+        var existingCache = await _context.NobilCaches
+            .FirstOrDefaultAsync(c => c.CountryCode == countryCode);
+
+        if (existingCache != null)
+        {
+            existingCache.JsonData = JsonSerializer.Serialize(stations);
+            existingCache.FetchedAt = DateTime.UtcNow;
+        }
+        else
+        {
+            _context.NobilCaches.Add(new NobilCache
+            {
+                CountryCode = countryCode,
+                JsonData = JsonSerializer.Serialize(stations),
+                FetchedAt = DateTime.UtcNow
+            });
+        }
+
+        await _context.SaveChangesAsync();
+        return stations;
+    }
+
+    private async Task<List<NobilDumpStation>> FetchFromNobilApiAsync(string countryCode)
+    {
+        var apiKey = _configuration["Nobil:ApiKey"];
+        if (string.IsNullOrEmpty(apiKey))
+        {
+            _logger.LogWarning("NOBIL API Key is missing");
+        }
+
+        var client = _httpClientFactory.CreateClient();
+        var url = $"https://nobil.no/api/server/datadump.php?apikey={apiKey}&countrycode={countryCode}&format=json&file=false";
+
+        var response = await client.GetAsync(url);
+        response.EnsureSuccessStatusCode();
+
+        var content = await response.Content.ReadAsStringAsync();
+
+
+        var result = JsonSerializer.Deserialize<NobilApiResponse>(content);
+
+
+        if (result?.chargerstations == null)
+        {
+            return new List<NobilDumpStation>();
+        }
+
+        return result.chargerstations.Select(s => new NobilDumpStation
+        {
+            uuid = s.csmd.uuid,
+            name = s.csmd.name,
+            street = s.csmd.street,
+            house_number = s.csmd.house_number,
+            zipcode = s.csmd.zipcode,
+            city = s.csmd.city,
+            municipality = s.csmd.municipality,
+            country_code = s.csmd.country_code,
+            description = s.csmd.description,
+            geolocation = s.csmd.geolocation,
+            number_charging_points = s.csmd.number_charging_points,
+            capacity = ExtractMaxCapacity(s.attr)
+        }).ToList();
+    }
+
+    private int ExtractMaxCapacity(JsonElement attr)
+    {
+        try
+        {
+            if (attr.ValueKind == JsonValueKind.Object)
+            {
+
+                if (attr.TryGetProperty("conn", out var conn) && conn.ValueKind == JsonValueKind.Object)
+                {
+                    int maxCap = 0;
+                    foreach (var connector in conn.EnumerateObject())
+                    {
+
+                        foreach (var attribute in connector.Value.EnumerateObject())
+                        {
+                            string attrId = attribute.Name;
+                            // Sometimes there is an internal attrid property, but the key is usually the ID
+                            if (attribute.Value.ValueKind == JsonValueKind.Object && attribute.Value.TryGetProperty("attrid", out var idProp))
+                            {
+                                attrId = idProp.GetRawText().Trim('"');
+                            }
+
+                            if (attrId == "5") // "Charging capacity"
+                            {
+                                if (attribute.Value.ValueKind == JsonValueKind.Object && attribute.Value.TryGetProperty("trans", out var valProp))
+                                {
+                                    var valStr = valProp.GetString()?.ToLower() ?? "";
+
+                                    if (!string.IsNullOrEmpty(valStr))
+                                    {
+                                        if (valStr.Contains("kw"))
+                                        {
+                                            var partsArray = valStr.Split("kw");
+                                            var numericPart = new string(partsArray[0].Trim().Reverse().TakeWhile(c => char.IsDigit(c) || c == '.' || c == ',').Reverse().ToArray());
+                                            if (double.TryParse(numericPart.Replace(',', '.'), System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out double parsedCap))
+                                            {
+                                                if (parsedCap > maxCap) maxCap = (int)parsedCap;
+                                            }
+                                        }
+                                        else if (attribute.Value.TryGetProperty("attrvalid", out var validProp))
+                                        {
+                                            var validId = validProp.GetRawText().Trim('"');
+                                            int mappedCap = validId switch {
+                                                "7" => 3,   // 230V 1-phase 16A
+                                                "8" => 7,   // 230V 1-phase 32A
+                                                "29" => 6,  // 230V 3-phase 16A
+                                                "30" => 12, // 230V 3-phase 32A
+                                                "27" => 11, // 400V 3-phase 16A
+                                                "28" => 22, // 400V 3-phase 32A
+                                                "31" => 43, // 400V 3-phase 63A
+                                                _ => 0
+                                            };
+                                            if (mappedCap > maxCap) maxCap = mappedCap;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    return maxCap;
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogWarning(ex, "Error extracting capacity from NOBIL attributes");
+        }
+        return 0;
+    }
+
+    private (double, double) ParseCoordinates(string coordString)
+    {
+        try
+        {
+            if (string.IsNullOrWhiteSpace(coordString)) return (0,0);
+            var parts = coordString.Split(',');
+            if (parts.Length == 2 &&
+                double.TryParse(parts[0], System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out double lat) &&
+                double.TryParse(parts[1], System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out double lon))
+            {
+                return (lat, lon);
+            }
+        }
+        catch {}
+        return (0, 0);
+    }
+
+    private double CalculateDistance(double lat1, double lon1, double lat2, double lon2)
+    {
+        var R = 6371e3; // metres
+        var φ1 = lat1 * Math.PI / 180; // φ, λ in radians
+        var φ2 = lat2 * Math.PI / 180;
+        var Δφ = (lat2 - lat1) * Math.PI / 180;
+        var Δλ = (lon2 - lon1) * Math.PI / 180;
+
+        var a = Math.Sin(Δφ / 2) * Math.Sin(Δφ / 2) +
+                Math.Cos(φ1) * Math.Cos(φ2) *
+                Math.Sin(Δλ / 2) * Math.Sin(Δλ / 2);
+        var c = 2 * Math.Atan2(Math.Sqrt(a), Math.Sqrt(1 - a));
+
+        var d = R * c; // in metres
+        return d;
+    }
+}
+
+// Wrapper classes for NOBIL JSON structure (Internal use for deserialization)
+public class NobilApiResponse
+{
+    public List<NobilApiStationContainer> chargerstations { get; set; }
+}
+
+public class NobilApiStationContainer
+{
+    public NobilApiStation csmd { get; set; }
+    public JsonElement attr { get; set; }
+}
+
+public class NobilApiStation
+{
+    [JsonPropertyName("id")]
+    public int uuid { get; set; }
+
+    [JsonPropertyName("name")]
+    public string name { get; set; }
+
+    [JsonPropertyName("Street")]
+    public string street { get; set; }
+
+    [JsonPropertyName("House_number")]
+    public string house_number { get; set; }
+
+    [JsonPropertyName("Zipcode")]
+    public string zipcode { get; set; }
+
+    [JsonPropertyName("City")]
+    public string city { get; set; }
+
+    [JsonPropertyName("Municipality")]
+    public string municipality { get; set; }
+
+    [JsonPropertyName("Land_code")]
+    public string country_code { get; set; }
+
+    [JsonPropertyName("Description_of_location")]
+    public string description { get; set; }
+
+    [JsonPropertyName("Position")]
+    public string geolocation { get; set; } // "(lat,long)"
+
+    [JsonPropertyName("Number_charging_points")]
+    public int number_charging_points { get; set; }
+}

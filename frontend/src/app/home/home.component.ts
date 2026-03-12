@@ -95,6 +95,12 @@ export class HomeComponent implements OnInit {
         this.router.navigate(['/admin/suggestions']);
     }
 
+    navigateToNobilImport(): void {
+        this.router.navigate(['/admin/import/nobil'], {
+            state: { nobilOrigin: this.router.url }
+        });
+    }
+
     navigateToProfile(): void {
         this.router.navigate(['/user/profile']);
     }
@@ -211,6 +217,8 @@ export class HomeComponent implements OnInit {
                 numberOfChargePoints: point.numberOfChargePoints,
                 capacity: point.capacity,
                 hasImage: point.hasImage,
+                externalId: point.externalId,
+                externalSource: point.externalSource
             }));
         } catch (error) {
             this.errorService.handleError(

@@ -1,0 +1,158 @@
+<div class="nobil-import-container">
+    <div class="header">
+        <button mat-icon-button (click)="onBack()" class="back-button">
+            <mat-icon>arrow_back</mat-icon>
+        </button>
+        <h2>Importera från NOBIL</h2>
+    </div>
+
+    <mat-card class="nobil-import-card">
+        <mat-card-content>
+    <div class="search-area">
+        <button mat-raised-button color="primary" (click)="search()" [disabled]="isLoading">
+            Hämta stationslista
+        </button>
+        <button mat-button (click)="loadMatches()" [disabled]="isLoading" style="margin-left: 10px;">
+            Matcha mot befintliga stationer
+        </button>
+    </div>
+
+    @if (viewMode === 'import' && stations.length > 0) {
+    <div class="filter-area">
+        <mat-form-field appearance="outline">
+            <mat-label>Filtrera på namn</mat-label>
+            <input matInput [(ngModel)]="filterName" (ngModelChange)="filterStations()">
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+            <mat-label>Filtrera på ort</mat-label>
+            <input matInput [(ngModel)]="filterCity" (ngModelChange)="filterStations()">
+        </mat-form-field>
+
+        <div class="capacity-filter">
+            <span class="filter-label">Min kW:</span>
+            <mat-button-toggle-group [(ngModel)]="minCapacity" name="minCapacity" (ngModelChange)="filterStations()"
+                aria-label="Capacity Filter">
+                <mat-button-toggle [value]="0">Alla</mat-button-toggle>
+                <mat-button-toggle [value]="50">50+</mat-button-toggle>
+                <mat-button-toggle [value]="100">100+</mat-button-toggle>
+                <mat-button-toggle [value]="150">150+</mat-button-toggle>
+                <mat-button-toggle [value]="200">200+</mat-button-toggle>
+            </mat-button-toggle-group>
+        </div>
+    </div>
+    }
+
+    @if (viewMode === 'import') {
+    <div class="content-area">
+        <div class="list-area">
+            @if (stations.length > 0) {
+            <mat-card>
+                <mat-card-header>
+                    <mat-card-title>
+                        Showing {{filteredStations.length}} of {{stations.length}} stations
+                    </mat-card-title>
+                </mat-card-header>
+                <div class="station-list">
+                    @for (station of filteredStations; track station.uuid) {
+                    <div class="station-row" [class.selected]="selectedStation?.uuid === station.uuid"
+                        (click)="selectStation(station)">
+                        <div class="image-container">
+                            <div class="placeholder-image">
+                                <mat-icon>ev_station</mat-icon>
+                            </div>
+                        </div>
+                        <div class="text-content-container">
+                            <div class="station-info">
+                                <span class="station-name">{{station.name}}</span>
+                                <span class="station-city">{{station.city}}</span>
+                            </div>
+                            <div class="station-stats">
+                                <span class="stat-item" title="Max kapacitet">
+                                    <mat-icon>bolt</mat-icon> {{station.capacity}} kW
+                                </span>
+                                <span class="stat-item" title="Antal laddpunkter">
+                                    <mat-icon>ev_station</mat-icon> {{station.number_charging_points}} st
+                                </span>
+                            </div>
+                        </div>
+                        @if (selectedStation?.uuid === station.uuid) {
+                        <div class="station-actions" (click)="$event.stopPropagation()">
+                            <button mat-mini-fab color="primary" (click)="reviewAndAddStation(station)"
+                                matTooltip="Granska och lägg till">
+                                <mat-icon>rate_review</mat-icon>
+                            </button>
+                            <button mat-mini-fab color="warn" (click)="ignoreStation(station)" matTooltip="Ignorera">
+                                <mat-icon>block</mat-icon>
+                            </button>
+                        </div>
+                        }
+                    </div>
+                    }
+                </div>
+            </mat-card>
+            } @else {
+            <!-- No stations to display, loading data... -->
+            }
+        </div>
+
+        <div class="map-area">
+            <div class="map-controls">
+                <button class="control-btn" (click)="toggleSatelliteMode()" [class.active]="isSatelliteMode"
+                    [title]="isSatelliteMode ? 'Visa karta' : 'Visa satellit'">
+                    <mat-icon>layers</mat-icon>
+                </button>
+            </div>
+            <div id="nobil-map"></div>
+        </div>
+    </div>
+    }
+
+    @if (viewMode === 'link') {
+    <div class="match-area">
+        @if (matches.length > 0) {
+        <mat-card>
+            <mat-card-header>
+                <mat-card-title>Found {{matches.length}} potential matches</mat-card-title>
+            </mat-card-header>
+            <div class="match-list">
+                @for (match of matches; track match.localStation.id) {
+                <div class="match-item">
+                    <div class="match-details">
+                        <div class="station-side">
+                            <span class="badge local">Local</span>
+                            <h4>{{match.localStation.title}}</h4>
+                            <p>{{match.localStation.address1}}, {{match.localStation.city}}</p>
+                        </div>
+                        <mat-icon>link</mat-icon>
+                        <div class="station-side">
+                            <span class="badge nobil">Nobil</span>
+                            <h4>{{match.nobilStation.name}}</h4>
+                            <p>{{match.nobilStation.street}} {{match.nobilStation.house_number}},
+                                {{match.nobilStation.city}}</p>
+                        </div>
+                        <div class="distance-info">
+                            <span>{{match.distanceMeters | number:'1.0-0'}} m</span>
+                            <button mat-raised-button color="primary" (click)="linkStation(match)">
+                                Link
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                }
+            </div>
+        </mat-card>
+        } @else {
+        <div class="no-data-scan">
+            @if (!isLoading) {
+            <p>No matches found. Try searching for new stations instead.</p>
+            }
+            @if (isLoading) {
+            <mat-spinner></mat-spinner>
+            }
+        </div>
+        }
+    </div>
+    }
+        </mat-card-content>
+    </mat-card>
+</div>

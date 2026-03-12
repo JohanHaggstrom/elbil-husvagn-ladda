@@ -4,6 +4,7 @@ using ElbilHusvagnLadda.WebApi.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ElbilHusvagnLadda.WebApi.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260124170725_AddNobilIntegration")]
+    partial class AddNobilIntegration
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -298,30 +301,6 @@ namespace ElbilHusvagnLadda.WebApi.Migrations
                     b.ToTable("IgnoredChargingPoints");
                 });
 
-            modelBuilder.Entity("ElbilHusvagnLadda.WebApi.Models.NobilCache", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("CountryCode")
-                        .IsRequired()
-                        .HasColumnType("longtext");
-
-                    b.Property<DateTime>("FetchedAt")
-                        .HasColumnType("datetime(6)");
-
-                    b.Property<string>("JsonData")
-                        .IsRequired()
-                        .HasColumnType("longtext");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("NobilCaches");
-                });
-
             modelBuilder.Entity("ElbilHusvagnLadda.WebApi.Models.SuggestedChargingPoint", b =>
                 {
                     b.Property<int>("Id")
@@ -349,12 +328,6 @@ namespace ElbilHusvagnLadda.WebApi.Migrations
 
                     b.Property<string>("Country")
                         .IsRequired()
-                        .HasColumnType("longtext");
-
-                    b.Property<string>("ExternalId")
-                        .HasColumnType("longtext");
-
-                    b.Property<string>("ExternalSource")
                         .HasColumnType("longtext");
 
                     b.Property<string>("ImageContentType")

@@ -13,6 +13,8 @@ public class SuggestedChargingPoint
     public required string MapCoordinates { get; set; }
     public int? NumberOfChargePoints { get; set; }
     public int Capacity { get; set; }
+    public string? ExternalId { get; set; }
+    public string? ExternalSource { get; set; }
 
     // Store image simply as byte array if needed, similar to ChargingPoint
     [System.Text.Json.Serialization.JsonIgnore]

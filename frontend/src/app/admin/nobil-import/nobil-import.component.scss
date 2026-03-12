@@ -1,0 +1,399 @@
+.nobil-import-container {
+    width: 100%;
+    max-width: 1400px; // Match main page content width
+    margin: 0 auto;
+    padding: 2rem 1rem; // Match main page gutters
+    box-sizing: border-box;
+    height: calc(100vh - 64px); // Adjust based on navbar height, approx
+    display: flex;
+    flex-direction: column;
+
+    .header {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        margin-bottom: 20px;
+
+        h2 {
+            margin: 0;
+        }
+    }
+
+    .back-button {
+        margin-left: -8px;
+    }
+
+  .nobil-import-card {
+    flex: 1;
+    min-height: 0; // Critical: allows flex child to shrink below content size
+    display: flex;
+    flex-direction: column;
+    background-color: var(--card-bg);
+    color: var(--text-primary);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    border-radius: 12px;
+
+    mat-card-title {
+      color: var(--text-primary);
+    }
+
+    mat-card-content {
+      flex: 1;
+      min-height: 0; // Critical: allows flex child to shrink below content size
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+  }
+
+    .search-area {
+        display: flex;
+        gap: 16px;
+        align-items: center;
+        margin-bottom: 20px;
+
+        mat-form-field {
+            width: 200px;
+        }
+    }
+
+    .filter-area {
+        display: flex;
+        gap: 16px;
+        align-items: center;
+        margin-bottom: 20px;
+        flex-wrap: wrap;
+
+        .capacity-filter {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 22px; // Align with form field bottom margin
+
+            .filter-label {
+                font-size: 14px;
+                color: #666;
+                font-weight: 500;
+                white-space: nowrap;
+            }
+
+            ::ng-deep .mat-button-toggle-label-content {
+                line-height: 28px;
+                padding: 0 10px;
+                font-size: 13px;
+            }
+        }
+    }
+
+    .content-area {
+        display: flex;
+        gap: 20px;
+        flex: 1;
+        overflow: hidden;
+
+        @media (max-width: 768px) {
+            flex-direction: column;
+        }
+    }
+
+    .list-area {
+        flex: 1;
+        overflow-y: auto;
+        max-width: 400px;
+
+        @media (max-width: 768px) {
+            max-width: 100%;
+            height: 40%;
+        }
+
+        .station-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0;
+            padding-right: 8px;
+            padding-left: 4px;
+        }
+
+        .station-row {
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            width: 100%;
+            box-sizing: border-box;
+            cursor: pointer;
+
+            .image-container {
+                width: 56px;
+                height: 56px;
+                margin-right: 12px;
+                flex-shrink: 0;
+
+                .placeholder-image {
+                    width: 100%;
+                    height: 100%;
+                    background-color: var(--bg-secondary);
+                    border-radius: 8px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    color: var(--text-secondary);
+                    border: 1px solid var(--border-color);
+
+                    mat-icon {
+                        font-size: 24px;
+                        width: 24px;
+                        height: 24px;
+                    }
+                }
+            }
+
+            .text-content-container {
+                border: 1px solid var(--border-color);
+                border-radius: 12px;
+                flex: 1;
+                min-width: 0;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                padding: 8px 16px;
+                background-color: var(--card-bg);
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+                transition: box-shadow 0.2s ease, background-color 0.2s ease;
+                min-height: 56px;
+
+                .station-info {
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                    gap: 8px;
+
+                    .station-name {
+                        font-weight: 500;
+                        white-space: nowrap;
+                        overflow: hidden;
+                        text-overflow: ellipsis;
+                        margin-right: 8px;
+                    }
+
+                    .station-city {
+                        color: var(--text-secondary);
+                        white-space: nowrap;
+                        flex-shrink: 0;
+                        font-size: 14px;
+                    }
+                }
+
+                .station-stats {
+                    display: flex;
+                    gap: 8px;
+                    margin-top: 4px;
+
+                    .stat-item {
+                        display: flex;
+                        align-items: center;
+                        font-size: 12px;
+                        color: #555;
+                        background: var(--bg-secondary);
+                        padding: 2px 8px;
+                        border-radius: 12px;
+                        border: 1px solid var(--border-color);
+
+                        @media (prefers-color-scheme: dark) {
+                            color: #ccc;
+                        }
+
+                        mat-icon {
+                            font-size: 14px;
+                            width: 14px;
+                            height: 14px;
+                            margin-right: 4px;
+                        }
+                    }
+                }
+            }
+
+            &:hover .text-content-container {
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+                background-color: var(--bg-secondary);
+            }
+
+            &.selected .text-content-container {
+                border-color: var(--primary-color, #1976d2);
+                box-shadow: 0 0 0 2px rgba(25, 118, 210, 0.2);
+                background-color: var(--card-bg);
+            }
+
+            .station-actions {
+                display: flex;
+                gap: 8px;
+                margin-left: 12px;
+                flex-shrink: 0;
+            }
+        }
+    }
+
+    .map-area {
+        flex: 2;
+        border-radius: 4px;
+        overflow: hidden;
+        position: relative; // For map absolute positioning if needed, or just flex item
+
+        .map-controls {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            z-index: 500;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            align-items: flex-end;
+        }
+
+        .control-btn {
+            background: var(--card-bg);
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            width: 40px;
+            height: 40px;
+            padding: 0;
+            cursor: pointer;
+            color: var(--text-primary);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            &:hover {
+                background: var(--bg-secondary);
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+                transform: translateY(-1px);
+            }
+
+            &.active {
+                background: #3b82f6;
+                color: white;
+                border-color: #2563eb;
+            }
+
+            &:active {
+                transform: translateY(0);
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            }
+        }
+
+        #nobil-map {
+            height: 100%;
+            width: 100%;
+            border-radius: 12px;
+        }
+    }
+
+    .match-area {
+        flex: 1;
+        overflow-y: auto;
+
+        mat-card {
+            margin-bottom: 20px;
+        }
+
+        .match-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            padding: 15px;
+        }
+
+        .match-item {
+            border: 1px solid #eee;
+            border-radius: 8px;
+            padding: 15px;
+            background: #fff;
+
+            @media (prefers-color-scheme: dark) {
+                background: #424242;
+                border-color: #555;
+            }
+
+            .match-details {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                gap: 20px;
+
+                @media (max-width: 768px) {
+                    flex-direction: column;
+                    align-items: flex-start;
+                }
+            }
+
+            .station-side {
+                flex: 1;
+
+                h4 {
+                    margin: 5px 0;
+                }
+
+                p {
+                    margin: 0;
+                    color: #666;
+
+                    @media (prefers-color-scheme: dark) {
+                        color: #ccc;
+                    }
+                }
+
+                .badge {
+                    font-size: 10px;
+                    padding: 2px 6px;
+                    border-radius: 4px;
+                    text-transform: uppercase;
+                    font-weight: bold;
+
+                    &.local {
+                        background: #e3f2fd;
+                        color: #1976d2;
+                    }
+
+                    &.nobil {
+                        background: #e8f5e9;
+                        color: #388e3c;
+                    }
+                }
+            }
+
+            .distance-info {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                gap: 10px;
+                min-width: 100px;
+
+                @media (max-width: 768px) {
+                    flex-direction: row;
+                    width: 100%;
+                    justify-content: space-between;
+                }
+
+                span {
+                    font-weight: bold;
+                    font-size: 1.2em;
+                }
+            }
+        }
+    }
+
+    .no-data-scan {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 200px;
+        flex-direction: column;
+    }
+}
+
+@media (max-width: 600px) {
+    .nobil-import-container {
+        padding: 0.5rem;
+    }
+}

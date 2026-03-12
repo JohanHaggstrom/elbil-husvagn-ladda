@@ -28,7 +28,7 @@ p {
 .main {
     width: 100%;
     max-width: 100%;
-    min-height: 100%;
+    height: 100vh;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -36,7 +36,7 @@ p {
     padding: 2rem 1rem;
     box-sizing: border-box;
     position: relative;
-    overflow-x: hidden;
+    overflow: hidden;
 }
 
 .link-button {
@@ -89,6 +89,13 @@ p {
         color: var(--text-secondary);
         font-weight: 400;
         font-size: 1.1rem;
+    }
+
+    .station-count {
+        margin: -1rem 0 1.25rem 0;
+        color: var(--text-secondary);
+        font-size: 0.95rem;
+        font-weight: 500;
     }
 
     .search-field {
@@ -213,7 +220,9 @@ p {
     justify-content: center;
     width: 100%;
     max-width: 1400px;
-    height: calc(100vh - 250px); // Approximate height for map
+    flex: 1;
+    min-height: 0; // Critical for flex child overflow to work
+    overflow: hidden;
 }
 
 .list-view {
@@ -328,7 +337,6 @@ p {
         justify-content: flex-start; // Align content to top instead of center
         width: 100%;
         max-width: 100%;
-        height: calc(100vh - 280px);
     }
 }
 
@@ -351,10 +359,6 @@ p {
         .search-field {
             margin-top: 0.5rem; // Reduce top margin on mobile
         }
-    }
-
-    .content {
-        height: calc(100vh - 180px); // More space for the map on small screens
     }
 
     .one-row-container {

@@ -114,4 +114,6 @@ Läs mer i [SECURITY.md](SECURITY.md).
 
 Se respektive README i `frontend/` och `backend/` mapparna för mer detaljerad information.
 
+För information om driftsättning och miljövariabler, se [DEPLOY.md](DEPLOY.md).
+
 
