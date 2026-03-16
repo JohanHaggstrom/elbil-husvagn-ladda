@@ -20,6 +20,7 @@ services:
       - ConnectionStrings__DefaultConnection=Server=db;Database=charge_ev;User=root;Password=${DB_ROOT_PASSWORD};
       - TZ=Europe/Stockholm
       - ApiKey=${API_KEY}
+      - Nobil__ApiKey=${NOBIL_API_KEY}
     depends_on:
       - db
     networks:
