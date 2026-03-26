@@ -22,6 +22,7 @@ import { ConnectionService } from '../services/connection.service';
 import { ErrorService } from '../services/error.service';
 import { FeedbackService } from '../services/feedback.service';
 import { ThemeService } from '../services/theme.service';
+import { ShareService } from '../services/share.service';
 
 @Component({
     selector: 'app-home',
@@ -71,9 +72,15 @@ export class HomeComponent implements OnInit {
     private errorService = inject(ErrorService);
     private feedbackService = inject(FeedbackService);
     private backupService = inject(BackupService);
+    protected shareService = inject(ShareService);
     private snackBar = inject(MatSnackBar);
 
     protected unhandledFeedbackCount = 0;
+
+    onShare(event: Event, point: IdentifiedCaravanChargePoint): void {
+        event.stopPropagation();
+        this.shareService.shareChargingPoint(point);
+    }
 
     navigateToLogin(): void {
         this.router.navigate(['/login']);

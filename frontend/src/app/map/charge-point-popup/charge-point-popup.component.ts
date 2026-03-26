@@ -1,13 +1,16 @@
 import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { environment } from '../../../environments/environment';
 import { IdentifiedCaravanChargePoint } from '../../app.model';
+import { ShareService } from '../../services/share.service';
+import { inject } from '@angular/core';
 
 @Component({
     selector: 'app-charge-point-popup',
-    imports: [CommonModule, MatIconModule, MatTooltipModule],
+    imports: [CommonModule, MatButtonModule, MatIconModule, MatTooltipModule],
     templateUrl: './charge-point-popup.component.html',
     styleUrl: './charge-point-popup.component.scss'
 })
@@ -17,6 +20,7 @@ export class ChargePointPopupComponent {
     @Output() edit = new EventEmitter<void>();
     @Output() delete = new EventEmitter<void>();
     @Output() viewComments = new EventEmitter<void>();
+    protected shareService = inject(ShareService);
 
     get capacityColor(): string {
         if (this.chargePoint.capacity > 50) return '#10b981';
@@ -33,6 +37,10 @@ export class ChargePointPopupComponent {
     }
 
 
+
+    onShare(): void {
+        this.shareService.shareChargingPoint(this.chargePoint);
+    }
 
     onEdit(): void {
         this.edit.emit();

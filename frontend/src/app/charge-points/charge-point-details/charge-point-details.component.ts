@@ -16,6 +16,7 @@ import { AuthService } from '../../auth/auth.service';
 import { ChargePointComment, CommentStats, CreateCommentRequest, VoteType } from '../../models/comment.model';
 import { ChargingPoint, ChargingStationService } from '../../services/charging-station.service';
 import { CommentService } from '../../services/comment.service';
+import { ShareService } from '../../services/share.service';
 
 @Component({
     selector: 'app-charge-point-details',
@@ -41,6 +42,7 @@ export class ChargePointDetailsComponent implements OnInit {
     private route = inject(ActivatedRoute);
     private router = inject(Router);
     protected authService = inject(AuthService);
+    protected shareService = inject(ShareService);
 
     chargePoint: ChargingPoint | null = null;
     comments: ChargePointComment[] = [];
@@ -162,6 +164,12 @@ export class ChargePointDetailsComponent implements OnInit {
             hour: '2-digit',
             minute: '2-digit'
         });
+    }
+
+    onShare(): void {
+        if (this.chargePoint) {
+            this.shareService.shareChargingPoint(this.chargePoint);
+        }
     }
 
     onBack(): void {

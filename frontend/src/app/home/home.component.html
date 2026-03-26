@@ -193,6 +193,17 @@
                         <mat-icon>delete</mat-icon>
                     </button>
                     }
+                    @if (shareService.canShare()) {
+                    <button
+                        class="link-button"
+                        mat-mini-fab
+                        matTooltip="Dela"
+                        color="accent"
+                        (click)="onShare($event, item)"
+                    >
+                        <mat-icon>share</mat-icon>
+                    </button>
+                    }
                     <button
                         class="link-button"
                         mat-mini-fab

@@ -29,9 +29,22 @@
         <p class="popup-comments"><em>{{ chargePoint.comments }}</em></p>
     }
 
-    <button class="comments-btn" (click)="onViewComments()">
-        <mat-icon>chat_bubble</mat-icon> Visa kommentarer
-    </button>
+    <div class="row-actions">
+        <button class="comments-btn" (click)="onViewComments()">
+            <mat-icon>chat_bubble</mat-icon> Kommentarer
+        </button>
+        @if (shareService.canShare()) {
+            <button
+                class="link-button"
+                mat-mini-fab
+                matTooltip="Dela"
+                color="accent"
+                (click)="onShare()"
+            >
+                <mat-icon>share</mat-icon>
+            </button>
+        }
+    </div>
 
     <a [href]="googleMapsUrl"
        target="_blank"

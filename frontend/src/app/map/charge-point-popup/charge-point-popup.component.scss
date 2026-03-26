@@ -65,31 +65,42 @@
         border-radius: 4px;
     }
 
-    .comments-btn {
-        width: 100%;
-        padding: 8px;
-        background: #3b82f6;
-        border: none;
-        border-radius: 4px;
-        cursor: pointer;
-        color: white;
-        font-weight: 500;
+    .row-actions {
+        display: flex;
+        gap: 8px;
         margin-top: 8px;
-        transition: background 0.2s;
+        align-items: center;
 
-        &:hover {
-            background: #2563eb;
+        .comments-btn {
+            flex: 1;
+            padding: 8px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            color: white;
+            background: #3b82f6;
+            font-weight: 500;
+            transition: opacity 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+
+            &:hover {
+                opacity: 0.9;
+            }
+
+            mat-icon {
+                font-size: 18px;
+                width: 18px;
+                height: 18px;
+            }
         }
 
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 8px;
-
-        mat-icon {
-            font-size: 18px;
-            width: 18px;
-            height: 18px;
+        button[mat-mini-fab] {
+            flex: 0 0 auto;
+            min-width: 40px;
+            min-height: 40px;
         }
     }
 

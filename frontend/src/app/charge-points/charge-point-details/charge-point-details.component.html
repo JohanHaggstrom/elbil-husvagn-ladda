@@ -4,6 +4,19 @@
             <mat-icon>arrow_back</mat-icon>
         </button>
         <h1>{{ chargePoint?.title || 'Laddstation' }}</h1>
+        <div class="header-actions">
+            @if (shareService.canShare()) {
+                <button
+                    class="link-button"
+                    mat-mini-fab
+                    matTooltip="Dela"
+                    color="accent"
+                    (click)="onShare()"
+                >
+                    <mat-icon>share</mat-icon>
+                </button>
+            }
+        </div>
     </div>
 
     @if (chargePoint) {
