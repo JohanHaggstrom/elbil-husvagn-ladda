@@ -1,0 +1,41 @@
+version: '3.8'
+
+services:
+  app:
+    image: mcr.microsoft.com/devcontainers/dotnet:8.0
+    container_name: elbil-husvagn-ladda-dev
+    ports:
+      - "4200:4200"
+      - "5000:5000"
+      - "5001:5001"
+    volumes:
+      - ..:/workspace:cached
+    command: /bin/sh -c "while sleep 1000; do :; done"
+    env_file:
+      - ../.env
+    networks:
+      - dev-network
+    depends_on:
+      - db
+
+  db:
+    image: mariadb:10.11
+    container_name: elbil-husvagn-ladda-dev-db
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: dev_password_123
+      MYSQL_DATABASE: ElbilHusvagnLadda
+      MYSQL_USER: elbil_user
+      MYSQL_PASSWORD: elbil_pass_123
+      TZ: Europe/Stockholm
+    volumes:
+      - dev_db_data:/var/lib/mysql
+    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+    networks:
+      - dev-network
+
+volumes:
+  dev_db_data:
+
+networks:
+  dev-network:

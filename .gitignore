@@ -46,3 +46,8 @@ backend/**/bin/
 backend/**/obj/
 backend/**/*.user
 backend/**/*.suo
+
+# Environment variables - NEVER commit secrets!
+.env
+.env.local
+.env.*.local

@@ -1,0 +1,35 @@
+{
+  "name": "Elbil Husvagn Ladda Dev",
+  "dockerComposeFile": "docker-compose.yml",
+  "service": "app",
+  "workspaceFolder": "/workspace",
+
+  "features": {
+    "ghcr.io/devcontainers/features/node:1": {
+      "version": "lts"
+    }
+  },
+
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-dotnettools.csharp",
+        "esbenp.prettier-vscode",
+        "dbaeumer.vscode-eslint",
+        "Angular.ng-template"
+      ]
+    }
+  },
+
+  "forwardPorts": [4200, 5000, 5001, 3306],
+  
+  "portsAttributes": {
+    "4200": { "label": "Angular Frontend" },
+    "5000": { "label": "Backend HTTP" },
+    "5001": { "label": "Backend HTTPS" },
+    "3306": { "label": "MariaDB" }
+  },
+
+  "remoteUser": "vscode",
+  "postCreateCommand": "dotnet tool restore && npm cache clean --force"
+}
