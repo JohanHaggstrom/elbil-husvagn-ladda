@@ -1,3 +1,4 @@
+using System.Security.Cryptography;
 using ElbilHusvagnLadda.WebApi.Data;
 using ElbilHusvagnLadda.WebApi.Models;
 using ElbilHusvagnLadda.WebApi.Services;
@@ -139,8 +140,35 @@ public class UsersController : ControllerBase
         return Ok(new { message = "Password updated." });
     }
 
-    private string GenerateRandomPassword()
+    private static string GenerateRandomPassword()
     {
-        return Path.GetRandomFileName().Replace(".", "").Substring(0, 10) + "!";
+        const string lower = "abcdefghijkmnopqrstuvwxyz";
+        const string upper = "ABCDEFGHJKLMNPQRSTUVWXYZ";
+        const string digits = "23456789";
+        const string special = "!@#$%&*?";
+        const string all = lower + upper + digits + special;
+
+        var bytes = RandomNumberGenerator.GetBytes(16);
+
+        // Guarantee at least one character from each required category
+        var password = new char[16];
+        password[0] = lower[bytes[0] % lower.Length];
+        password[1] = upper[bytes[1] % upper.Length];
+        password[2] = digits[bytes[2] % digits.Length];
+        password[3] = special[bytes[3] % special.Length];
+        for (int i = 4; i < 16; i++)
+        {
+            password[i] = all[bytes[i] % all.Length];
+        }
+
+        // Shuffle to avoid predictable positions
+        var shuffleBytes = RandomNumberGenerator.GetBytes(16);
+        for (int i = password.Length - 1; i > 0; i--)
+        {
+            int j = shuffleBytes[i] % (i + 1);
+            (password[i], password[j]) = (password[j], password[i]);
+        }
+
+        return new string(password);
     }
 }
