@@ -4,7 +4,9 @@ import {
     AfterViewInit,
     ApplicationRef,
     Component,
+    ComponentRef,
     createComponent,
+    DestroyRef,
     EnvironmentInjector,
     EventEmitter,
     inject,
@@ -15,6 +17,7 @@ import {
     Output,
     SimpleChanges,
 } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -54,6 +57,8 @@ export class MapComponent
     public shareService = inject(ShareService);
     private appRef = inject(ApplicationRef);
     private injector = inject(EnvironmentInjector);
+    private destroyRef = inject(DestroyRef);
+    private popupComponentRefs: ComponentRef<ChargePointPopupComponent>[] = [];
 
     public searchQuery: string = '';
     public searchResults: any[] = [];
@@ -96,9 +101,17 @@ export class MapComponent
     }
 
     ngOnDestroy(): void {
+        this.destroyPopupComponents();
         if (this.map) {
             this.map.remove();
         }
+    }
+
+    private destroyPopupComponents(): void {
+        for (const ref of this.popupComponentRefs) {
+            ref.destroy();
+        }
+        this.popupComponentRefs = [];
     }
 
     private initMap(): void {
@@ -166,8 +179,9 @@ export class MapComponent
             return;
         }
 
-        // Clear existing markers
+        // Clear existing markers and destroy any popup components attached to them
         this.markerClusterGroup.clearLayers();
+        this.destroyPopupComponents();
 
         let markersCount = 0;
 
@@ -265,22 +279,28 @@ export class MapComponent
         componentRef.instance.isAuthenticated =
             this.authService.isAuthenticated();
 
-        // Subscribe to outputs
-        componentRef.instance.edit.subscribe(() => {
+        // Subscribe to outputs. Subscriptions are released when the
+        // componentRef is destroyed (in destroyPopupComponents / ngOnDestroy),
+        // or if the MapComponent itself is destroyed first via takeUntilDestroyed.
+        const untilDestroyed = takeUntilDestroyed(this.destroyRef);
+        componentRef.instance.edit.pipe(untilDestroyed).subscribe(() => {
             this.editChargePoint.emit(point);
         });
 
-        componentRef.instance.delete.subscribe(() => {
+        componentRef.instance.delete.pipe(untilDestroyed).subscribe(() => {
             this.deleteChargePoint.emit(point);
             this.map?.closePopup();
         });
 
-        componentRef.instance.viewComments.subscribe(() => {
+        componentRef.instance.viewComments.pipe(untilDestroyed).subscribe(() => {
             this.viewComments.emit(point);
         });
 
         // Attach to the application
         this.appRef.attachView(componentRef.hostView);
+
+        // Track for later destruction
+        this.popupComponentRefs.push(componentRef);
 
         // Get the DOM element
         const domElem = (componentRef.hostView as any)

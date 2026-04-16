@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, DestroyRef, OnInit, inject } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
@@ -39,6 +40,7 @@ export class AdminFeedbackComponent implements OnInit {
     private feedbackService = inject(FeedbackService);
     private snackBar = inject(MatSnackBar);
     private router = inject(Router);
+    private destroyRef = inject(DestroyRef);
     authService = inject(AuthService);
 
     feedbacks: Feedback[] = [];
@@ -57,19 +59,22 @@ export class AdminFeedbackComponent implements OnInit {
 
     loadFeedback() {
         this.isLoading = true;
-        this.feedbackService.getAllFeedback().subscribe({
-            next: (feedbacks) => {
-                this.feedbacks = feedbacks;
-                this.isLoading = false;
-            },
-            error: (error) => {
-                console.error('Error loading feedback:', error);
-                this.snackBar.open('Kunde inte ladda feedback', 'Stäng', {
-                    duration: 3000
-                });
-                this.isLoading = false;
-            }
-        });
+        this.feedbackService
+            .getAllFeedback()
+            .pipe(takeUntilDestroyed(this.destroyRef))
+            .subscribe({
+                next: (feedbacks) => {
+                    this.feedbacks = feedbacks;
+                    this.isLoading = false;
+                },
+                error: (error) => {
+                    console.error('Error loading feedback:', error);
+                    this.snackBar.open('Kunde inte ladda feedback', 'Stäng', {
+                        duration: 3000
+                    });
+                    this.isLoading = false;
+                }
+            });
     }
 
     deleteFeedback(feedback: Feedback) {
@@ -79,42 +84,48 @@ export class AdminFeedbackComponent implements OnInit {
             return;
         }
 
-        this.feedbackService.deleteFeedback(feedback.id).subscribe({
-            next: () => {
-                this.feedbacks = this.feedbacks.filter(f => f.id !== feedback.id);
-                this.snackBar.open('Feedback borttagen', 'Stäng', {
-                    duration: 3000
-                });
-            },
-            error: (error) => {
-                console.error('Error deleting feedback:', error);
-                this.snackBar.open('Kunde inte ta bort feedback', 'Stäng', {
-                    duration: 3000
-                });
-            }
-        });
+        this.feedbackService
+            .deleteFeedback(feedback.id)
+            .pipe(takeUntilDestroyed(this.destroyRef))
+            .subscribe({
+                next: () => {
+                    this.feedbacks = this.feedbacks.filter(f => f.id !== feedback.id);
+                    this.snackBar.open('Feedback borttagen', 'Stäng', {
+                        duration: 3000
+                    });
+                },
+                error: (error) => {
+                    console.error('Error deleting feedback:', error);
+                    this.snackBar.open('Kunde inte ta bort feedback', 'Stäng', {
+                        duration: 3000
+                    });
+                }
+            });
     }
 
     toggleHandled(feedback: Feedback) {
         if (!feedback.id) return;
 
         const newStatus = !feedback.isHandled;
-        this.feedbackService.markAsHandled(feedback.id, newStatus).subscribe({
-            next: () => {
-                feedback.isHandled = newStatus;
-                this.snackBar.open(
-                    newStatus ? 'Markerad som hanterad' : 'Markerad som ohanterad',
-                    'Stäng',
-                    { duration: 2000 }
-                );
-            },
-            error: (error) => {
-                console.error('Error updating feedback status:', error);
-                this.snackBar.open('Kunde inte uppdatera status', 'Stäng', {
-                    duration: 3000
-                });
-            }
-        });
+        this.feedbackService
+            .markAsHandled(feedback.id, newStatus)
+            .pipe(takeUntilDestroyed(this.destroyRef))
+            .subscribe({
+                next: () => {
+                    feedback.isHandled = newStatus;
+                    this.snackBar.open(
+                        newStatus ? 'Markerad som hanterad' : 'Markerad som ohanterad',
+                        'Stäng',
+                        { duration: 2000 }
+                    );
+                },
+                error: (error) => {
+                    console.error('Error updating feedback status:', error);
+                    this.snackBar.open('Kunde inte uppdatera status', 'Stäng', {
+                        duration: 3000
+                    });
+                }
+            });
     }
 
     startEditingResponse(feedback: Feedback) {
@@ -130,22 +141,25 @@ export class AdminFeedbackComponent implements OnInit {
     saveResponse(feedback: Feedback) {
         if (!feedback.id) return;
 
-        this.feedbackService.updateAdminResponse(feedback.id, this.tempResponse).subscribe({
-            next: () => {
-                feedback.adminResponse = this.tempResponse;
-                this.editingResponseId = null;
-                this.tempResponse = '';
-                this.snackBar.open('Svar sparat', 'Stäng', {
-                    duration: 2000
-                });
-            },
-            error: (error) => {
-                console.error('Error saving response:', error);
-                this.snackBar.open('Kunde inte spara svar', 'Stäng', {
-                    duration: 3000
-                });
-            }
-        });
+        this.feedbackService
+            .updateAdminResponse(feedback.id, this.tempResponse)
+            .pipe(takeUntilDestroyed(this.destroyRef))
+            .subscribe({
+                next: () => {
+                    feedback.adminResponse = this.tempResponse;
+                    this.editingResponseId = null;
+                    this.tempResponse = '';
+                    this.snackBar.open('Svar sparat', 'Stäng', {
+                        duration: 2000
+                    });
+                },
+                error: (error) => {
+                    console.error('Error saving response:', error);
+                    this.snackBar.open('Kunde inte spara svar', 'Stäng', {
+                        duration: 3000
+                    });
+                }
+            });
     }
 
     getFeedbackTypeLabel(type: FeedbackType): string {

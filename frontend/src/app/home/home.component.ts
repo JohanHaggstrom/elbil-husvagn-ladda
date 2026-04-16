@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, DestroyRef, OnInit, inject } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
@@ -74,6 +75,7 @@ export class HomeComponent implements OnInit {
     private backupService = inject(BackupService);
     protected shareService = inject(ShareService);
     private snackBar = inject(MatSnackBar);
+    private destroyRef = inject(DestroyRef);
 
     protected unhandledFeedbackCount = 0;
 
@@ -157,12 +159,14 @@ export class HomeComponent implements OnInit {
             this.loadUnhandledSuggestionsCount();
         }
 
-        this.connectionService.online$.subscribe((isOnline) => {
-            this.isOnline = isOnline;
-            if (isOnline && this.identifiedChargePoints.length === 0) {
-                this.loadChargingPoints();
-            }
-        });
+        this.connectionService.online$
+            .pipe(takeUntilDestroyed(this.destroyRef))
+            .subscribe((isOnline) => {
+                this.isOnline = isOnline;
+                if (isOnline && this.identifiedChargePoints.length === 0) {
+                    this.loadChargingPoints();
+                }
+            });
     }
 
     navigateToEdit(point: IdentifiedCaravanChargePoint): void {
@@ -239,31 +243,37 @@ export class HomeComponent implements OnInit {
     }
 
     private loadUnhandledFeedbackCount(): void {
-        this.feedbackService.getUnhandledCount().subscribe({
-            next: (count) => {
-                this.unhandledFeedbackCount = count;
-            },
-            error: (error) => {
-                console.error('Error loading unhandled feedback count:', error);
-                // Silently fail - not critical
-            },
-        });
+        this.feedbackService
+            .getUnhandledCount()
+            .pipe(takeUntilDestroyed(this.destroyRef))
+            .subscribe({
+                next: (count) => {
+                    this.unhandledFeedbackCount = count;
+                },
+                error: (error) => {
+                    console.error('Error loading unhandled feedback count:', error);
+                    // Silently fail - not critical
+                },
+            });
     }
 
     protected unhandledSuggestionsCount = 0;
 
     private loadUnhandledSuggestionsCount(): void {
-        this.chargingStationService.getSuggestedCount().subscribe({
-            next: (count) => {
-                this.unhandledSuggestionsCount = count;
-            },
-            error: (error) => {
-                console.error(
-                    'Error loading unhandled suggestions count:',
-                    error
-                );
-            },
-        });
+        this.chargingStationService
+            .getSuggestedCount()
+            .pipe(takeUntilDestroyed(this.destroyRef))
+            .subscribe({
+                next: (count) => {
+                    this.unhandledSuggestionsCount = count;
+                },
+                error: (error) => {
+                    console.error(
+                        'Error loading unhandled suggestions count:',
+                        error
+                    );
+                },
+            });
     }
 
     protected getImageUrl(id: number): string {
