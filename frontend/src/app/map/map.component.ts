@@ -16,11 +16,14 @@ import {
     SimpleChanges,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { firstValueFrom } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { IdentifiedCaravanChargePoint } from '../app.model';
 import { AuthService } from '../auth/auth.service';
+import { ShareService } from '../services/share.service';
 import { ChargePointPopupComponent } from './charge-point-popup/charge-point-popup.component';
 
 import type { DivIcon, Map as LeafletMap, Marker, TileLayer } from 'leaflet';
@@ -28,7 +31,7 @@ declare var L: any;
 
 @Component({
     selector: 'app-map',
-    imports: [CommonModule, FormsModule, MatIconModule],
+    imports: [CommonModule, FormsModule, MatButtonModule, MatIconModule, MatTooltipModule],
     templateUrl: './map.component.html',
     styleUrl: './map.component.scss',
 })
@@ -48,6 +51,7 @@ export class MapComponent
     private userLocationMarker: Marker | null = null;
     private http = inject(HttpClient);
     public authService = inject(AuthService);
+    public shareService = inject(ShareService);
     private appRef = inject(ApplicationRef);
     private injector = inject(EnvironmentInjector);
 
@@ -410,6 +414,12 @@ export class MapComponent
         if (this.mobilePopupChargePoint) {
             this.viewComments.emit(this.mobilePopupChargePoint);
             this.closeMobilePopup();
+        }
+    }
+
+    public onMobilePopupShare(): void {
+        if (this.mobilePopupChargePoint) {
+            this.shareService.shareChargingPoint(this.mobilePopupChargePoint);
         }
     }
 }

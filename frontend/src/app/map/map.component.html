@@ -105,10 +105,23 @@
                     }
 
                     <div class="action-buttons">
-                        <button class="action-btn primary" (click)="onMobilePopupViewComments()">
-                            <mat-icon>chat_bubble</mat-icon>
-                            Visa kommentarer
-                        </button>
+                        <div class="comments-row">
+                            <button class="action-btn primary" (click)="onMobilePopupViewComments()">
+                                <mat-icon>chat_bubble</mat-icon>
+                                Visa kommentarer
+                            </button>
+                            @if (shareService.canShare()) {
+                                <button
+                                    mat-mini-fab
+                                    matTooltip="Dela"
+                                    color="accent"
+                                    class="share-fab"
+                                    (click)="onMobilePopupShare()"
+                                >
+                                    <mat-icon>share</mat-icon>
+                                </button>
+                            }
+                        </div>
 
                         <a [href]="'https://www.google.com/maps/place/' + mobilePopupChargePoint.mapCoordinates"
                            target="_blank"

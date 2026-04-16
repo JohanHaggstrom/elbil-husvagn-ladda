@@ -153,6 +153,20 @@
         flex-direction: column;
         gap: 12px;
 
+        .comments-row {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+
+            .action-btn {
+                flex: 1;
+            }
+
+            .share-fab {
+                flex: 0 0 auto;
+            }
+        }
+
         .action-btn {
             display: flex;
             align-items: center;
