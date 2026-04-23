@@ -3,12 +3,31 @@ import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
 
+export type UserRole = 'User' | 'Admin' | 'SuperAdmin';
+
 export interface User {
     id: number;
     username: string;
     email: string;
-    role: 'User' | 'Admin' | 'SuperAdmin';
+    role: UserRole;
     createdAt: string;
+}
+
+export interface CreateUserRequest {
+    username: string;
+    email: string;
+    password: string;
+    role: UserRole;
+}
+
+export interface UpdateUserRequest {
+    email: string;
+    role: UserRole;
+}
+
+export interface ChangePasswordRequest {
+    oldPassword: string;
+    newPassword: string;
 }
 
 @Injectable({
@@ -26,12 +45,12 @@ export class UserService {
         return this.http.get<User>(`${this.apiUrl}/account/profile`);
     }
 
-    createUser(user: any): Observable<User> {
+    createUser(user: CreateUserRequest): Observable<User> {
         return this.http.post<User>(`${this.apiUrl}/users`, user);
     }
 
-    updateUser(id: number, user: any): Observable<any> {
-        return this.http.put(`${this.apiUrl}/users/${id}`, user);
+    updateUser(id: number, user: UpdateUserRequest): Observable<void> {
+        return this.http.put<void>(`${this.apiUrl}/users/${id}`, user);
     }
 
     deleteUser(id: number): Observable<any> {
@@ -42,8 +61,8 @@ export class UserService {
         return this.http.post(`${this.apiUrl}/users/${id}/reset-password`, {});
     }
 
-    changePassword(data: any): Observable<any> {
-        return this.http.post(`${this.apiUrl}/account/change-password`, data);
+    changePassword(data: ChangePasswordRequest): Observable<void> {
+        return this.http.post<void>(`${this.apiUrl}/account/change-password`, data);
     }
 
     updateProfile(email: string, username: string): Observable<any> {
