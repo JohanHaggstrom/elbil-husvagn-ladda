@@ -63,6 +63,8 @@ export class MapComponent
     public searchQuery: string = '';
     public searchResults: any[] = [];
     public isSearching: boolean = false;
+    private lastSearchAt: number = 0;
+    private static readonly NOMINATIM_MIN_INTERVAL_MS = 1000;
     public isSatelliteMode: boolean = false;
     private osmLayer: TileLayer | null = null;
     private satelliteLayer: TileLayer | null = null;
@@ -355,8 +357,17 @@ export class MapComponent
     }
     public async searchLocation(): Promise<void> {
         if (!this.searchQuery || this.searchQuery.length < 3) return;
+        if (this.isSearching) return;
+
+        const sinceLast = Date.now() - this.lastSearchAt;
+        if (sinceLast < MapComponent.NOMINATIM_MIN_INTERVAL_MS) {
+            await new Promise((resolve) =>
+                setTimeout(resolve, MapComponent.NOMINATIM_MIN_INTERVAL_MS - sinceLast)
+            );
+        }
 
         this.isSearching = true;
+        this.lastSearchAt = Date.now();
         const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(
             this.searchQuery
         )}`;
