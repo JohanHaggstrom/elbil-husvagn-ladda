@@ -21,11 +21,13 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { firstValueFrom } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { IdentifiedCaravanChargePoint } from '../app.model';
 import { AuthService } from '../auth/auth.service';
+import { ErrorService } from '../services/error.service';
 import { ShareService } from '../services/share.service';
 import { ChargePointPopupComponent } from './charge-point-popup/charge-point-popup.component';
 
@@ -53,6 +55,8 @@ export class MapComponent
     private markerClusterGroup: any = null;
     private userLocationMarker: Marker | null = null;
     private http = inject(HttpClient);
+    private errorService = inject(ErrorService);
+    private snackBar = inject(MatSnackBar);
     public authService = inject(AuthService);
     public shareService = inject(ShareService);
     private appRef = inject(ApplicationRef);
@@ -345,14 +349,18 @@ export class MapComponent
                     this.map!.setView(userCoords, 12);
                 },
                 (error) => {
-                    console.error('Error getting user location:', error);
-                    alert(
+                    this.errorService.handleError(
+                        error,
                         'Kunde inte hämta din position. Kontrollera att du har gett tillåtelse för platsåtkomst.'
                     );
                 }
             );
         } else {
-            alert('Geolocation stöds inte av din webbläsare.');
+            this.snackBar.open(
+                'Geolocation stöds inte av din webbläsare.',
+                'Stäng',
+                { duration: 5000 }
+            );
         }
     }
     public async searchLocation(): Promise<void> {
@@ -385,12 +393,13 @@ export class MapComponent
                 }
                 this.searchResults = []; // Clear results after selection (or handle list if we want to show multiple)
             } else {
-                alert('Inga platser hittades.');
+                this.snackBar.open('Inga platser hittades.', 'Stäng', {
+                    duration: 5000,
+                });
             }
         } catch (err) {
             this.isSearching = false;
-            console.error('Search error:', err);
-            alert('Ett fel uppstod vid sökning.');
+            this.errorService.handleError(err, 'Ett fel uppstod vid sökning.');
         }
     }
 
