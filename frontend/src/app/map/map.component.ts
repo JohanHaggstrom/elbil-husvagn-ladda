@@ -62,7 +62,14 @@ export class MapComponent
     private appRef = inject(ApplicationRef);
     private injector = inject(EnvironmentInjector);
     private destroyRef = inject(DestroyRef);
-    private popupComponentRefs: ComponentRef<ChargePointPopupComponent>[] = [];
+    private markersById = new Map<
+        number,
+        {
+            marker: Marker;
+            snapshot: string;
+            popupRef: ComponentRef<ChargePointPopupComponent> | null;
+        }
+    >();
 
     public searchQuery: string = '';
     public searchResults: any[] = [];
@@ -107,17 +114,26 @@ export class MapComponent
     }
 
     ngOnDestroy(): void {
-        this.destroyPopupComponents();
+        this.removeAllMarkers();
         if (this.map) {
             this.map.remove();
         }
     }
 
-    private destroyPopupComponents(): void {
-        for (const ref of this.popupComponentRefs) {
-            ref.destroy();
+    private removeAllMarkers(): void {
+        for (const id of Array.from(this.markersById.keys())) {
+            this.removeMarker(id);
         }
-        this.popupComponentRefs = [];
+    }
+
+    private removeMarker(id: number): void {
+        const entry = this.markersById.get(id);
+        if (!entry) return;
+        if (this.markerClusterGroup) {
+            this.markerClusterGroup.removeLayer(entry.marker);
+        }
+        entry.popupRef?.destroy();
+        this.markersById.delete(id);
     }
 
     private initMap(): void {
@@ -185,56 +201,79 @@ export class MapComponent
             return;
         }
 
-        // Clear existing markers and destroy any popup components attached to them
-        this.markerClusterGroup.clearLayers();
-        this.destroyPopupComponents();
+        const wasEmpty = this.markersById.size === 0;
+        const incomingIds = new Set<number>();
+        let changed = false;
 
-        let markersCount = 0;
+        for (const point of this.chargePoints) {
+            incomingIds.add(point.id);
+            const snapshot = JSON.stringify(point);
+            const existing = this.markersById.get(point.id);
 
-        // Add marker for each charge point
-        this.chargePoints.forEach((point) => {
-            const coords = this.parseCoordinates(point.mapCoordinates);
-            if (coords && this.markerClusterGroup) {
-                const icon = this.getMarkerIcon(point.capacity);
-                const marker = L.marker(coords, { icon });
-
-                // On mobile: show fullscreen overlay, on desktop: use Leaflet popup
-                marker.on('click', () => {
-                    if (this.isMobile) {
-                        this.showMobilePopup = true;
-                        this.mobilePopupChargePoint = point;
-                        this.chargePointSelected.emit(point);
-                        // Close any open Leaflet popups
-                        this.map?.closePopup();
-                    } else {
-                        // Desktop: popup will open automatically
-                        this.chargePointSelected.emit(point);
-                        // Close mobile popup if somehow open
-                        this.closeMobilePopup();
-                    }
-                });
-
-                // Only bind popup on desktop
-                if (!this.isMobile) {
-                    marker.bindPopup(
-                        this.createPopupContent(point),
-                        {
-                            autoPan: false,
-                            maxWidth: 300,
-                        }
-                    );
-                }
-
-                this.markerClusterGroup.addLayer(marker);
-                markersCount++;
+            if (existing && existing.snapshot === snapshot) {
+                continue;
             }
-        });
 
-        // Fit map to show all markers if there are any
-        if (this.markerClusterGroup.getLayers().length > 0 && this.map) {
+            if (existing) {
+                this.removeMarker(point.id);
+            }
+
+            if (this.createAndAddMarker(point, snapshot)) {
+                changed = true;
+            }
+        }
+
+        for (const id of Array.from(this.markersById.keys())) {
+            if (!incomingIds.has(id)) {
+                this.removeMarker(id);
+                changed = true;
+            }
+        }
+
+        // Fit bounds when initially populating, mirroring previous behavior.
+        if (changed && wasEmpty && this.markerClusterGroup.getLayers().length > 0) {
             const bounds = this.markerClusterGroup.getBounds();
             this.map.fitBounds(bounds.pad(0.1));
         }
+    }
+
+    private createAndAddMarker(
+        point: IdentifiedCaravanChargePoint,
+        snapshot: string
+    ): boolean {
+        const coords = this.parseCoordinates(point.mapCoordinates);
+        if (!coords || !this.markerClusterGroup) {
+            return false;
+        }
+
+        const icon = this.getMarkerIcon(point.capacity);
+        const marker = L.marker(coords, { icon });
+
+        marker.on('click', () => {
+            if (this.isMobile) {
+                this.showMobilePopup = true;
+                this.mobilePopupChargePoint = point;
+                this.chargePointSelected.emit(point);
+                this.map?.closePopup();
+            } else {
+                this.chargePointSelected.emit(point);
+                this.closeMobilePopup();
+            }
+        });
+
+        let popupRef: ComponentRef<ChargePointPopupComponent> | null = null;
+        if (!this.isMobile) {
+            const { domElem, componentRef } = this.createPopupContent(point);
+            popupRef = componentRef;
+            marker.bindPopup(domElem, {
+                autoPan: false,
+                maxWidth: 300,
+            });
+        }
+
+        this.markerClusterGroup.addLayer(marker);
+        this.markersById.set(point.id, { marker, snapshot, popupRef });
+        return true;
     }
 
     private getMarkerIcon(capacity: number): DivIcon {
@@ -272,22 +311,21 @@ export class MapComponent
         return null;
     }
 
-    private createPopupContent(
-        point: IdentifiedCaravanChargePoint
-    ): HTMLElement {
-        // Create the component dynamically
+    private createPopupContent(point: IdentifiedCaravanChargePoint): {
+        domElem: HTMLElement;
+        componentRef: ComponentRef<ChargePointPopupComponent>;
+    } {
         const componentRef = createComponent(ChargePointPopupComponent, {
             environmentInjector: this.injector,
         });
 
-        // Set the inputs
         componentRef.instance.chargePoint = point;
         componentRef.instance.isAuthenticated =
             this.authService.isAuthenticated();
 
-        // Subscribe to outputs. Subscriptions are released when the
-        // componentRef is destroyed (in destroyPopupComponents / ngOnDestroy),
-        // or if the MapComponent itself is destroyed first via takeUntilDestroyed.
+        // Subscriptions are released when the componentRef is destroyed
+        // (in removeMarker / removeAllMarkers), or if the MapComponent itself
+        // is destroyed first via takeUntilDestroyed.
         const untilDestroyed = takeUntilDestroyed(this.destroyRef);
         componentRef.instance.edit.pipe(untilDestroyed).subscribe(() => {
             this.editChargePoint.emit(point);
@@ -302,17 +340,12 @@ export class MapComponent
             this.viewComments.emit(point);
         });
 
-        // Attach to the application
         this.appRef.attachView(componentRef.hostView);
 
-        // Track for later destruction
-        this.popupComponentRefs.push(componentRef);
-
-        // Get the DOM element
         const domElem = (componentRef.hostView as any)
             .rootNodes[0] as HTMLElement;
 
-        return domElem;
+        return { domElem, componentRef };
     }
 
     public showUserLocation(): void {
