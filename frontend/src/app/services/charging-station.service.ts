@@ -53,9 +53,12 @@ export class ChargingStationService {
     }
 
     createChargingPoint(chargingPoint: Omit<ChargingPoint, 'id'>, file?: File | null): Observable<ChargingPoint> {
+        return this.http.post<ChargingPoint>(this.apiUrl, this.buildFormData(chargingPoint, file));
+    }
+
+    private buildFormData(chargingPoint: Omit<ChargingPoint, 'id'>, file?: File | null): FormData {
         const formData = new FormData();
 
-        // Append all charge point fields
         formData.append('title', chargingPoint.title);
         formData.append('address1', chargingPoint.address1);
         if (chargingPoint.address2) formData.append('address2', chargingPoint.address2);
@@ -69,12 +72,11 @@ export class ChargingStationService {
         if (chargingPoint.externalId) formData.append('externalId', chargingPoint.externalId);
         if (chargingPoint.externalSource) formData.append('externalSource', chargingPoint.externalSource);
 
-        // Append image if provided
         if (file) {
             formData.append('image', file);
         }
 
-        return this.http.post<ChargingPoint>(this.apiUrl, formData);
+        return formData;
     }
 
     deleteChargingPoint(id: number): Observable<void> {
@@ -103,28 +105,7 @@ export class ChargingStationService {
     }
 
     suggestChargingPoint(chargingPoint: Omit<ChargingPoint, 'id'>, file?: File | null): Observable<ChargingPoint> {
-        const formData = new FormData();
-
-        // Append all charge point fields
-        formData.append('title', chargingPoint.title);
-        formData.append('address1', chargingPoint.address1);
-        if (chargingPoint.address2) formData.append('address2', chargingPoint.address2);
-        formData.append('postalCode', chargingPoint.postalCode);
-        formData.append('city', chargingPoint.city);
-        formData.append('country', chargingPoint.country);
-        if (chargingPoint.comments) formData.append('comments', chargingPoint.comments);
-        formData.append('mapCoordinates', chargingPoint.mapCoordinates);
-        if (chargingPoint.numberOfChargePoints) formData.append('numberOfChargePoints', chargingPoint.numberOfChargePoints.toString());
-        formData.append('capacity', chargingPoint.capacity.toString());
-        if (chargingPoint.externalId) formData.append('externalId', chargingPoint.externalId);
-        if (chargingPoint.externalSource) formData.append('externalSource', chargingPoint.externalSource);
-
-        // Append image if provided
-        if (file) {
-            formData.append('image', file);
-        }
-
-        return this.http.post<ChargingPoint>(this.suggestedApiUrl, formData, this.getHeaders());
+        return this.http.post<ChargingPoint>(this.suggestedApiUrl, this.buildFormData(chargingPoint, file), this.getHeaders());
     }
 
     deleteSuggestedChargingPoint(id: number): Observable<void> {
