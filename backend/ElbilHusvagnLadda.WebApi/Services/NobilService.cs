@@ -352,7 +352,14 @@ public class NobilService : INobilService
                 return (lat, lon);
             }
         }
-        catch {}
+        catch (Exception ex)
+        {
+            _logger.LogWarning(
+                ex,
+                "Error parsing NOBIL coordinates from '{CoordString}'",
+                coordString
+            );
+        }
         return (0, 0);
     }
 
