@@ -22,22 +22,34 @@ public class EmailService : IEmailService
         _logger = logger;
     }
 
-    public async Task SendFeedbackResponseAsync(string toEmail, string feedbackTitle, string adminResponse)
+    public async Task SendFeedbackResponseAsync(
+        string toEmail,
+        string feedbackTitle,
+        string adminResponse
+    )
     {
         try
         {
             // Skip if email settings are not configured
-            if (string.IsNullOrEmpty(_emailSettings.SmtpServer) ||
-                string.IsNullOrEmpty(_emailSettings.FromEmail))
+            if (
+                string.IsNullOrEmpty(_emailSettings.SmtpServer)
+                || string.IsNullOrEmpty(_emailSettings.FromEmail)
+            )
             {
                 _logger.LogWarning("Email settings not configured. Skipping email send.");
                 return;
             }
 
-            using var smtpClient = new SmtpClient(_emailSettings.SmtpServer, _emailSettings.SmtpPort)
+            using var smtpClient = new SmtpClient(
+                _emailSettings.SmtpServer,
+                _emailSettings.SmtpPort
+            )
             {
-                Credentials = new NetworkCredential(_emailSettings.SmtpUsername, _emailSettings.SmtpPassword),
-                EnableSsl = _emailSettings.EnableSsl
+                Credentials = new NetworkCredential(
+                    _emailSettings.SmtpUsername,
+                    _emailSettings.SmtpPassword
+                ),
+                EnableSsl = _emailSettings.EnableSsl,
             };
 
             var mailMessage = new MailMessage
@@ -45,7 +57,7 @@ public class EmailService : IEmailService
                 From = new MailAddress(_emailSettings.FromEmail, _emailSettings.FromName),
                 Subject = $"Svar på din feedback: {feedbackTitle}",
                 Body = BuildEmailBody(feedbackTitle, adminResponse),
-                IsBodyHtml = true
+                IsBodyHtml = true,
             };
 
             mailMessage.To.Add(toEmail);
@@ -64,16 +76,25 @@ public class EmailService : IEmailService
     {
         try
         {
-            if (string.IsNullOrEmpty(_emailSettings.SmtpServer) || string.IsNullOrEmpty(_emailSettings.FromEmail))
+            if (
+                string.IsNullOrEmpty(_emailSettings.SmtpServer)
+                || string.IsNullOrEmpty(_emailSettings.FromEmail)
+            )
             {
                 _logger.LogWarning("Email settings not configured. Skipping email send.");
                 return;
             }
 
-            using var smtpClient = new SmtpClient(_emailSettings.SmtpServer, _emailSettings.SmtpPort)
+            using var smtpClient = new SmtpClient(
+                _emailSettings.SmtpServer,
+                _emailSettings.SmtpPort
+            )
             {
-                Credentials = new NetworkCredential(_emailSettings.SmtpUsername, _emailSettings.SmtpPassword),
-                EnableSsl = _emailSettings.EnableSsl
+                Credentials = new NetworkCredential(
+                    _emailSettings.SmtpUsername,
+                    _emailSettings.SmtpPassword
+                ),
+                EnableSsl = _emailSettings.EnableSsl,
             };
 
             var mailMessage = new MailMessage
@@ -81,7 +102,7 @@ public class EmailService : IEmailService
                 From = new MailAddress(_emailSettings.FromEmail, _emailSettings.FromName),
                 Subject = subject,
                 Body = body,
-                IsBodyHtml = false // Default to false for generic emails, or true if we want to support it?
+                IsBodyHtml = false, // Default to false for generic emails, or true if we want to support it?
             };
 
             mailMessage.To.Add(toEmail);

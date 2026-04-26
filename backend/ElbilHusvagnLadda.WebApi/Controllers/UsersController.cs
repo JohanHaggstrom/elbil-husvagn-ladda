@@ -18,7 +18,12 @@ public class UsersController : ControllerBase
     private readonly IEmailService _emailService;
     private readonly IPasswordValidationService _passwordValidationService;
 
-    public UsersController(AppDbContext context, IPasswordService passwordService, IEmailService emailService, IPasswordValidationService passwordValidationService)
+    public UsersController(
+        AppDbContext context,
+        IPasswordService passwordService,
+        IEmailService emailService,
+        IPasswordValidationService passwordValidationService
+    )
     {
         _context = context;
         _passwordService = passwordService;
@@ -48,7 +53,11 @@ public class UsersController : ControllerBase
     [HttpPost]
     public async Task<ActionResult<User>> CreateUser(CreateUserRequest request)
     {
-        if (await _context.Users.AnyAsync(u => u.Email == request.Email || u.Username == request.Username))
+        if (
+            await _context.Users.AnyAsync(u =>
+                u.Email == request.Email || u.Username == request.Username
+            )
+        )
         {
             return BadRequest("User with this email or username already exists.");
         }
@@ -66,7 +75,7 @@ public class UsersController : ControllerBase
             Email = request.Email,
             Role = request.Role,
             PasswordHash = _passwordService.HashPassword(request.Password),
-            CreatedAt = DateTime.UtcNow
+            CreatedAt = DateTime.UtcNow,
         };
 
         _context.Users.Add(user);
@@ -114,17 +123,22 @@ public class UsersController : ControllerBase
     [HttpPost("{id}/reset-password")]
     public async Task<IActionResult> ResetPassword(int id)
     {
-         var user = await _context.Users.FindAsync(id);
-         if (user == null) return NotFound();
+        var user = await _context.Users.FindAsync(id);
+        if (user == null)
+            return NotFound();
 
-         var newPassword = GenerateRandomPassword();
-         user.PasswordHash = _passwordService.HashPassword(newPassword);
+        var newPassword = GenerateRandomPassword();
+        user.PasswordHash = _passwordService.HashPassword(newPassword);
 
-         await _context.SaveChangesAsync();
+        await _context.SaveChangesAsync();
 
-         await _emailService.SendEmailAsync(user.Email, "Lösenordsåterställning", $"Ditt nya lösenord är: {newPassword}");
+        await _emailService.SendEmailAsync(
+            user.Email,
+            "Lösenordsåterställning",
+            $"Ditt nya lösenord är: {newPassword}"
+        );
 
-         return Ok(new { message = "New password sent to email.", password = newPassword }); // Returning password in response for dev convenience if emails fail? User said "sent to email". I'll keep it secure and NOT return it, unless in dev mode. But I'll stick to email.
+        return Ok(new { message = "New password sent to email.", password = newPassword }); // Returning password in response for dev convenience if emails fail? User said "sent to email". I'll keep it secure and NOT return it, unless in dev mode. But I'll stick to email.
     }
 
     // Fallback: Manually set password endpoint? User asked for "Reset link or random password".
@@ -133,7 +147,8 @@ public class UsersController : ControllerBase
     public async Task<IActionResult> SetUserPassword(int id, [FromBody] string newPassword)
     {
         var user = await _context.Users.FindAsync(id);
-        if (user == null) return NotFound();
+        if (user == null)
+            return NotFound();
 
         user.PasswordHash = _passwordService.HashPassword(newPassword);
         await _context.SaveChangesAsync();

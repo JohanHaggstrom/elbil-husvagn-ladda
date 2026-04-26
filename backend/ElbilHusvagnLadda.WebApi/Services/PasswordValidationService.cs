@@ -57,7 +57,9 @@ public class PasswordValidationService : IPasswordValidationService
         }
 
         // Check for special characters
-        result.HasSpecialCharacters = _policy.RequireSpecialCharacters ? Regex.IsMatch(password, "[!@#$%^&*()_+\\-=\\[\\]{};':\"\\\\|,.<>?]") : true;
+        result.HasSpecialCharacters = _policy.RequireSpecialCharacters
+            ? Regex.IsMatch(password, "[!@#$%^&*()_+\\-=\\[\\]{};':\"\\\\|,.<>?]")
+            : true;
         if (_policy.RequireSpecialCharacters && !result.HasSpecialCharacters)
         {
             result.Errors.Add("Lösenordet måste innehålla minst ett specialtecken (!@#$%^&*)");

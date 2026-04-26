@@ -1,9 +1,9 @@
+using System.Text.Json;
 using ElbilHusvagnLadda.WebApi.Data;
 using ElbilHusvagnLadda.WebApi.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using System.Text.Json;
 
 namespace ElbilHusvagnLadda.WebApi.Controllers;
 
@@ -26,8 +26,8 @@ public class BackupController : ControllerBase
     {
         try
         {
-            var chargingPoints = await _context.ChargingPoints
-                .Include(cp => cp.ChargePointComments)
+            var chargingPoints = await _context
+                .ChargingPoints.Include(cp => cp.ChargePointComments)
                 .ToListAsync();
 
             var users = await _context.Users.ToListAsync();
@@ -37,7 +37,7 @@ public class BackupController : ControllerBase
                 ExportDate = DateTime.UtcNow,
                 TotalChargingPoints = chargingPoints.Count,
                 TotalComments = chargingPoints.Sum(cp => cp.ChargePointComments?.Count ?? 0),
-                TotalUsers = users.Count
+                TotalUsers = users.Count,
             };
 
             foreach (var point in chargingPoints)
@@ -46,19 +46,24 @@ public class BackupController : ControllerBase
                 {
                     Id = point.Id,
                     Name = point.Title,
-                    Location = $"{point.Address1}, {point.PostalCode} {point.City}, {point.Country}",
+                    Location =
+                        $"{point.Address1}, {point.PostalCode} {point.City}, {point.Country}",
                     Latitude = 0, // MapCoordinates містить обидва, тому парсимо
                     Longitude = 0,
                     ConnectorCount = point.NumberOfChargePoints ?? 0,
                     CreatedAt = DateTime.UtcNow,
-                    ImageBase64 = null
+                    ImageBase64 = null,
                 };
 
                 // Parse MapCoordinates to get lat/long
                 if (!string.IsNullOrEmpty(point.MapCoordinates))
                 {
                     var coords = point.MapCoordinates.Split(',');
-                    if (coords.Length == 2 && double.TryParse(coords[0], out var lat) && double.TryParse(coords[1], out var lon))
+                    if (
+                        coords.Length == 2
+                        && double.TryParse(coords[0], out var lat)
+                        && double.TryParse(coords[1], out var lon)
+                    )
                     {
                         pointDto.Latitude = lat;
                         pointDto.Longitude = lon;
@@ -76,13 +81,15 @@ public class BackupController : ControllerBase
                 {
                     foreach (var comment in point.ChargePointComments)
                     {
-                        pointDto.Comments.Add(new ChargePointCommentExportDto
-                        {
-                            Id = comment.Id,
-                            Comment = comment.Comment,
-                            VoteType = comment.Vote.ToString(),
-                            CreatedAt = comment.CreatedAt
-                        });
+                        pointDto.Comments.Add(
+                            new ChargePointCommentExportDto
+                            {
+                                Id = comment.Id,
+                                Comment = comment.Comment,
+                                VoteType = comment.Vote.ToString(),
+                                CreatedAt = comment.CreatedAt,
+                            }
+                        );
                     }
                 }
 
@@ -92,20 +99,29 @@ public class BackupController : ControllerBase
             // Add users
             foreach (var user in users)
             {
-                exportDto.Users.Add(new UserExportDto
-                {
-                    Id = user.Id,
-                    Username = user.Username,
-                    Email = user.Email,
-                    Role = user.Role.ToString(),
-                    CreatedAt = user.CreatedAt
-                });
+                exportDto.Users.Add(
+                    new UserExportDto
+                    {
+                        Id = user.Id,
+                        Username = user.Username,
+                        Email = user.Email,
+                        Role = user.Role.ToString(),
+                        CreatedAt = user.CreatedAt,
+                    }
+                );
             }
 
-            var json = JsonSerializer.Serialize(exportDto, new JsonSerializerOptions { WriteIndented = true });
+            var json = JsonSerializer.Serialize(
+                exportDto,
+                new JsonSerializerOptions { WriteIndented = true }
+            );
             var bytes = System.Text.Encoding.UTF8.GetBytes(json);
 
-            return File(bytes, "application/json", $"charging-points-backup-{DateTime.UtcNow:yyyy-MM-dd-HHmmss}.json");
+            return File(
+                bytes,
+                "application/json",
+                $"charging-points-backup-{DateTime.UtcNow:yyyy-MM-dd-HHmmss}.json"
+            );
         }
         catch (Exception ex)
         {
@@ -114,4 +130,3 @@ public class BackupController : ControllerBase
         }
     }
 }
-

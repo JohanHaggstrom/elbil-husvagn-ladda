@@ -1,5 +1,5 @@
-using ElbilHusvagnLadda.WebApi.Models;
 using System.Text.Json.Serialization;
+using ElbilHusvagnLadda.WebApi.Models;
 
 namespace ElbilHusvagnLadda.WebApi.Services;
 

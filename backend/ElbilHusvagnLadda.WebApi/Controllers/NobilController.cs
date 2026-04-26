@@ -20,7 +20,9 @@ public class NobilController : ControllerBase
     }
 
     [HttpGet("search")]
-    public async Task<ActionResult<IEnumerable<NobilDumpStation>>> Search([FromQuery] string countryCode = "SWE")
+    public async Task<ActionResult<IEnumerable<NobilDumpStation>>> Search(
+        [FromQuery] string countryCode = "SWE"
+    )
     {
         try
         {
@@ -65,7 +67,9 @@ public class NobilController : ControllerBase
     }
 
     [HttpGet("matches")]
-    public async Task<ActionResult<IEnumerable<NobilStationMatch>>> GetMatches([FromQuery] string countryCode = "SWE")
+    public async Task<ActionResult<IEnumerable<NobilStationMatch>>> GetMatches(
+        [FromQuery] string countryCode = "SWE"
+    )
     {
         try
         {
@@ -89,7 +93,12 @@ public class NobilController : ControllerBase
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error linking station {LocalId} to {NobilId}", request.LocalId, request.NobilId);
+            _logger.LogError(
+                ex,
+                "Error linking station {LocalId} to {NobilId}",
+                request.LocalId,
+                request.NobilId
+            );
             return StatusCode(500, "Error linking station");
         }
     }
