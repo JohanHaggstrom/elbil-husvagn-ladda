@@ -13,7 +13,10 @@ public class SuggestedChargingPointsController : ControllerBase
     private readonly AppDbContext _context;
     private readonly ILogger<SuggestedChargingPointsController> _logger;
 
-    public SuggestedChargingPointsController(AppDbContext context, ILogger<SuggestedChargingPointsController> logger)
+    public SuggestedChargingPointsController(
+        AppDbContext context,
+        ILogger<SuggestedChargingPointsController> logger
+    )
     {
         _context = context;
         _logger = logger;
@@ -22,7 +25,9 @@ public class SuggestedChargingPointsController : ControllerBase
     // GET: api/SuggestedChargingPoints
     [HttpGet]
     [Authorize]
-    public async Task<ActionResult<IEnumerable<SuggestedChargingPoint>>> GetSuggestedChargingPoints()
+    public async Task<
+        ActionResult<IEnumerable<SuggestedChargingPoint>>
+    > GetSuggestedChargingPoints()
     {
         return await _context.SuggestedChargingPoints.ToListAsync();
     }
@@ -52,7 +57,10 @@ public class SuggestedChargingPointsController : ControllerBase
 
     // POST: api/SuggestedChargingPoints
     [HttpPost]
-    public async Task<ActionResult<SuggestedChargingPoint>> PostSuggestedChargingPoint([FromForm] SuggestedChargingPoint suggestedChargingPoint, [FromForm] IFormFile? image)
+    public async Task<ActionResult<SuggestedChargingPoint>> PostSuggestedChargingPoint(
+        [FromForm] SuggestedChargingPoint suggestedChargingPoint,
+        [FromForm] IFormFile? image
+    )
     {
         try
         {
@@ -90,8 +98,16 @@ public class SuggestedChargingPointsController : ControllerBase
             _context.SuggestedChargingPoints.Add(suggestedChargingPoint);
             await _context.SaveChangesAsync();
 
-            _logger.LogInformation("Suggested charging point created with ID {Id}, HasImage: {HasImage}", suggestedChargingPoint.Id, image != null);
-            return CreatedAtAction("GetSuggestedChargingPoint", new { id = suggestedChargingPoint.Id }, suggestedChargingPoint);
+            _logger.LogInformation(
+                "Suggested charging point created with ID {Id}, HasImage: {HasImage}",
+                suggestedChargingPoint.Id,
+                image != null
+            );
+            return CreatedAtAction(
+                "GetSuggestedChargingPoint",
+                new { id = suggestedChargingPoint.Id },
+                suggestedChargingPoint
+            );
         }
         catch (Exception ex)
         {
@@ -144,7 +160,7 @@ public class SuggestedChargingPointsController : ControllerBase
             ExternalId = suggestion.ExternalId,
             ExternalSource = suggestion.ExternalSource,
             ImageData = suggestion.ImageData,
-            ImageContentType = suggestion.ImageContentType
+            ImageContentType = suggestion.ImageContentType,
         };
 
         _context.ChargingPoints.Add(chargingPoint);

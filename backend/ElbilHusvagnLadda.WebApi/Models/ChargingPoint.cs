@@ -24,7 +24,8 @@ public class ChargingPoint
 
     // Navigation property for comments
     [System.Text.Json.Serialization.JsonIgnore]
-    public ICollection<ChargePointComment> ChargePointComments { get; set; } = new List<ChargePointComment>();
+    public ICollection<ChargePointComment> ChargePointComments { get; set; } =
+        new List<ChargePointComment>();
 
     public bool HasImage => ImageData != null && ImageData.Length > 0;
 }

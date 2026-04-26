@@ -1,6 +1,6 @@
-using Microsoft.AspNetCore.Mvc;
 using System.Reflection;
 using ElbilHusvagnLadda.WebApi.Data;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace ElbilHusvagnLadda.WebApi.Controllers
@@ -15,13 +15,17 @@ namespace ElbilHusvagnLadda.WebApi.Controllers
         {
             _context = context;
         }
+
         [HttpGet("version")]
         public async Task<IActionResult> GetVersion()
         {
             var assembly = Assembly.GetExecutingAssembly();
-            var backendVersion = assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>()?.InformationalVersion
-                                ?? assembly.GetName().Version?.ToString()
-                                ?? "1.0.0";
+            var backendVersion =
+                assembly
+                    .GetCustomAttribute<AssemblyInformationalVersionAttribute>()
+                    ?.InformationalVersion
+                ?? assembly.GetName().Version?.ToString()
+                ?? "1.0.0";
 
             string? lastMigration = null;
             try
@@ -34,11 +38,7 @@ namespace ElbilHusvagnLadda.WebApi.Controllers
                 // Fallback if DB check fails
             }
 
-            return Ok(new
-            {
-                BackendVersion = backendVersion,
-                LastMigration = lastMigration
-            });
+            return Ok(new { BackendVersion = backendVersion, LastMigration = lastMigration });
         }
     }
 }

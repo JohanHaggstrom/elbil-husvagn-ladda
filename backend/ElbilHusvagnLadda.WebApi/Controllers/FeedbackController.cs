@@ -15,7 +15,11 @@ public class FeedbackController : ControllerBase
     private readonly ILogger<FeedbackController> _logger;
     private readonly IEmailService _emailService;
 
-    public FeedbackController(AppDbContext context, ILogger<FeedbackController> logger, IEmailService emailService)
+    public FeedbackController(
+        AppDbContext context,
+        ILogger<FeedbackController> logger,
+        IEmailService emailService
+    )
     {
         _context = context;
         _logger = logger;
@@ -34,7 +38,11 @@ public class FeedbackController : ControllerBase
             _context.Feedbacks.Add(feedback);
             await _context.SaveChangesAsync();
 
-            _logger.LogInformation("New feedback created: {Type} - {Title}", feedback.Type, feedback.Title);
+            _logger.LogInformation(
+                "New feedback created: {Type} - {Title}",
+                feedback.Type,
+                feedback.Title
+            );
             return CreatedAtAction(nameof(GetFeedback), new { id = feedback.Id }, feedback);
         }
         catch (Exception ex)
@@ -53,8 +61,8 @@ public class FeedbackController : ControllerBase
     {
         try
         {
-            var feedbacks = await _context.Feedbacks
-                .OrderByDescending(f => f.CreatedAt)
+            var feedbacks = await _context
+                .Feedbacks.OrderByDescending(f => f.CreatedAt)
                 .ToListAsync();
             return Ok(feedbacks);
         }
@@ -138,7 +146,11 @@ public class FeedbackController : ControllerBase
             feedback.IsHandled = isHandled;
             await _context.SaveChangesAsync();
 
-            _logger.LogInformation("Feedback {Id} marked as {Status}", id, isHandled ? "handled" : "unhandled");
+            _logger.LogInformation(
+                "Feedback {Id} marked as {Status}",
+                id,
+                isHandled ? "handled" : "unhandled"
+            );
             return NoContent();
         }
         catch (Exception ex)
@@ -177,7 +189,11 @@ public class FeedbackController : ControllerBase
                     feedback.Title,
                     response
                 );
-                _logger.LogInformation("Email notification sent to {Email} for feedback {Id}", feedback.Email, id);
+                _logger.LogInformation(
+                    "Email notification sent to {Email} for feedback {Id}",
+                    feedback.Email,
+                    id
+                );
             }
 
             return NoContent();

@@ -1,4 +1,3 @@
-
 namespace ElbilHusvagnLadda.WebApi.Services;
 
 public interface IPasswordService

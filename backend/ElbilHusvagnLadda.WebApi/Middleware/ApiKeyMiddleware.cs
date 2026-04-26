@@ -1,7 +1,7 @@
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using System.Threading.Tasks;
 
 namespace ElbilHusvagnLadda.WebApi.Middleware;
 
@@ -18,10 +18,13 @@ public class ApiKeyMiddleware
     public async Task InvokeAsync(HttpContext context)
     {
         // Apply API key validation to GET /api/chargingpoints AND all /api/suggestedchargingpoints
-        bool isProtectedChargingPoints = context.Request.Path.StartsWithSegments("/api/chargingpoints") &&
-                                         context.Request.Method.Equals("GET", StringComparison.OrdinalIgnoreCase);
+        bool isProtectedChargingPoints =
+            context.Request.Path.StartsWithSegments("/api/chargingpoints")
+            && context.Request.Method.Equals("GET", StringComparison.OrdinalIgnoreCase);
 
-        bool isProtectedSuggestions = context.Request.Path.StartsWithSegments("/api/suggestedchargingpoints");
+        bool isProtectedSuggestions = context.Request.Path.StartsWithSegments(
+            "/api/suggestedchargingpoints"
+        );
 
         if (!isProtectedChargingPoints && !isProtectedSuggestions)
         {
@@ -30,7 +33,10 @@ public class ApiKeyMiddleware
         }
 
         // Exclude image endpoints from API Key validation so <img> tags work
-        if (context.Request.Path.Value?.EndsWith("/image", StringComparison.OrdinalIgnoreCase) == true)
+        if (
+            context.Request.Path.Value?.EndsWith("/image", StringComparison.OrdinalIgnoreCase)
+            == true
+        )
         {
             await _next(context);
             return;

@@ -57,7 +57,9 @@ public class ChargingPointsController : ControllerBase
         }
 
         // Preserve existing image data if not provided in update
-        var existingPoint = await _context.ChargingPoints.AsNoTracking().FirstOrDefaultAsync(cp => cp.Id == id);
+        var existingPoint = await _context
+            .ChargingPoints.AsNoTracking()
+            .FirstOrDefaultAsync(cp => cp.Id == id);
         if (existingPoint != null)
         {
             if (chargingPoint.ImageData == null && existingPoint.ImageData != null)
@@ -90,7 +92,10 @@ public class ChargingPointsController : ControllerBase
 
     [HttpPost]
     [Authorize]
-    public async Task<ActionResult<ChargingPoint>> PostChargingPoint([FromForm] ChargingPoint chargingPoint, [FromForm] IFormFile? image)
+    public async Task<ActionResult<ChargingPoint>> PostChargingPoint(
+        [FromForm] ChargingPoint chargingPoint,
+        [FromForm] IFormFile? image
+    )
     {
         try
         {
@@ -128,8 +133,16 @@ public class ChargingPointsController : ControllerBase
             _context.ChargingPoints.Add(chargingPoint);
             await _context.SaveChangesAsync();
 
-            _logger.LogInformation("Charging point created with ID {Id}, HasImage: {HasImage}", chargingPoint.Id, image != null);
-            return CreatedAtAction("GetChargingPoint", new { id = chargingPoint.Id }, chargingPoint);
+            _logger.LogInformation(
+                "Charging point created with ID {Id}, HasImage: {HasImage}",
+                chargingPoint.Id,
+                image != null
+            );
+            return CreatedAtAction(
+                "GetChargingPoint",
+                new { id = chargingPoint.Id },
+                chargingPoint
+            );
         }
         catch (Exception ex)
         {
