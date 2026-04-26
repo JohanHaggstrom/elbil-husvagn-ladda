@@ -9,6 +9,7 @@ namespace ElbilHusvagnLadda.WebApi.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[Authorize(Roles = "Admin,SuperAdmin")]
 public class FeedbackController : ControllerBase
 {
     private readonly AppDbContext _context;
@@ -30,6 +31,7 @@ public class FeedbackController : ControllerBase
     /// Submit feedback - accessible to everyone
     /// </summary>
     [HttpPost]
+    [AllowAnonymous]
     public async Task<ActionResult<Feedback>> CreateFeedback(Feedback feedback)
     {
         try
@@ -56,7 +58,6 @@ public class FeedbackController : ControllerBase
     /// Get all feedback - admin only
     /// </summary>
     [HttpGet]
-    [Authorize]
     public async Task<ActionResult<IEnumerable<Feedback>>> GetAllFeedback()
     {
         try
@@ -77,7 +78,6 @@ public class FeedbackController : ControllerBase
     /// Get single feedback by ID - admin only
     /// </summary>
     [HttpGet("{id}")]
-    [Authorize]
     public async Task<ActionResult<Feedback>> GetFeedback(int id)
     {
         try
@@ -102,7 +102,6 @@ public class FeedbackController : ControllerBase
     /// Delete feedback - admin only
     /// </summary>
     [HttpDelete("{id}")]
-    [Authorize]
     public async Task<IActionResult> DeleteFeedback(int id)
     {
         try
@@ -131,7 +130,6 @@ public class FeedbackController : ControllerBase
     /// Mark feedback as handled - admin only
     /// </summary>
     [HttpPatch("{id}/handle")]
-    [Authorize]
     public async Task<IActionResult> MarkAsHandled(int id, [FromBody] bool isHandled)
     {
         try
@@ -164,7 +162,6 @@ public class FeedbackController : ControllerBase
     /// Update admin response - admin only
     /// </summary>
     [HttpPatch("{id}/response")]
-    [Authorize]
     public async Task<IActionResult> UpdateAdminResponse(int id, [FromBody] string response)
     {
         try
@@ -209,7 +206,6 @@ public class FeedbackController : ControllerBase
     /// Get count of unhandled feedback - admin only
     /// </summary>
     [HttpGet("unhandled/count")]
-    [Authorize]
     public async Task<ActionResult<int>> GetUnhandledCount()
     {
         try
