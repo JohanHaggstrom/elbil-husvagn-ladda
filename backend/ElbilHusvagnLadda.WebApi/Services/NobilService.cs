@@ -378,18 +378,31 @@ public class NobilService : INobilService
                                             )
                                         )
                                         {
-                                            var validId = validProp.GetRawText().Trim('"');
-                                            int mappedCap = validId switch
+                                            var validIdRaw = validProp.GetRawText().Trim('"');
+                                            int mappedCap = 0;
+                                            if (
+                                                Enum.TryParse<NobilChargingCapacityId>(
+                                                    validIdRaw,
+                                                    out var capacityId
+                                                )
+                                                && Enum.IsDefined(
+                                                    typeof(NobilChargingCapacityId),
+                                                    capacityId
+                                                )
+                                            )
                                             {
-                                                "7" => 3, // 230V 1-phase 16A
-                                                "8" => 7, // 230V 1-phase 32A
-                                                "29" => 6, // 230V 3-phase 16A
-                                                "30" => 12, // 230V 3-phase 32A
-                                                "27" => 11, // 400V 3-phase 16A
-                                                "28" => 22, // 400V 3-phase 32A
-                                                "31" => 43, // 400V 3-phase 63A
-                                                _ => 0,
-                                            };
+                                                mappedCap = capacityId switch
+                                                {
+                                                    NobilChargingCapacityId.V230_1P_16A => 3,
+                                                    NobilChargingCapacityId.V230_1P_32A => 7,
+                                                    NobilChargingCapacityId.V230_3P_16A => 6,
+                                                    NobilChargingCapacityId.V230_3P_32A => 12,
+                                                    NobilChargingCapacityId.V400_3P_16A => 11,
+                                                    NobilChargingCapacityId.V400_3P_32A => 22,
+                                                    NobilChargingCapacityId.V400_3P_63A => 43,
+                                                    _ => 0,
+                                                };
+                                            }
                                             if (mappedCap > maxCap)
                                                 maxCap = mappedCap;
                                         }
