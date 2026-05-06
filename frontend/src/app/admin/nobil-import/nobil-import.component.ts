@@ -7,6 +7,7 @@ import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
+import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatTooltipModule } from '@angular/material/tooltip';
@@ -37,6 +38,7 @@ interface NobilImportState {
         MatInputModule,
         MatFormFieldModule,
         MatIconModule,
+        MatPaginatorModule,
         MatProgressSpinnerModule,
         MatSnackBarModule,
         MatButtonToggleModule,
@@ -52,6 +54,9 @@ export class NobilImportComponent implements OnInit {
     filterCity: string = '';
     minCapacity: number = 0;
     filteredStations: NobilDumpStation[] = [];
+    pageIndex: number = 0;
+    pageSize: number = 20;
+    pageSizeOptions: number[] = [10, 20, 50, 100];
     matches: NobilStationMatch[] = [];
     viewMode: 'import' | 'link' = 'import';
     isLoading: boolean = false;
@@ -244,6 +249,17 @@ export class NobilImportComponent implements OnInit {
 
             return matchName && matchCity && matchCapacity;
         });
+        this.pageIndex = 0;
+    }
+
+    get pagedStations(): NobilDumpStation[] {
+        const start = this.pageIndex * this.pageSize;
+        return this.filteredStations.slice(start, start + this.pageSize);
+    }
+
+    onPageChange(event: PageEvent) {
+        this.pageIndex = event.pageIndex;
+        this.pageSize = event.pageSize;
     }
 
     selectStation(station: NobilDumpStation) {
