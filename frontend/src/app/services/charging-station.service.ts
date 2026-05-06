@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
@@ -18,6 +18,13 @@ export interface ChargingPoint {
     hasImage?: boolean;
     externalId?: string;
     externalSource?: string;
+}
+
+export interface PagedResult<T> {
+    items: T[];
+    total: number;
+    page: number;
+    pageSize: number;
 }
 
 export interface SystemVersion {
@@ -42,6 +49,19 @@ export class ChargingStationService {
 
     getChargingPoints(): Observable<ChargingPoint[]> {
         return this.http.get<ChargingPoint[]>(this.apiUrl, this.getHeaders());
+    }
+
+    getChargingPointsPaged(page: number, pageSize: number, search?: string): Observable<PagedResult<ChargingPoint>> {
+        let params = new HttpParams()
+            .set('page', page.toString())
+            .set('pageSize', pageSize.toString());
+        if (search && search.trim().length > 0) {
+            params = params.set('search', search.trim());
+        }
+        return this.http.get<PagedResult<ChargingPoint>>(this.apiUrl, {
+            ...this.getHeaders(),
+            params,
+        });
     }
 
     getChargingPoint(id: number): Observable<ChargingPoint> {

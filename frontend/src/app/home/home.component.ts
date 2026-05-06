@@ -9,16 +9,18 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatMenuModule } from '@angular/material/menu';
+import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { Router } from '@angular/router';
-import { firstValueFrom } from 'rxjs';
+import { firstValueFrom, Subject } from 'rxjs';
+import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import { environment } from '../../environments/environment';
 import { IdentifiedCaravanChargePoint } from '../app.model';
 import { AuthService } from '../auth/auth.service';
 import { MapComponent } from '../map/map.component';
 import { BackupService } from '../services/backup.service';
-import { ChargingStationService } from '../services/charging-station.service';
+import { ChargingPoint, ChargingStationService } from '../services/charging-station.service';
 import { ConnectionService } from '../services/connection.service';
 import { ErrorService } from '../services/error.service';
 import { FeedbackService } from '../services/feedback.service';
@@ -38,6 +40,7 @@ import { ShareService } from '../services/share.service';
         MatButtonToggleModule,
         MatInputModule,
         MatFormFieldModule,
+        MatPaginatorModule,
         FormsModule,
     ],
     templateUrl: './home.component.html',
@@ -48,22 +51,15 @@ export class HomeComponent implements OnInit {
     protected viewMode: 'map' | 'list' = 'map';
     protected searchText = '';
     protected identifiedChargePoints: IdentifiedCaravanChargePoint[] = [];
+    protected pagedChargePoints: IdentifiedCaravanChargePoint[] = [];
+    protected pageIndex = 0;
+    protected pageSize = 20;
+    protected pageSizeOptions = [10, 20, 50, 100];
+    protected totalPagedCount = 0;
     protected isLoading = false;
     protected isOnline = true;
 
-    protected get filteredChargePoints(): IdentifiedCaravanChargePoint[] {
-        if (!this.searchText) {
-            return this.identifiedChargePoints;
-        }
-        const lowerSearch = this.searchText.toLowerCase();
-        return this.identifiedChargePoints.filter(
-            (point) =>
-                point.title.toLowerCase().includes(lowerSearch) ||
-                point.city.toLowerCase().includes(lowerSearch) ||
-                (point.address1 &&
-                    point.address1.toLowerCase().includes(lowerSearch))
-        );
-    }
+    private searchInput$ = new Subject<string>();
 
     protected authService = inject(AuthService);
     protected themeService = inject(ThemeService);
@@ -167,6 +163,35 @@ export class HomeComponent implements OnInit {
                     this.loadChargingPoints();
                 }
             });
+
+        this.searchInput$
+            .pipe(
+                debounceTime(1000),
+                distinctUntilChanged(),
+                takeUntilDestroyed(this.destroyRef)
+            )
+            .subscribe(() => {
+                this.pageIndex = 0;
+                this.loadPagedChargingPoints();
+            });
+    }
+
+    protected onSearchTextChange(value: string): void {
+        this.searchText = value;
+        this.searchInput$.next(value);
+    }
+
+    protected onViewModeChange(mode: 'map' | 'list'): void {
+        this.viewMode = mode;
+        if (mode === 'list' && this.pagedChargePoints.length === 0) {
+            this.loadPagedChargingPoints();
+        }
+    }
+
+    protected onPageChange(event: PageEvent): void {
+        this.pageIndex = event.pageIndex;
+        this.pageSize = event.pageSize;
+        this.loadPagedChargingPoints();
     }
 
     navigateToEdit(point: IdentifiedCaravanChargePoint): void {
@@ -190,6 +215,9 @@ export class HomeComponent implements OnInit {
                     this.chargingStationService.deleteChargingPoint(point.id)
                 );
                 await this.loadChargingPoints();
+                if (this.viewMode === 'list') {
+                    this.loadPagedChargingPoints();
+                }
             } catch (err) {
                 console.error('Error deleting charging point:', err);
                 alert('Kunde inte ta bort laddstationen.');
@@ -215,22 +243,9 @@ export class HomeComponent implements OnInit {
             const points = await firstValueFrom(
                 this.chargingStationService.getChargingPoints()
             );
-            this.identifiedChargePoints = points.map((point) => ({
-                id: point.id,
-                title: point.title,
-                address1: point.address1,
-                address2: point.address2 || '',
-                postalCode: point.postalCode,
-                city: point.city,
-                country: point.country,
-                comments: point.comments || '',
-                mapCoordinates: point.mapCoordinates,
-                numberOfChargePoints: point.numberOfChargePoints,
-                capacity: point.capacity,
-                hasImage: point.hasImage,
-                externalId: point.externalId,
-                externalSource: point.externalSource
-            }));
+            this.identifiedChargePoints = points.map((point) =>
+                this.toIdentified(point)
+            );
         } catch (error) {
             this.errorService.handleError(
                 error,
@@ -240,6 +255,53 @@ export class HomeComponent implements OnInit {
         } finally {
             this.isLoading = false;
         }
+    }
+
+    private async loadPagedChargingPoints(): Promise<void> {
+        if (!this.connectionService.isOnline()) {
+            return;
+        }
+
+        this.isLoading = true;
+        try {
+            const result = await firstValueFrom(
+                this.chargingStationService.getChargingPointsPaged(
+                    this.pageIndex + 1,
+                    this.pageSize,
+                    this.searchText
+                )
+            );
+            this.pagedChargePoints = result.items.map((point) =>
+                this.toIdentified(point)
+            );
+            this.totalPagedCount = result.total;
+        } catch (error) {
+            this.errorService.handleError(
+                error,
+                'Kunde inte ladda laddstationer'
+            );
+        } finally {
+            this.isLoading = false;
+        }
+    }
+
+    private toIdentified(point: ChargingPoint): IdentifiedCaravanChargePoint {
+        return {
+            id: point.id,
+            title: point.title,
+            address1: point.address1,
+            address2: point.address2 || '',
+            postalCode: point.postalCode,
+            city: point.city,
+            country: point.country,
+            comments: point.comments || '',
+            mapCoordinates: point.mapCoordinates,
+            numberOfChargePoints: point.numberOfChargePoints,
+            capacity: point.capacity,
+            hasImage: point.hasImage,
+            externalId: point.externalId,
+            externalSource: point.externalSource,
+        };
     }
 
     private loadUnhandledFeedbackCount(): void {

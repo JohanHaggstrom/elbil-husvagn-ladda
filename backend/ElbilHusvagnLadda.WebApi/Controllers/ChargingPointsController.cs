@@ -20,12 +20,56 @@ public class ChargingPointsController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<ChargingPoint>>> GetChargingPoints()
+    public async Task<IActionResult> GetChargingPoints(
+        [FromQuery] int? page = null,
+        [FromQuery] int? pageSize = null,
+        [FromQuery] string? search = null
+    )
     {
         try
         {
-            var chargingPoints = await _context.ChargingPoints.ToListAsync();
-            return Ok(chargingPoints);
+            var query = _context.ChargingPoints.AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(search))
+            {
+                var term = search.Trim();
+                query = query.Where(cp =>
+                    EF.Functions.Like(cp.Title, $"%{term}%")
+                    || EF.Functions.Like(cp.City, $"%{term}%")
+                    || EF.Functions.Like(cp.Address1, $"%{term}%")
+                );
+            }
+
+            // No pagination requested → return full list (backwards compatible).
+            if (page is null && pageSize is null)
+            {
+                var all = await query.ToListAsync();
+                return Ok(all);
+            }
+
+            var pageNumber = page is > 0 ? page.Value : 1;
+            var size = pageSize is > 0 ? pageSize.Value : 20;
+            if (size > 200)
+            {
+                size = 200;
+            }
+
+            var total = await query.CountAsync();
+            var items = await query
+                .OrderBy(cp => cp.Id)
+                .Skip((pageNumber - 1) * size)
+                .Take(size)
+                .ToListAsync();
+
+            return Ok(
+                new PagedResult<ChargingPoint>
+                {
+                    Items = items,
+                    Total = total,
+                    Page = pageNumber,
+                    PageSize = size,
+                }
+            );
         }
         catch (Exception ex)
         {

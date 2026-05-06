@@ -107,16 +107,23 @@
         <h5>Anpassade, eller lämpliga, när man har husvagn</h5>
         @if (!isLoading) {
         <p class="station-count">
-            @if (viewMode === 'list' && searchText) {
-            Visar {{ filteredChargePoints.length }} av
-            {{ identifiedChargePoints.length }} laddstationer
+            @if (viewMode === 'list') {
+                @if (searchText) {
+                {{ totalPagedCount }} laddstationer matchade sökningen
+                } @else {
+                {{ totalPagedCount }} laddstationer tillgängliga
+                }
             } @else {
             {{ identifiedChargePoints.length }} laddstationer tillgängliga
             }
         </p>
         }
 
-        <mat-button-toggle-group [(value)]="viewMode" aria-label="View Mode">
+        <mat-button-toggle-group
+            [value]="viewMode"
+            (valueChange)="onViewModeChange($event)"
+            aria-label="View Mode"
+        >
             <mat-button-toggle value="map">Karta</mat-button-toggle>
             <mat-button-toggle value="list">Lista</mat-button-toggle>
         </mat-button-toggle-group>
@@ -126,7 +133,8 @@
             <mat-label>Sök</mat-label>
             <input
                 matInput
-                [(ngModel)]="searchText"
+                [ngModel]="searchText"
+                (ngModelChange)="onSearchTextChange($event)"
             />
             <mat-icon matSuffix>search</mat-icon>
         </mat-form-field>
@@ -152,7 +160,7 @@
     <div class="content">
         @if (viewMode === 'list') {
         <div class="list-view">
-            @for (item of filteredChargePoints; track item.id) {
+            @for (item of pagedChargePoints; track item.id) {
             <div class="one-row-container" (click)="navigateToDetails(item)" style="cursor: pointer;">
                 <div class="image-container">
                     @if (item.hasImage) {
@@ -226,11 +234,19 @@
             } @empty {
             <p>Oh, snap! There are no charge points for the selected region!</p>
             }
+            <mat-paginator
+                [length]="totalPagedCount"
+                [pageSize]="pageSize"
+                [pageIndex]="pageIndex"
+                [pageSizeOptions]="pageSizeOptions"
+                (page)="onPageChange($event)"
+                showFirstLastButtons
+            ></mat-paginator>
         </div>
         } @if (viewMode === 'map') {
         <div class="map-view">
             <app-map
-                [chargePoints]="filteredChargePoints"
+                [chargePoints]="identifiedChargePoints"
                 (editChargePoint)="navigateToEdit($event)"
                 (deleteChargePoint)="deleteChargePoint($event)"
                 (viewComments)="navigateToDetails($event)"
