@@ -1,8 +1,9 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { Feedback } from '../models/feedback.model';
+import { PagedResult } from '../models/paged-result.model';
 
 @Injectable({
     providedIn: 'root'
@@ -26,11 +27,15 @@ export class FeedbackService {
         return this.http.post<Feedback>(this.apiUrl, feedback, this.getHeaders());
     }
 
+
     /**
-     * Get all feedback - admin only
+     * Get paginated feedback - admin only
      */
-    getAllFeedback(): Observable<Feedback[]> {
-        return this.http.get<Feedback[]>(this.apiUrl);
+    getAllFeedbackPaged(page: number, pageSize: number): Observable<PagedResult<Feedback>> {
+        const params = new HttpParams()
+            .set('page', page.toString())
+            .set('pageSize', pageSize.toString());
+        return this.http.get<PagedResult<Feedback>>(this.apiUrl, { params });
     }
 
     /**

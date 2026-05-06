@@ -58,14 +58,40 @@ public class FeedbackController : ControllerBase
     /// Get all feedback - admin only
     /// </summary>
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<Feedback>>> GetAllFeedback()
+    public async Task<IActionResult> GetAllFeedback(
+        [FromQuery] int? page = null,
+        [FromQuery] int? pageSize = null
+    )
     {
         try
         {
-            var feedbacks = await _context
-                .Feedbacks.OrderByDescending(f => f.CreatedAt)
-                .ToListAsync();
-            return Ok(feedbacks);
+            var query = _context.Feedbacks.OrderByDescending(f => f.CreatedAt);
+
+            if (page is null && pageSize is null)
+            {
+                var all = await query.ToListAsync();
+                return Ok(all);
+            }
+
+            var pageNumber = page is > 0 ? page.Value : 1;
+            var size = pageSize is > 0 ? pageSize.Value : 20;
+            if (size > 200)
+            {
+                size = 200;
+            }
+
+            var total = await query.CountAsync();
+            var items = await query.Skip((pageNumber - 1) * size).Take(size).ToListAsync();
+
+            return Ok(
+                new PagedResult<Feedback>
+                {
+                    Items = items,
+                    Total = total,
+                    Page = pageNumber,
+                    PageSize = size,
+                }
+            );
         }
         catch (Exception ex)
         {

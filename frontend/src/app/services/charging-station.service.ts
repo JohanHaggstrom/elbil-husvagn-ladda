@@ -2,6 +2,9 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
+import { PagedResult } from '../models/paged-result.model';
+
+export { PagedResult };
 
 export interface ChargingPoint {
     id: number;
@@ -18,13 +21,6 @@ export interface ChargingPoint {
     hasImage?: boolean;
     externalId?: string;
     externalSource?: string;
-}
-
-export interface PagedResult<T> {
-    items: T[];
-    total: number;
-    page: number;
-    pageSize: number;
 }
 
 export interface SystemVersion {

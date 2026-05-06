@@ -9,6 +9,7 @@ import { MatChipsModule } from '@angular/material/chips';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
+import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatTooltipModule } from '@angular/material/tooltip';
@@ -31,6 +32,7 @@ import { FeedbackService } from '../services/feedback.service';
         MatFormFieldModule,
         MatInputModule,
         MatCheckboxModule,
+        MatPaginatorModule,
         MatTooltipModule
     ],
     templateUrl: './admin-feedback.component.html',
@@ -49,23 +51,39 @@ export class AdminFeedbackComponent implements OnInit {
     editingResponseId: number | null = null;
     tempResponse = '';
 
+    pageIndex = 0;
+    pageSize = 20;
+    pageSizeOptions = [10, 20, 50, 100];
+    totalCount = 0;
+    unhandledCount = 0;
+
     ngOnInit() {
         if (!this.authService.isAuthenticated()) {
             this.router.navigate(['/login']);
             return;
         }
         this.loadFeedback();
+        this.loadUnhandledCount();
     }
 
     loadFeedback() {
         this.isLoading = true;
         this.feedbackService
-            .getAllFeedback()
+            .getAllFeedbackPaged(this.pageIndex + 1, this.pageSize)
             .pipe(takeUntilDestroyed(this.destroyRef))
             .subscribe({
-                next: (feedbacks) => {
-                    this.feedbacks = feedbacks;
+                next: (result) => {
+                    this.feedbacks = result.items;
+                    this.totalCount = result.total;
                     this.isLoading = false;
+
+                    // If the current page is now beyond the last valid page
+                    // (e.g. after deletes shrank the dataset), step back.
+                    const lastIndex = Math.max(0, Math.ceil(result.total / this.pageSize) - 1);
+                    if (this.pageIndex > lastIndex) {
+                        this.pageIndex = lastIndex;
+                        this.loadFeedback();
+                    }
                 },
                 error: (error) => {
                     console.error('Error loading feedback:', error);
@@ -75,6 +93,22 @@ export class AdminFeedbackComponent implements OnInit {
                     this.isLoading = false;
                 }
             });
+    }
+
+    loadUnhandledCount() {
+        this.feedbackService
+            .getUnhandledCount()
+            .pipe(takeUntilDestroyed(this.destroyRef))
+            .subscribe({
+                next: (count) => (this.unhandledCount = count),
+                error: (error) => console.error('Error loading unhandled count:', error)
+            });
+    }
+
+    onPageChange(event: PageEvent) {
+        this.pageIndex = event.pageIndex;
+        this.pageSize = event.pageSize;
+        this.loadFeedback();
     }
 
     deleteFeedback(feedback: Feedback) {
@@ -89,10 +123,11 @@ export class AdminFeedbackComponent implements OnInit {
             .pipe(takeUntilDestroyed(this.destroyRef))
             .subscribe({
                 next: () => {
-                    this.feedbacks = this.feedbacks.filter(f => f.id !== feedback.id);
                     this.snackBar.open('Feedback borttagen', 'Stäng', {
                         duration: 3000
                     });
+                    this.loadFeedback();
+                    this.loadUnhandledCount();
                 },
                 error: (error) => {
                     console.error('Error deleting feedback:', error);
@@ -118,6 +153,7 @@ export class AdminFeedbackComponent implements OnInit {
                         'Stäng',
                         { duration: 2000 }
                     );
+                    this.loadUnhandledCount();
                 },
                 error: (error) => {
                     console.error('Error updating feedback status:', error);
@@ -179,7 +215,4 @@ export class AdminFeedbackComponent implements OnInit {
         this.router.navigate(['/']);
     }
 
-    get unhandledCount(): number {
-        return this.feedbacks.filter(f => !f.isHandled).length;
-    }
 }

@@ -16,7 +16,7 @@
             <mat-spinner></mat-spinner>
             <p>Laddar feedback...</p>
         </div>
-    } @else if (feedbacks.length === 0) {
+    } @else if (totalCount === 0) {
         <mat-card class="empty-state">
             <mat-card-content>
                 <mat-icon class="empty-icon">inbox</mat-icon>
@@ -125,5 +125,13 @@
                 </mat-card>
             }
         </div>
+        <mat-paginator
+            [length]="totalCount"
+            [pageSize]="pageSize"
+            [pageIndex]="pageIndex"
+            [pageSizeOptions]="pageSizeOptions"
+            (page)="onPageChange($event)"
+            showFirstLastButtons
+        ></mat-paginator>
     }
 </div>
