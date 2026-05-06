@@ -51,3 +51,6 @@ backend/**/*.suo
 .env
 .env.local
 .env.*.local
+
+# Claude
+.claude/*
