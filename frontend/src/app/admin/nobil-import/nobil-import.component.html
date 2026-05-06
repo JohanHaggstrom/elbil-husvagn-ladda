@@ -53,7 +53,7 @@
                     </mat-card-title>
                 </mat-card-header>
                 <div class="station-list">
-                    @for (station of filteredStations; track station.uuid) {
+                    @for (station of pagedStations; track station.uuid) {
                     <div class="station-row" [class.selected]="selectedStation?.uuid === station.uuid"
                         (click)="selectStation(station)">
                         <div class="image-container">
@@ -89,9 +89,20 @@
                     </div>
                     }
                 </div>
+                <mat-paginator
+                    [length]="filteredStations.length"
+                    [pageSize]="pageSize"
+                    [pageIndex]="pageIndex"
+                    [pageSizeOptions]="pageSizeOptions"
+                    (page)="onPageChange($event)"
+                    showFirstLastButtons
+                ></mat-paginator>
             </mat-card>
-            } @else {
-            <!-- No stations to display, loading data... -->
+            } @else if (isLoading) {
+            <div class="loading-stations">
+                <mat-spinner diameter="48"></mat-spinner>
+                <p>Hämtar stationer från NOBIL...</p>
+            </div>
             }
         </div>
 
