@@ -36,13 +36,24 @@ builder.Services.AddHttpClient();
 builder.Services.AddScoped<INobilService, NobilService>();
 
 // Configure CORS to allow Angular frontend
+var allowedOrigins =
+    builder.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>()
+    ?? Array.Empty<string>();
+
 builder.Services.AddCors(options =>
 {
     options.AddPolicy(
         "AllowAngularApp",
         policy =>
         {
-            policy.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod();
+            if (allowedOrigins.Length == 0)
+            {
+                policy.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod();
+            }
+            else
+            {
+                policy.WithOrigins(allowedOrigins).AllowAnyHeader().AllowAnyMethod();
+            }
         }
     );
 });

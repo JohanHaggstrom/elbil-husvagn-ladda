@@ -40,6 +40,23 @@ I framtiden kan detta bytas ut mot en riktig databas (SQL Server, PostgreSQL, et
 
 ## CORS
 
-API:et är konfigurerat att tillåta requests från Angular-frontend på `http://localhost:4200`.
+Tillåtna origins läses från konfigurationen `Cors:AllowedOrigins` (array av URL:er).
 
-Verify: You should be able to access the admin routes.
+```json
+"Cors": {
+    "AllowedOrigins": [
+        "https://elbil.exempel.se",
+        "http://localhost:4200"
+    ]
+}
+```
+
+Om listan är tom faller policyn tillbaka till `AllowAnyOrigin` — bekvämt för utveckling, men sätt alltid explicita origins i produktion.
+
+I en Portainer-stack kan värden sättas via miljövariabler (ASP.NET-konfigurationsbindning):
+
+```
+Cors__AllowedOrigins__0=https://elbil.husvagn.ladda.com
+```
+
+Med Cloudflare framför API:et: ange den publika domän browsern faktiskt skickar i `Origin`-headern, inte intern container-adress. Cloudflare vidarebefordrar `Origin` oförändrad. Använd inte `AllowCredentials()` ihop med `AllowAnyOrigin()` (browsern blockerar det); eftersom auth sker via JWT i `Authorization`-headern och inte cookies behövs inte credentials här.
