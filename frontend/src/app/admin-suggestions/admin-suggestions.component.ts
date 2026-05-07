@@ -5,6 +5,7 @@ import { MatCardModule } from '@angular/material/card';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatDialog } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
+import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatTooltipModule } from '@angular/material/tooltip';
@@ -24,6 +25,7 @@ import { ChargingPoint, ChargingStationService } from '../services/charging-stat
         MatIconModule,
         MatChipsModule,
         MatProgressSpinnerModule,
+        MatPaginatorModule,
         MatTooltipModule
     ],
     templateUrl: './admin-suggestions.component.html',
@@ -39,6 +41,11 @@ export class AdminSuggestionsComponent implements OnInit {
     suggestions: ChargingPoint[] = [];
     isLoading = false;
 
+    pageIndex = 0;
+    pageSize = 20;
+    pageSizeOptions = [10, 20, 50, 100];
+    totalCount = 0;
+
     ngOnInit(): void {
         if (!this.authService.isAuthenticated()) {
             this.router.navigate(['/login']);
@@ -49,17 +56,32 @@ export class AdminSuggestionsComponent implements OnInit {
 
     loadSuggestions(): void {
         this.isLoading = true;
-        this.chargingStationService.getSuggestedChargingPoints().subscribe({
-            next: (data) => {
-                this.suggestions = data;
-                this.isLoading = false;
-            },
-            error: (err) => {
-                console.error('Error loading suggestions:', err);
-                this.snackBar.open('Kunde inte ladda förslag', 'Stäng', { duration: 3000 });
-                this.isLoading = false;
-            }
-        });
+        this.chargingStationService
+            .getSuggestedChargingPointsPaged(this.pageIndex + 1, this.pageSize)
+            .subscribe({
+                next: (result) => {
+                    this.suggestions = result.items;
+                    this.totalCount = result.total;
+                    this.isLoading = false;
+
+                    const lastIndex = Math.max(0, Math.ceil(result.total / this.pageSize) - 1);
+                    if (this.pageIndex > lastIndex) {
+                        this.pageIndex = lastIndex;
+                        this.loadSuggestions();
+                    }
+                },
+                error: (err) => {
+                    console.error('Error loading suggestions:', err);
+                    this.snackBar.open('Kunde inte ladda förslag', 'Stäng', { duration: 3000 });
+                    this.isLoading = false;
+                }
+            });
+    }
+
+    onPageChange(event: PageEvent): void {
+        this.pageIndex = event.pageIndex;
+        this.pageSize = event.pageSize;
+        this.loadSuggestions();
     }
 
     approveSuggestion(suggestion: ChargingPoint): void {
@@ -69,8 +91,8 @@ export class AdminSuggestionsComponent implements OnInit {
 
         this.chargingStationService.approveSuggestedChargingPoint(suggestion.id).subscribe({
             next: () => {
-                this.suggestions = this.suggestions.filter(s => s.id !== suggestion.id);
                 this.snackBar.open('Förslag godkänt och tillagt!', 'Stäng', { duration: 3000 });
+                this.loadSuggestions();
             },
             error: (err) => {
                 console.error('Error approving suggestion:', err);
@@ -86,8 +108,8 @@ export class AdminSuggestionsComponent implements OnInit {
 
         this.chargingStationService.deleteSuggestedChargingPoint(suggestion.id).subscribe({
             next: () => {
-                this.suggestions = this.suggestions.filter(s => s.id !== suggestion.id);
                 this.snackBar.open('Förslag borttaget!', 'Stäng', { duration: 3000 });
+                this.loadSuggestions();
             },
             error: (err) => {
                 console.error('Error deleting suggestion:', err);

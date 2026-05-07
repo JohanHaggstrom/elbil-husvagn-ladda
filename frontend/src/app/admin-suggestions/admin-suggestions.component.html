@@ -4,9 +4,9 @@
             <mat-icon>arrow_back</mat-icon>
         </button>
         <h1>Förslag på nya laddstationer</h1>
-        @if (suggestions.length > 0) {
+        @if (totalCount > 0) {
             <mat-chip highlighted color="accent" class="count-badge">
-                {{ suggestions.length }} förslag
+                {{ totalCount }} förslag
             </mat-chip>
         }
     </div>
@@ -16,7 +16,7 @@
             <mat-spinner></mat-spinner>
             <p>Laddar förslag...</p>
         </div>
-    } @else if (suggestions.length === 0) {
+    } @else if (totalCount === 0) {
         <mat-card class="empty-state">
             <mat-card-content>
                 <mat-icon class="empty-icon">check_circle_outline</mat-icon>
@@ -78,5 +78,13 @@
                 </mat-card>
             }
         </div>
+        <mat-paginator
+            [length]="totalCount"
+            [pageSize]="pageSize"
+            [pageIndex]="pageIndex"
+            [pageSizeOptions]="pageSizeOptions"
+            (page)="onPageChange($event)"
+            showFirstLastButtons
+        ></mat-paginator>
     }
 </div>

@@ -25,11 +25,38 @@ public class SuggestedChargingPointsController : ControllerBase
     // GET: api/SuggestedChargingPoints
     [HttpGet]
     [Authorize]
-    public async Task<
-        ActionResult<IEnumerable<SuggestedChargingPoint>>
-    > GetSuggestedChargingPoints()
+    public async Task<IActionResult> GetSuggestedChargingPoints(
+        [FromQuery] int? page = null,
+        [FromQuery] int? pageSize = null
+    )
     {
-        return await _context.SuggestedChargingPoints.ToListAsync();
+        var query = _context.SuggestedChargingPoints.OrderByDescending(s => s.Id);
+
+        if (page is null && pageSize is null)
+        {
+            var all = await query.ToListAsync();
+            return Ok(all);
+        }
+
+        var pageNumber = page is > 0 ? page.Value : 1;
+        var size = pageSize is > 0 ? pageSize.Value : 20;
+        if (size > 200)
+        {
+            size = 200;
+        }
+
+        var total = await query.CountAsync();
+        var items = await query.Skip((pageNumber - 1) * size).Take(size).ToListAsync();
+
+        return Ok(
+            new PagedResult<SuggestedChargingPoint>
+            {
+                Items = items,
+                Total = total,
+                Page = pageNumber,
+                PageSize = size,
+            }
+        );
     }
 
     // GET: api/SuggestedChargingPoints/count

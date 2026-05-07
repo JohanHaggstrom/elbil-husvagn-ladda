@@ -116,6 +116,16 @@ export class ChargingStationService {
         return this.http.get<ChargingPoint[]>(this.suggestedApiUrl, this.getHeaders());
     }
 
+    getSuggestedChargingPointsPaged(page: number, pageSize: number): Observable<PagedResult<ChargingPoint>> {
+        const params = new HttpParams()
+            .set('page', page.toString())
+            .set('pageSize', pageSize.toString());
+        return this.http.get<PagedResult<ChargingPoint>>(this.suggestedApiUrl, {
+            ...this.getHeaders(),
+            params
+        });
+    }
+
     getSuggestedCount(): Observable<number> {
         return this.http.get<number>(`${this.suggestedApiUrl}/count`, this.getHeaders());
     }
