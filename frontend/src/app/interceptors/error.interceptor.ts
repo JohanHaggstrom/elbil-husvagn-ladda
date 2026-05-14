@@ -6,6 +6,7 @@ import { ErrorService } from '../services/error.service';
 
 export const errorInterceptor: HttpInterceptorFn = (req, next) => {
     const errorService = inject(ErrorService);
+    const authService = inject(AuthService);
 
     return next(req).pipe(
         // Retry failed requests (except for POST/PUT/DELETE to avoid duplicates)
@@ -24,8 +25,6 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
         }),
         catchError((error: HttpErrorResponse) => {
             if (error.status === 401) {
-                // 401 Unauthorized - Token expired or invalid
-                const authService = inject(AuthService); // Inject here to avoid circular dependency issues in construction
                 authService.logout();
             } else {
                 errorService.handleError(error);
