@@ -1,5 +1,39 @@
 /* You can add global styles to this file, and also import other style files */
 
+// Design tokens — layout, spacing, typography and semantic colors shared across all pages.
+:root {
+    // Page layout widths
+    --page-max-width-form: 720px;
+    --page-max-width-list: 1200px;
+    --page-max-width-wide: 1400px;
+    --page-padding-block: 2rem;
+    --page-padding-inline: 1.5rem;
+
+    // Spacing scale
+    --space-xs: 4px;
+    --space-sm: 8px;
+    --space-md: 16px;
+    --space-lg: 24px;
+    --space-xl: 32px;
+    --space-2xl: 48px;
+
+    // Typography scale
+    --font-size-h1: 2rem;
+    --font-size-h2: 1.5rem;
+    --font-size-h3: 1.15rem;
+    --font-weight-heading: 600;
+
+    // Semantic colors
+    --color-success: #10b981;
+    --color-danger: #ef4444;
+    --color-warn: #f59e0b;
+    --color-info: #3b82f6;
+    --color-accent-gradient-start: #667eea;
+    --color-accent-gradient-end: #764ba2;
+    --color-primary-gradient-start: #3f51b5;
+    --color-primary-gradient-end: #5c6bc0;
+}
+
 // Light mode (default)
 :root,
 .light-mode {
@@ -43,6 +77,25 @@ body {
     font-family: Roboto, "Helvetica Neue", sans-serif;
     background-color: var(--bg-primary);
     color: var(--text-primary);
+}
+
+// Default heading scale. Individual pages may opt out for special cases (e.g. landing hero).
+h1 {
+    font-size: var(--font-size-h1);
+    font-weight: var(--font-weight-heading);
+    margin: 0 0 var(--space-md);
+}
+
+h2 {
+    font-size: var(--font-size-h2);
+    font-weight: var(--font-weight-heading);
+    margin: 0 0 var(--space-md);
+}
+
+h3 {
+    font-size: var(--font-size-h3);
+    font-weight: var(--font-weight-heading);
+    margin: 0 0 var(--space-sm);
 }
 
 /* Dark mode Material overrides */
@@ -384,6 +437,46 @@ body {
         padding: 0 2rem !important;
         font-size: 1.15rem !important;
         border-radius: 18px !important;
+    }
+}
+
+/* Global Paginator Styling — keeps mat-paginator in sync with current theme on every list page.
+   !important matches the pattern used by the dark mode Material overrides above, since Material's
+   own paginator background otherwise wins on specificity. */
+.mat-mdc-paginator {
+    --mat-paginator-container-background-color: transparent;
+    background-color: transparent !important;
+    color: var(--text-primary) !important;
+    margin-top: 1rem;
+
+    .mat-mdc-paginator-container {
+        color: var(--text-primary) !important;
+    }
+
+    .mat-mdc-paginator-page-size-label,
+    .mat-mdc-paginator-range-label {
+        color: var(--text-secondary) !important;
+    }
+
+    .mat-mdc-paginator-icon {
+        fill: var(--text-primary) !important;
+    }
+
+    button:disabled .mat-mdc-paginator-icon {
+        fill: var(--text-secondary) !important;
+        opacity: 0.4;
+    }
+
+    .mat-mdc-form-field {
+        .mat-mdc-text-field-wrapper {
+            background-color: var(--bg-secondary) !important;
+        }
+
+        .mat-mdc-form-field-infix,
+        .mat-mdc-select-value,
+        .mat-mdc-select-arrow {
+            color: var(--text-primary) !important;
+        }
     }
 }
 

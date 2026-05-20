@@ -224,39 +224,3 @@
         margin-top: 0.5rem;
     }
 }
-
-::ng-deep .admin-feedback-container .mat-mdc-paginator {
-    background-color: transparent;
-    color: var(--text-primary);
-    margin-top: 1rem;
-
-    .mat-mdc-paginator-container {
-        color: var(--text-primary);
-    }
-
-    .mat-mdc-paginator-page-size-label,
-    .mat-mdc-paginator-range-label {
-        color: var(--text-secondary);
-    }
-
-    .mat-mdc-paginator-icon {
-        fill: var(--text-primary);
-    }
-
-    button:disabled .mat-mdc-paginator-icon {
-        fill: var(--text-secondary);
-        opacity: 0.4;
-    }
-
-    .mat-mdc-form-field {
-        .mat-mdc-text-field-wrapper {
-            background-color: var(--bg-primary);
-        }
-
-        .mat-mdc-form-field-infix,
-        .mat-mdc-select-value,
-        .mat-mdc-select-arrow {
-            color: var(--text-primary);
-        }
-    }
-}
