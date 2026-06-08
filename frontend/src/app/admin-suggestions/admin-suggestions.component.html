@@ -8,18 +8,13 @@
     </app-page-header>
 
     @if (isLoading) {
-        <div class="loading-container">
-            <mat-spinner></mat-spinner>
-            <p>Laddar förslag...</p>
-        </div>
+        <app-loading-state message="Laddar förslag..." />
     } @else if (totalCount === 0) {
-        <mat-card class="empty-state">
-            <mat-card-content>
-                <mat-icon class="empty-icon">check_circle_outline</mat-icon>
-                <h2>Inga nya förslag</h2>
-                <p>Alla förslag har hanterats!</p>
-            </mat-card-content>
-        </mat-card>
+        <app-empty-state
+            icon="check_circle_outline"
+            title="Inga nya förslag"
+            message="Alla förslag har hanterats!"
+        />
     } @else {
         <div class="suggestions-list">
             @for (suggestion of suggestions; track suggestion.id) {

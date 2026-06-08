@@ -16,6 +16,8 @@ import { ShowMapDialogComponent } from '../dialogs/show-map-dialog/show-map-dial
 import { ChargingPoint, ChargingStationService } from '../services/charging-station.service';
 import { PageLayoutComponent } from '../shared/page-layout/page-layout.component';
 import { PageHeaderComponent } from '../shared/page-header/page-header.component';
+import { EmptyStateComponent } from '../shared/empty-state/empty-state.component';
+import { LoadingStateComponent } from '../shared/loading-state/loading-state.component';
 
 @Component({
     selector: 'app-admin-suggestions',
@@ -30,7 +32,9 @@ import { PageHeaderComponent } from '../shared/page-header/page-header.component
         MatPaginatorModule,
         MatTooltipModule,
         PageLayoutComponent,
-        PageHeaderComponent
+        PageHeaderComponent,
+        EmptyStateComponent,
+        LoadingStateComponent
     ],
     templateUrl: './admin-suggestions.component.html',
     styleUrl: './admin-suggestions.component.scss'

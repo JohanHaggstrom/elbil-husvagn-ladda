@@ -19,6 +19,8 @@ import { Feedback, FeedbackType } from '../models/feedback.model';
 import { FeedbackService } from '../services/feedback.service';
 import { PageLayoutComponent } from '../shared/page-layout/page-layout.component';
 import { PageHeaderComponent } from '../shared/page-header/page-header.component';
+import { EmptyStateComponent } from '../shared/empty-state/empty-state.component';
+import { LoadingStateComponent } from '../shared/loading-state/loading-state.component';
 
 @Component({
     selector: 'app-admin-feedback',
@@ -37,7 +39,9 @@ import { PageHeaderComponent } from '../shared/page-header/page-header.component
         MatPaginatorModule,
         MatTooltipModule,
         PageLayoutComponent,
-        PageHeaderComponent
+        PageHeaderComponent,
+        EmptyStateComponent,
+        LoadingStateComponent
     ],
     templateUrl: './admin-feedback.component.html',
     styleUrl: './admin-feedback.component.scss'
