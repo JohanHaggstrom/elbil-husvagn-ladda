@@ -14,6 +14,8 @@ import { environment } from '../../../environments/environment';
 import { ImageConstants } from '../../models/image-settings.model';
 import { ChargingPoint } from '../../services/charging-station.service';
 import { ImageCompressorService } from '../../services/image-compressor.service';
+import { PageLayoutComponent } from '../../shared/page-layout/page-layout.component';
+import { PageHeaderComponent } from '../../shared/page-header/page-header.component';
 declare var L: any;
 
 @Component({
@@ -28,7 +30,9 @@ declare var L: any;
         ReactiveFormsModule,
         MatIconModule,
         MatTooltipModule,
-        RecaptchaModule
+        RecaptchaModule,
+        PageLayoutComponent,
+        PageHeaderComponent
     ],
     templateUrl: './charge-point-base.component.html',
     styleUrl: './charge-point-base.component.scss'

@@ -1,14 +1,7 @@
-<div class="page-container">
-    <mat-card class="card">
-        <mat-card-header>
-            <div class="header-content">
-                <button mat-icon-button (click)="onCancel()" class="back-button">
-                    <mat-icon>arrow_back</mat-icon>
-                </button>
-                <mat-card-title>Min Profil ({{ role }})</mat-card-title>
-            </div>
-        </mat-card-header>
+<app-page-layout variant="form">
+    <app-page-header [title]="'Min Profil (' + role + ')'" backTo="/" />
 
+    <mat-card class="card">
         <mat-card-content>
             @if (isLoadingProfile) {
             <div
@@ -83,4 +76,4 @@
             }
         </mat-card-content>
     </mat-card>
-</div>
+</app-page-layout>

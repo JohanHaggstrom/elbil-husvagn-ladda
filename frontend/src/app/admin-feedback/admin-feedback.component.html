@@ -1,15 +1,11 @@
-<div class="admin-feedback-container">
-    <div class="header">
-        <button mat-icon-button (click)="goBack()" class="back-button">
-            <mat-icon>arrow_back</mat-icon>
-        </button>
-        <h1>Ny feedback</h1>
+<app-page-layout variant="list">
+    <app-page-header title="Ny feedback">
         @if (unhandledCount > 0) {
-            <mat-chip highlighted color="warn" class="unhandled-badge">
+            <mat-chip pageHeaderBadge highlighted color="warn" class="unhandled-badge">
                 {{ unhandledCount }} ohanterade
             </mat-chip>
         }
-    </div>
+    </app-page-header>
 
     @if (isLoading) {
         <div class="loading-container">
@@ -134,4 +130,4 @@
             showFirstLastButtons
         ></mat-paginator>
     }
-</div>
+</app-page-layout>

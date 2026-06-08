@@ -1,13 +1,8 @@
-<div class="page-container">
+<app-page-layout variant="form">
+  <app-page-header [title]="title" [customBack]="true" (back)="onCancel()" />
+
   <mat-card class="card">
     <mat-card-content>
-      <div class="header-content">
-        <button mat-icon-button (click)="onCancel()" class="back-button">
-          <mat-icon>arrow_back</mat-icon>
-        </button>
-        <h2 class="page-title">{{ title }}</h2>
-      </div>
-
       <form [formGroup]="form" class="edit-form">
         <mat-form-field appearance="outline" class="full-width">
           <mat-label>Titel</mat-label>
@@ -146,4 +141,4 @@
       </form>
     </mat-card-content>
   </mat-card>
-</div>
+</app-page-layout>

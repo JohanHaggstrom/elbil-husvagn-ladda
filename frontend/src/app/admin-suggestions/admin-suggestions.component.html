@@ -1,15 +1,11 @@
-<div class="admin-suggestions-container">
-    <div class="header">
-        <button mat-icon-button (click)="goBack()" class="back-button">
-            <mat-icon>arrow_back</mat-icon>
-        </button>
-        <h1>Förslag på nya laddstationer</h1>
+<app-page-layout variant="list">
+    <app-page-header title="Förslag på nya laddstationer">
         @if (totalCount > 0) {
-            <mat-chip highlighted color="accent" class="count-badge">
+            <mat-chip pageHeaderBadge highlighted color="accent" class="count-badge">
                 {{ totalCount }} förslag
             </mat-chip>
         }
-    </div>
+    </app-page-header>
 
     @if (isLoading) {
         <div class="loading-container">
@@ -87,4 +83,4 @@
             showFirstLastButtons
         ></mat-paginator>
     }
-</div>
+</app-page-layout>

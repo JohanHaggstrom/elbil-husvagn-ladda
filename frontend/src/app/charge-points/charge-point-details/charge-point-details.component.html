@@ -1,23 +1,18 @@
-<div class="page-container">
-    <div class="header">
-        <button mat-icon-button (click)="onBack()" class="back-button">
-            <mat-icon>arrow_back</mat-icon>
-        </button>
-        <h1>{{ chargePoint?.title || 'Laddstation' }}</h1>
-        <div class="header-actions">
-            @if (shareService.canShare()) {
-                <button
-                    class="link-button"
-                    mat-mini-fab
-                    matTooltip="Dela"
-                    color="accent"
-                    (click)="onShare()"
-                >
-                    <mat-icon>share</mat-icon>
-                </button>
-            }
-        </div>
-    </div>
+<app-page-layout variant="form">
+    <app-page-header [title]="chargePoint?.title || 'Laddstation'">
+        @if (shareService.canShare()) {
+            <button
+                pageHeaderActions
+                class="link-button"
+                mat-mini-fab
+                matTooltip="Dela"
+                color="accent"
+                (click)="onShare()"
+            >
+                <mat-icon>share</mat-icon>
+            </button>
+        }
+    </app-page-header>
 
     @if (chargePoint) {
         <div class="details-content">
@@ -194,4 +189,4 @@
             <mat-spinner></mat-spinner>
         </div>
     }
-</div>
+</app-page-layout>

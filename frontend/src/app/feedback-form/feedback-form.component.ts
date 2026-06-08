@@ -12,6 +12,8 @@ import { Router } from '@angular/router';
 import { RecaptchaModule } from 'ng-recaptcha-2';
 import { FeedbackType } from '../models/feedback.model';
 import { FeedbackService } from '../services/feedback.service';
+import { PageLayoutComponent } from '../shared/page-layout/page-layout.component';
+import { PageHeaderComponent } from '../shared/page-header/page-header.component';
 
 @Component({
     selector: 'app-feedback-form',
@@ -25,7 +27,9 @@ import { FeedbackService } from '../services/feedback.service';
         MatButtonModule,
         MatCardModule,
         MatIconModule,
-        RecaptchaModule
+        RecaptchaModule,
+        PageLayoutComponent,
+        PageHeaderComponent
     ],
     templateUrl: './feedback-form.component.html',
     styleUrl: './feedback-form.component.scss'

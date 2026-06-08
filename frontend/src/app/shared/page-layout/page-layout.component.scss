@@ -1,0 +1,20 @@
+// Outer chrome matches the home page (1400px max, 1rem horizontal padding) so the back button
+// aligns horizontally with the home page's hamburger menu. Inner content is constrained by variant.
+.page {
+    max-width: var(--page-max-width-wide);
+    width: 100%;
+    margin: 0 auto;
+    padding: var(--page-padding-block) 1rem;
+    box-sizing: border-box;
+}
+
+.page__content {
+    max-width: var(--content-max-width);
+    margin: 0 auto;
+}
+
+@media (max-width: 600px) {
+    .page {
+        padding: var(--space-md) var(--space-md);
+    }
+}

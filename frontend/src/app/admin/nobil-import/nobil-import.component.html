@@ -1,11 +1,7 @@
-<div class="nobil-import-container">
-    <div class="header">
-        <button mat-icon-button (click)="onBack()" class="back-button">
-            <mat-icon>arrow_back</mat-icon>
-        </button>
-        <h2>Importera från NOBIL</h2>
-    </div>
+<app-page-layout variant="wide">
+    <app-page-header title="Importera från NOBIL" />
 
+    <div class="nobil-import-container">
     <mat-card class="nobil-import-card">
         <mat-card-content>
     <div class="search-area">
@@ -166,4 +162,5 @@
     }
         </mat-card-content>
     </mat-card>
-</div>
+    </div>
+</app-page-layout>

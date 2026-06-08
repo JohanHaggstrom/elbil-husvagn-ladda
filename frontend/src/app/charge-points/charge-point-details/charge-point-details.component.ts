@@ -17,6 +17,8 @@ import { ChargePointComment, CommentStats, CreateCommentRequest, VoteType } from
 import { ChargingPoint, ChargingStationService } from '../../services/charging-station.service';
 import { CommentService } from '../../services/comment.service';
 import { ShareService } from '../../services/share.service';
+import { PageLayoutComponent } from '../../shared/page-layout/page-layout.component';
+import { PageHeaderComponent } from '../../shared/page-header/page-header.component';
 
 @Component({
     selector: 'app-charge-point-details',
@@ -30,7 +32,9 @@ import { ShareService } from '../../services/share.service';
         MatInputModule,
         MatProgressSpinnerModule,
         FormsModule,
-        MatTooltipModule
+        MatTooltipModule,
+        PageLayoutComponent,
+        PageHeaderComponent
     ],
     templateUrl: './charge-point-details.component.html',
     styleUrl: './charge-point-details.component.scss',

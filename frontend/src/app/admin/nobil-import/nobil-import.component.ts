@@ -15,6 +15,8 @@ import { Router } from '@angular/router';
 import * as L from 'leaflet';
 import 'leaflet.markercluster';
 import { NobilDumpStation, NobilService, NobilStationMatch } from '../../services/nobil.service';
+import { PageLayoutComponent } from '../../shared/page-layout/page-layout.component';
+import { PageHeaderComponent } from '../../shared/page-header/page-header.component';
 
 interface NobilImportState {
     countryCode: string;
@@ -42,7 +44,9 @@ interface NobilImportState {
         MatProgressSpinnerModule,
         MatSnackBarModule,
         MatButtonToggleModule,
-        MatTooltipModule
+        MatTooltipModule,
+        PageLayoutComponent,
+        PageHeaderComponent
     ],
     templateUrl: './nobil-import.component.html',
     styleUrls: ['./nobil-import.component.scss']

@@ -1,37 +1,6 @@
-.feedback-container {
-    display: flex;
-    justify-content: center;
-    align-items: flex-start;
-    padding: 2rem;
-    min-height: 100vh;
-    background: var(--bg-secondary);
-}
-
 .feedback-card {
-    max-width: 600px;
-    width: 100%;
-    margin-top: 2rem;
     background-color: var(--card-bg);
     color: var(--text-primary);
-
-    mat-card-title {
-        color: var(--text-primary);
-    }
-}
-
-.header-content {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    width: 100%;
-
-    button {
-        color: var(--text-primary);
-    }
-}
-
-.back-button {
-    margin-right: 0.5rem;
 }
 
 .description {
