@@ -19,6 +19,7 @@ import { CommentService } from '../../services/comment.service';
 import { ShareService } from '../../services/share.service';
 import { PageLayoutComponent } from '../../shared/page-layout/page-layout.component';
 import { PageHeaderComponent } from '../../shared/page-header/page-header.component';
+import { VoteButtonComponent } from '../../shared/vote-button/vote-button.component';
 
 @Component({
     selector: 'app-charge-point-details',
@@ -34,7 +35,8 @@ import { PageHeaderComponent } from '../../shared/page-header/page-header.compon
         FormsModule,
         MatTooltipModule,
         PageLayoutComponent,
-        PageHeaderComponent
+        PageHeaderComponent,
+        VoteButtonComponent
     ],
     templateUrl: './charge-point-details.component.html',
     styleUrl: './charge-point-details.component.scss',

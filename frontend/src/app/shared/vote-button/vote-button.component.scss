@@ -1,0 +1,48 @@
+:host {
+    display: inline-flex;
+    flex: 1;
+}
+
+.vote-button {
+    flex: 1;
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-sm);
+    padding: 12px 16px;
+    transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+    color: var(--text-primary);
+    background: var(--card-bg);
+
+    mat-icon {
+        font-size: 20px;
+        width: 20px;
+        height: 20px;
+    }
+
+    &.vote-button--up {
+        --vote-color: var(--color-success);
+    }
+
+    &.vote-button--down {
+        --vote-color: var(--color-danger);
+    }
+
+    border: 2px solid var(--vote-color);
+
+    mat-icon {
+        color: var(--vote-color);
+    }
+
+    &.vote-button--selected {
+        background: var(--vote-color);
+        color: white;
+
+        mat-icon {
+            color: white;
+        }
+    }
+
+    &:hover:not(.vote-button--selected) {
+        background: color-mix(in srgb, var(--vote-color) 10%, transparent);
+    }
+}

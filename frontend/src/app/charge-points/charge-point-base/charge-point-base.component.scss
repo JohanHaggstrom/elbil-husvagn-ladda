@@ -12,15 +12,6 @@
     flex-direction: column;
     gap: 0.5rem;
 
-    .row {
-        display: flex;
-        gap: 1rem;
-
-        mat-form-field {
-            flex: 1;
-        }
-    }
-
     .full-width {
         width: 100%;
     }
@@ -129,10 +120,4 @@
         border-radius: 0;
     }
 
-    .edit-form {
-        .row {
-            flex-direction: column;
-            gap: 0.5rem;
-        }
-    }
 }

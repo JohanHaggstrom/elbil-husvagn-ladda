@@ -8,18 +8,13 @@
     </app-page-header>
 
     @if (isLoading) {
-        <div class="loading-container">
-            <mat-spinner></mat-spinner>
-            <p>Laddar feedback...</p>
-        </div>
+        <app-loading-state message="Laddar feedback..." />
     } @else if (totalCount === 0) {
-        <mat-card class="empty-state">
-            <mat-card-content>
-                <mat-icon class="empty-icon">inbox</mat-icon>
-                <h2>Ingen feedback än</h2>
-                <p>Det finns ingen feedback att visa just nu.</p>
-            </mat-card-content>
-        </mat-card>
+        <app-empty-state
+            icon="inbox"
+            title="Ingen feedback än"
+            message="Det finns ingen feedback att visa just nu."
+        />
     } @else {
         <div class="feedback-list">
             @for (feedback of feedbacks; track feedback.id) {

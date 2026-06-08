@@ -59,15 +59,15 @@
     color: white;
 
     &.admin {
-        background-color: #2196f3;
+        background-color: var(--color-info);
     }
 
     &.superadmin {
-        background-color: #ff9800;
+        background-color: var(--color-warn);
     }
 
     &.user {
-        background-color: #4caf50;
+        background-color: var(--color-success);
     }
 }
 
