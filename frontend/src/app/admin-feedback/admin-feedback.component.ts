@@ -17,6 +17,8 @@ import { Router } from '@angular/router';
 import { AuthService } from '../auth/auth.service';
 import { Feedback, FeedbackType } from '../models/feedback.model';
 import { FeedbackService } from '../services/feedback.service';
+import { PageLayoutComponent } from '../shared/page-layout/page-layout.component';
+import { PageHeaderComponent } from '../shared/page-header/page-header.component';
 
 @Component({
     selector: 'app-admin-feedback',
@@ -33,7 +35,9 @@ import { FeedbackService } from '../services/feedback.service';
         MatInputModule,
         MatCheckboxModule,
         MatPaginatorModule,
-        MatTooltipModule
+        MatTooltipModule,
+        PageLayoutComponent,
+        PageHeaderComponent
     ],
     templateUrl: './admin-feedback.component.html',
     styleUrl: './admin-feedback.component.scss'

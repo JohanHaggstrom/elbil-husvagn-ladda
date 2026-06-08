@@ -10,6 +10,8 @@ import { Router } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
 import { AuthService } from '../../auth/auth.service';
 import { User, UserService } from '../../services/user.service';
+import { PageLayoutComponent } from '../../shared/page-layout/page-layout.component';
+import { PageHeaderComponent } from '../../shared/page-header/page-header.component';
 
 @Component({
     selector: 'app-user-list',
@@ -21,6 +23,8 @@ import { User, UserService } from '../../services/user.service';
         MatButtonModule,
         MatIconModule,
         MatProgressSpinnerModule,
+        PageLayoutComponent,
+        PageHeaderComponent,
     ],
     templateUrl: './user-list.component.html',
     styleUrl: './user-list.component.scss',

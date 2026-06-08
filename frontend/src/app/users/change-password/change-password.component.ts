@@ -18,6 +18,8 @@ import { firstValueFrom } from 'rxjs';
 import { AuthService } from '../../auth/auth.service';
 import { PasswordStrengthIndicatorComponent } from '../../dialogs/password-strength-indicator/password-strength-indicator.component';
 import { UserService } from '../../services/user.service';
+import { PageLayoutComponent } from '../../shared/page-layout/page-layout.component';
+import { PageHeaderComponent } from '../../shared/page-header/page-header.component';
 
 @Component({
     selector: 'app-change-password',
@@ -32,6 +34,8 @@ import { UserService } from '../../services/user.service';
         MatProgressSpinnerModule,
         MatIconModule,
         PasswordStrengthIndicatorComponent,
+        PageLayoutComponent,
+        PageHeaderComponent,
     ],
     templateUrl: './change-password.component.html',
     styleUrl: './change-password.component.scss',

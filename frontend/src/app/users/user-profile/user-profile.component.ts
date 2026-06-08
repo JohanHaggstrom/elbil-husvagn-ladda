@@ -12,6 +12,8 @@ import { Router } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
 import { AuthService } from '../../auth/auth.service';
 import { UserService } from '../../services/user.service';
+import { PageLayoutComponent } from '../../shared/page-layout/page-layout.component';
+import { PageHeaderComponent } from '../../shared/page-header/page-header.component';
 
 @Component({
     selector: 'app-user-profile',
@@ -25,6 +27,8 @@ import { UserService } from '../../services/user.service';
         MatButtonModule,
         MatProgressSpinnerModule,
         MatIconModule,
+        PageLayoutComponent,
+        PageHeaderComponent,
     ],
     templateUrl: './user-profile.component.html',
     styleUrl: './user-profile.component.scss',

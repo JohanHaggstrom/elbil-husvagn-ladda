@@ -1,38 +1,6 @@
-.page-container {
-    display: flex;
-    justify-content: center;
-    align-items: flex-start;
-    padding: 2rem;
-    min-height: 100vh;
-    background: var(--bg-secondary);
-}
-
 .card {
-    max-width: 600px;
-    width: 100%;
-    margin-top: 2rem;
     background-color: var(--card-bg);
     color: var(--text-primary);
-
-    mat-card-title {
-        color: var(--text-primary);
-    }
-}
-
-.header-content {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    width: 100%;
-    margin-bottom: 1rem;
-
-    button {
-        color: var(--text-primary);
-    }
-}
-
-.back-button {
-    margin-right: -8px;
 }
 
 .profile-section {
@@ -88,16 +56,9 @@ mat-spinner {
 }
 
 @media screen and (max-width: 600px) {
-    .page-container {
-        padding: 0;
-        background: var(--card-bg);
-    }
-
     .card {
-        margin-top: 0;
         box-shadow: none;
         border-radius: 0;
-        min-height: 100vh;
     }
 
     .profile-section {

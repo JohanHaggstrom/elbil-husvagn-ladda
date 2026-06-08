@@ -1,34 +1,6 @@
-.support-container {
-    padding: 16px;
-    display: flex;
-    justify-content: center;
-    min-height: calc(100vh - 64px);
-    background-color: var(--bg-secondary);
-}
-
 .support-card {
-    width: 100%;
-    max-width: 600px;
-    margin-top: 16px;
     background-color: var(--card-bg);
     color: var(--text-primary);
-}
-
-.header-content {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    margin-bottom: 16px;
-
-    mat-card-title {
-        margin: 0;
-        font-size: 1.5rem;
-        color: var(--text-primary);
-    }
-
-    .back-button {
-         color: var(--text-primary);
-    }
 }
 
 .section {

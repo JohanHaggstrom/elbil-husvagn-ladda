@@ -1,25 +1,16 @@
-<div class="users-container">
-    <div class="users-header">
+<app-page-layout variant="list">
+    <app-page-header title="Användare" backTo="/">
         <button
-            mat-icon-button
-            (click)="navigateHome()"
-            title="Tillbaka till hem"
-            class="back-button"
-        >
-            <mat-icon>arrow_back</mat-icon>
-        </button>
-        <h1>Användare</h1>
-        <button
+            pageHeaderActions
             mat-raised-button
             color="primary"
             (click)="openAddUserPage()"
             title="Lägg till ny användare"
-            class="add-button"
         >
             <mat-icon>add</mat-icon>
             <span>Lägg till</span>
         </button>
-    </div>
+    </app-page-header>
 
     @if (isLoading) {
     <mat-card class="users-card">
@@ -120,4 +111,4 @@
         </mat-card-content>
     </mat-card>
     }
-</div>
+</app-page-layout>

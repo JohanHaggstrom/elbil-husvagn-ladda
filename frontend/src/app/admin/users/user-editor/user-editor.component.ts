@@ -18,6 +18,8 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
 import { PasswordStrengthIndicatorComponent } from '../../../dialogs/password-strength-indicator/password-strength-indicator.component';
 import { UserService } from '../../../services/user.service';
+import { PageLayoutComponent } from '../../../shared/page-layout/page-layout.component';
+import { PageHeaderComponent } from '../../../shared/page-header/page-header.component';
 
 @Component({
     selector: 'app-user-editor',
@@ -33,6 +35,8 @@ import { UserService } from '../../../services/user.service';
         MatIconModule,
         MatProgressSpinnerModule,
         PasswordStrengthIndicatorComponent,
+        PageLayoutComponent,
+        PageHeaderComponent,
     ],
     templateUrl: './user-editor.component.html',
     styleUrl: './user-editor.component.scss',

@@ -1,14 +1,7 @@
-<div class="support-container">
-    <mat-card class="support-card">
-        <mat-card-header>
-            <div class="header-content">
-                <button mat-icon-button (click)="goBack()" class="back-button">
-                    <mat-icon>arrow_back</mat-icon>
-                </button>
-                <mat-card-title>Om & Stöd ⛺</mat-card-title>
-            </div>
-        </mat-card-header>
+<app-page-layout variant="form">
+    <app-page-header title="Om & Stöd ⛺" backTo="/" />
 
+    <mat-card class="support-card">
         <mat-card-content>
             <section class="section">
                 <h3>Om utvecklaren</h3>
@@ -71,7 +64,6 @@
                         <mat-icon>email</mat-icon>
                         <span>johan.haggstrom@gmail.com</span>
                     </a>
-                    <!-- Add Real GitHub or other links if available -->
                 </div>
             </section>
 
@@ -95,4 +87,4 @@
             </section>
         </mat-card-content>
     </mat-card>
-</div>
+</app-page-layout>

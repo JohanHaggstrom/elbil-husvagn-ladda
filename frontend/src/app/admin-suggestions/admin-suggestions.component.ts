@@ -14,6 +14,8 @@ import { environment } from '../../environments/environment';
 import { AuthService } from '../auth/auth.service';
 import { ShowMapDialogComponent } from '../dialogs/show-map-dialog/show-map-dialog.component';
 import { ChargingPoint, ChargingStationService } from '../services/charging-station.service';
+import { PageLayoutComponent } from '../shared/page-layout/page-layout.component';
+import { PageHeaderComponent } from '../shared/page-header/page-header.component';
 
 @Component({
     selector: 'app-admin-suggestions',
@@ -26,7 +28,9 @@ import { ChargingPoint, ChargingStationService } from '../services/charging-stat
         MatChipsModule,
         MatProgressSpinnerModule,
         MatPaginatorModule,
-        MatTooltipModule
+        MatTooltipModule,
+        PageLayoutComponent,
+        PageHeaderComponent
     ],
     templateUrl: './admin-suggestions.component.html',
     styleUrl: './admin-suggestions.component.scss'

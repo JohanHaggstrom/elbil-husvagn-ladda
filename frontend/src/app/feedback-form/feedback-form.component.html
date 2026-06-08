@@ -1,14 +1,7 @@
-<div class="feedback-container">
-    <mat-card class="feedback-card">
-        <mat-card-header>
-            <div class="header-content">
-                <button mat-icon-button (click)="goBack()" class="back-button">
-                    <mat-icon>arrow_back</mat-icon>
-                </button>
-                <mat-card-title>Rapportera eller Föreslå</mat-card-title>
-            </div>
-        </mat-card-header>
+<app-page-layout variant="form">
+    <app-page-header title="Rapportera eller Föreslå" backTo="/" />
 
+    <mat-card class="feedback-card">
         <mat-card-content>
             <p class="description">
                 Hjälp oss att förbättra applikationen genom att rapportera buggar eller föreslå nya funktioner!
@@ -98,4 +91,4 @@
             </form>
         </mat-card-content>
     </mat-card>
-</div>
+</app-page-layout>

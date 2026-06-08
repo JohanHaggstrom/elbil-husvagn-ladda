@@ -1,33 +1,7 @@
-.admin-feedback-container {
-    padding: 2rem;
-    max-width: 1200px;
-    margin: 0 auto;
-    min-height: 100vh;
-    background: var(--bg-secondary);
-}
-
-.header {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    margin-bottom: 2rem;
-    color: var(--text-primary);
-
-    h1 {
-        margin: 0;
-        font-size: 2rem;
-        flex: 1;
-    }
-}
-
 .unhandled-badge {
     mat-icon {
         margin-right: 0.25rem;
     }
-}
-
-.back-button {
-    color: var(--text-primary);
 }
 
 .loading-container {
