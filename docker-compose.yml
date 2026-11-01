@@ -39,7 +39,7 @@ services:
       - app-network
 
   tunnel:
-    image: cloudflare/cloudflared:latest
+    image: cloudflare/cloudflared:2026.10.3
     restart: always
     command: tunnel run
     environment:
